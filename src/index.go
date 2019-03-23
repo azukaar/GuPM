@@ -89,6 +89,12 @@ func download(packagename string, versionBlob string, ch chan<-string) {
 		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3}\.\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0")
 		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0.0")
 	
+		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3}\.\d{1,3})\s`).ReplaceAllString(correctVersion, "$1.0")
+		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3})\s`).ReplaceAllString(correctVersion, "$1.0.0")
+	
+		correctVersion = regexp.MustCompile(`[\s\>\<\=]([\>\<\=]{0,2}\d{1,3}\.\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0")
+		correctVersion = regexp.MustCompile(`[\s\>\<\=]([\>\<\=]{0,2}\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0.0")
+	
 		correctVersion = regexp.MustCompile(`^(\d+\.\d+)\.x$`).ReplaceAllString(correctVersion, ">$1.0")
 		correctVersion = regexp.MustCompile(`^(\d+)\.x\.x$`).ReplaceAllString(correctVersion, ">$1.0.0")
 	
