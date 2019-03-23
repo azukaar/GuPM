@@ -8,7 +8,6 @@ import (
 	"io"
 	"strings"
 	"path/filepath"
-	// "fmt"
 )
 
 // Untar takes a destination path and a reader; a tar reader loops over the tarfile
