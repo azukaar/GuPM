@@ -60,51 +60,65 @@ func resolveTag(packagename string, tag string) string {
 }
 
 func download(packagename string, versionBlob string, ch chan<-string) {
-	var version string
+	var version, correctVersion, url string
 	var body []byte
 	var packageDescription map[string]interface{}
+	
+	specificCheck := regexp.MustCompile(`^\d+\.\d+\.\d+\-[\w\d\.]+$`)
+	trySpecific := specificCheck.FindString(versionBlob)
 
-	res := httpGet("https://registry.npmjs.org/" + packagename)
-	json.Unmarshal([]byte(res), &packageDescription)
-	candidates := packageDescription["versions"].(map[string]interface{})
-
-	correctVersion := strings.Replace(versionBlob, "~", ">=", -1)
-	correctVersion = strings.Replace(correctVersion, "^", ">=", -1)
-	correctVersion = strings.Replace(correctVersion, " -", " <", -1)
-	correctVersion = strings.Replace(correctVersion, "*", ">0.0.0", -1)
-
-	correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3}\.\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0")
-	correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0.0")
-
-	correctVersion = regexp.MustCompile(`^(\d+\.\d+)\.x$`).ReplaceAllString(correctVersion, ">$1.0")
-	correctVersion = regexp.MustCompile(`^(\d+)\.x\.x$`).ReplaceAllString(correctVersion, ">$1.0.0")
-
-	rangeVer, err := semver.ParseRange(correctVersion)
-	if err != nil {
-		fmt.Println("ERR 2", err)
-		fmt.Println("ERR 2", correctVersion + "(" + versionBlob + ")")
-		fmt.Println("ERR 2", packagename)
-	}
-
-	var url = "NO MATCHING VERSION FOR " + packagename + " " +  correctVersion
-
-	for verCand := range candidates {
-		sver, err := semver.ParseTolerant(verCand)
+	if(trySpecific != "") {
+		url = "https://registry.npmjs.org/" + 
+				packagename +
+				"/-/" +
+				packagename +
+				"-" +
+				versionBlob +
+				".tgz"
+		body = httpGet(url)
+	} else {
+		res := httpGet("https://registry.npmjs.org/" + packagename)
+		json.Unmarshal([]byte(res), &packageDescription)
+		candidates := packageDescription["versions"].(map[string]interface{})
+	
+		correctVersion = strings.Replace(versionBlob, "~", ">=", -1)
+		correctVersion = strings.Replace(correctVersion, "^", ">=", -1)
+		correctVersion = strings.Replace(correctVersion, " -", " <", -1)
+		correctVersion = strings.Replace(correctVersion, "*", ">0.0.0", -1)
+	
+		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3}\.\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0")
+		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0.0")
+	
+		correctVersion = regexp.MustCompile(`^(\d+\.\d+)\.x$`).ReplaceAllString(correctVersion, ">$1.0")
+		correctVersion = regexp.MustCompile(`^(\d+)\.x\.x$`).ReplaceAllString(correctVersion, ">$1.0.0")
+	
+		rangeVer, err := semver.ParseRange(correctVersion)
 		if err != nil {
-			fmt.Println("!", err)
+			fmt.Println("ERR 2", err)
+			fmt.Println("ERR 2", correctVersion + "(" + versionBlob + ")")
+			fmt.Println("ERR 2", packagename)
 		}
 
-		if(rangeVer(sver)) {
-			version = verCand
-			url = "https://registry.npmjs.org/" + 
-					packagename +
-					"/-/" +
-					packagename +
-					"-" +
-					version +
-					".tgz"
-			body = httpGet(url)
-			break;
+		url = "NO MATCHING VERSION FOR " + packagename + " " +  correctVersion
+	
+		for verCand := range candidates {
+			sver, err := semver.ParseTolerant(verCand)
+			if err != nil {
+				fmt.Println("!", err)
+			}
+	
+			if(rangeVer(sver)) {
+				version = verCand
+				url = "https://registry.npmjs.org/" + 
+						packagename +
+						"/-/" +
+						packagename +
+						"-" +
+						version +
+						".tgz"
+				body = httpGet(url)
+				break;
+			}
 		}
 	}
 
@@ -114,7 +128,7 @@ func download(packagename string, versionBlob string, ch chan<-string) {
 		fmt.Println(url)
 		os.MkdirAll("node_modules/"+packagename,  os.ModePerm)
 	
-		err = Untar("node_modules/"+packagename, string(body))
+		err := Untar("node_modules/"+packagename, string(body))
 		if err != nil {
 			fmt.Println("1", err)
 			fmt.Println("node_modules/"+packagename, version)
