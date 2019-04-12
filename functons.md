@@ -23,3 +23,7 @@ Return true if version in range
 # getLatestInRange([version], range)
 
 Return the latest version in range
+
+# findAll(regex, string)
+
+# match(regex, string)
