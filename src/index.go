@@ -9,8 +9,7 @@ import (
 	"time"
 	"io/ioutil"
 	"regexp"
-	"github.com/blang/semver"
-	"strings"
+	"github.com/Masterminds/semver"
 )
 
 func httpGet(url string) []byte {
@@ -64,41 +63,22 @@ func download(packagename string, versionBlob string, ch chan<-string) {
 	var body []byte
 	var packageDescription map[string]interface{}
 	
-	specificCheck := regexp.MustCompile(`^\d+\.\d+\.\d+\-[\w\d\.]+$`)
+	specificCheck := regexp.MustCompile(`^\d+\.\d+\.\d+`);
+	specificCheckNoSpecial := regexp.MustCompile(`[\sx*]`);
 	trySpecific := specificCheck.FindString(versionBlob)
+	trySpecificNoSpecial := specificCheckNoSpecial.FindString(versionBlob)
 
-	if(trySpecific != "") {
-		url = "https://registry.npmjs.org/" + 
-				packagename +
-				"/-/" +
-				packagename +
-				"-" +
-				versionBlob +
-				".tgz"
-		body = httpGet(url)
+	if(trySpecific != "" && trySpecificNoSpecial == "") {
+		version = versionBlob
 	} else {
 		res := httpGet("https://registry.npmjs.org/" + packagename)
 		json.Unmarshal([]byte(res), &packageDescription)
 		candidates := packageDescription["versions"].(map[string]interface{})
-	
-		correctVersion = strings.Replace(versionBlob, "~", ">=", -1)
-		correctVersion = strings.Replace(correctVersion, "^", ">=", -1)
-		correctVersion = strings.Replace(correctVersion, " -", " <", -1)
-		correctVersion = strings.Replace(correctVersion, "*", ">0.0.0", -1)
-	
-		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3}\.\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0")
-		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0.0")
-	
-		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3}\.\d{1,3})\s`).ReplaceAllString(correctVersion, "$1.0")
-		correctVersion = regexp.MustCompile(`^([\>\<\=]{0,2}\d{1,3})\s`).ReplaceAllString(correctVersion, "$1.0.0")
-	
-		correctVersion = regexp.MustCompile(`[\s\>\<\=]([\>\<\=]{0,2}\d{1,3}\.\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0")
-		correctVersion = regexp.MustCompile(`[\s\>\<\=]([\>\<\=]{0,2}\d{1,3})$`).ReplaceAllString(correctVersion, "$1.0.0")
-	
-		correctVersion = regexp.MustCompile(`^(\d+\.\d+)\.x$`).ReplaceAllString(correctVersion, ">$1.0")
-		correctVersion = regexp.MustCompile(`^(\d+)\.x\.x$`).ReplaceAllString(correctVersion, ">$1.0.0")
-	
-		rangeVer, err := semver.ParseRange(correctVersion)
+		correctVersion = versionBlob
+		
+		correctVersion = regexp.MustCompile(`(\d) ([\>\<\=\^\~\!])`).ReplaceAllString(correctVersion, "$1, $2")
+
+		rangeVer, err := semver.NewConstraint(correctVersion)
 		if err != nil {
 			fmt.Println("ERR 2", err)
 			fmt.Println("ERR 2", correctVersion + "(" + versionBlob + ")")
@@ -108,25 +88,26 @@ func download(packagename string, versionBlob string, ch chan<-string) {
 		url = "NO MATCHING VERSION FOR " + packagename + " " +  correctVersion
 	
 		for verCand := range candidates {
-			sver, err := semver.ParseTolerant(verCand)
+			sver, err := semver.NewVersion(verCand)
 			if err != nil {
 				fmt.Println("!", err)
 			}
 	
-			if(rangeVer(sver)) {
+			if(rangeVer.Check(sver)) {
 				version = verCand
-				url = "https://registry.npmjs.org/" + 
-						packagename +
-						"/-/" +
-						packagename +
-						"-" +
-						version +
-						".tgz"
-				body = httpGet(url)
-				break;
 			}
 		}
 	}
+
+	url = "https://registry.npmjs.org/" + 
+		packagename +
+		"/-/" +
+		packagename +
+		"-" +
+		version +
+		".tgz"
+
+	body = httpGet(url)
 
 	if (is404(body)) {
 		fmt.Println("404 NOT FOUND, " + url)
@@ -161,7 +142,7 @@ func depInstall(workingDir string, file string) {
 		fmt.Println("-- installing dependencies for", workingDir);
 
 		for packagename, versionBlob := range dependencies {
-			if _, err := os.Stat("node_modules/"+packagename); err != nil {
+			if _, err := os.Stat("node_modules/"+packagename); err != nil {	
 				var version string = versionBlob.(string)
 				tagCheck := regexp.MustCompile(`^\d*_*\w+[\d\w_]*$`)
 				tryTag := tagCheck.FindString(version)
