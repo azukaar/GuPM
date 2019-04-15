@@ -27,11 +27,12 @@ func InstallProject(path string) error {
 	}
 	
 	for index, dep := range depList {
-		expDep, errExpand := provider.ExpandDependency(dep.(utils.Json))
+		newDep, errExpand := provider.ExpandDependency(dep)
 		if(errExpand != nil) {
 			return errExpand
 		}
-		depList[index] = expDep
+		fmt.Println(index, newDep, errExpand)
+		// TODO : RECURSIVE
 	}
 
 	// depList = provider.BuildDependencyTree(depList)

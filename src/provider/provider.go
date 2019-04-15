@@ -101,7 +101,7 @@ func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
 	}
 }
 
-func GetDependencyList(config utils.Json) (utils.PackageDepedencyListType, error) {
+func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 	var file, _ = fileExists(ProviderPath + "/GetDependencyList.js")
 	if(file) {
 		input := make(map[string]interface {})
@@ -113,13 +113,13 @@ func GetDependencyList(config utils.Json) (utils.PackageDepedencyListType, error
 		}
 
 		resObj, err1 := res.Export()
-		return resObj.(utils.PackageDepedencyListType), err1
+		return resObj.([]map[string]interface {}), err1
 	} else {
 		return defaultProvider.GetDependencyList(config), nil
 	}
 }
 
-func ExpandDependency(depedency utils.Json) (utils.Json, error) {
+func ExpandDependency(depedency map[string]interface {}) ([]interface {}, error) {
 	var file, _ = fileExists(ProviderPath + "/ExpandDependency.js")
 	if(file) {
 		input := make(map[string]interface {})
@@ -131,8 +131,8 @@ func ExpandDependency(depedency utils.Json) (utils.Json, error) {
 		}
 
 		resObj, err1 := res.Export()
-		return resObj.(utils.Json), err1
+		return resObj.([]interface {}), err1
 	} else {
-		return depedency, nil
+		return nil, nil
 	}
 }
