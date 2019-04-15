@@ -26,8 +26,8 @@ gupm add -p npm react@1
 ## Script Manager
 ## CI Manager
 ## Write plugins
-[./functions.md](Functions)
+(functions.md)[functions]
 
 ### Provider
 Allow you to install / add from a repo
-[./hooklist.md](Hook list)
+(./hookList.md)[Hooks]
