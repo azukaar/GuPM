@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "config": {
         "default": {
-            "packageEntryPoint": "package.json"
+            "entrypoint": "package.json"
         }
     }
 }

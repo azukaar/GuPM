@@ -1,0 +1,9 @@
+{
+    "name": "sometest",
+    "version": "1.0.0",
+    "dependencies": {
+        "default" : {
+            "npm://react": "latest"
+        }
+    }
+}

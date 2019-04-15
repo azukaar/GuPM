@@ -9,21 +9,21 @@ input:
 output: true
 ```
 
-## getPackageDocumentation
+## getPackageConfig
 
-In case the doc isn't available to FS, you can hook this and return the json doc
+In case the doc isn't available to FS or not JSON, you can hook this and return the json doc
 
 ```
-input: packageDocumentationPath
+input: packageConfigPath
 output: JSON Object
 ```
 
-## postGetPackageDocumentation
+## postGetPackageConfig
 
 If you need to transform the doc before getting anything
 
 ```
-input: packageDocumentation
+input: packageConfig
 output: JSON Object
 ```
 
@@ -32,7 +32,7 @@ output: JSON Object
 Hook this to return the json array of deps
 
 ```
-input: packageDocumentation (transformed)
+input: packageConfig (transformed)
 output: JSON Array of deps
 ```
 
