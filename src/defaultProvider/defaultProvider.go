@@ -32,7 +32,9 @@ func PostGetDepedency(provider string, name string, version string, url string, 
 	tryExtension := extensionCheck.FindString(url)
 
 	if(tryExtension != "") {
-		utils.Untar(path, result)
+		resultFiles, _ := utils.Untar(result)
+		resultFiles.SaveAt(path)
+		// fmt.Println(resultFiles)
 	} else {
 
 	}

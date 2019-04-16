@@ -2,3 +2,4 @@ bin
 .vscode
 node_modules
 temp
+cache
