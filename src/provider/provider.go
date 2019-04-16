@@ -28,6 +28,20 @@ func run(path string, input map[string]interface {}) (otto.Value, error) {
 
 	vm := otto.New()
 	jsVm.Setup(vm)
+	
+	vm.Set("getDepedency", func(call otto.FunctionCall) otto.Value {
+		providerName, _ := call.Argument(0).ToString()
+		name, _ := call.Argument(1).ToString()
+		version, _ := call.Argument(2).ToString()
+		url, _ := call.Argument(3).ToString()
+		path := "./cache/" + providerName + "/" + name + "/" + version
+		
+		res, _ := GetDepedency(providerName, name, version, url, path)
+		postrest, _ := PostGetDepedency(providerName, name, version, url, path, res)
+
+		result, _ :=  vm.ToValue(postrest)
+		return result
+	})
 
 	for varName, varValue := range input {
 		vm.Set(varName, varValue)
@@ -129,5 +143,49 @@ func ExpandDependency(depedency map[string]interface {}) (map[string]interface {
 		return resObj.(map[string]interface {}), err1
 	} else {
 		return nil, nil
+	}
+}
+
+func GetDepedency(provider string, name string, version string, url string, path string) (string, error) {
+	var file, _ = utils.FileExists(ProviderPath + "/GetDepedency.js")
+	if(file) {
+		input := make(map[string]interface {})
+		input["Provider"] = provider
+		input["Name"] = name
+		input["Version"] = version
+		input["Url"] = url
+		input["Path"] = path
+
+		res, err :=  run(ProviderPath + "/GetDepedency.js", input)
+		if(err != nil) {
+			return "", err
+		}
+
+		resStr, err1 := res.ToString()
+		return resStr, err1
+	} else {
+		return defaultProvider.GetDepedency(provider, name, version, url, path)
+	}
+}
+
+func PostGetDepedency(provider string, name string, version string, url string, path string, result string) (string, error) {
+	var file, _ = utils.FileExists(ProviderPath + "/PostGetDepedency.js")
+	if(file) {
+		input := make(map[string]interface {})
+		input["Provider"] = provider
+		input["Name"] = name
+		input["Version"] = version
+		input["Url"] = url
+		input["Path"] = path
+
+		res, err :=  run(ProviderPath + "/PostGetDepedency.js", input)
+		if(err != nil) {
+			return "", err
+		}
+
+		resStr, err1 := res.ToString()
+		return resStr, err1
+	} else {
+		return defaultProvider.PostGetDepedency(provider, name, version, url, path, result)
 	}
 }

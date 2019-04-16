@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"../utils"
+	"os"
+	"regexp"
 	"fmt"
 )
 
@@ -17,6 +19,25 @@ func GetPackageConfig(entryPoint string) map[string]interface {} {
 	json.Unmarshal([]byte(string(b)), &packageConfig)
 
 	return packageConfig
+}
+
+func GetDepedency(provider string, name string, version string, url string, path string) (string, error) {
+	return string(utils.HttpGet(url)), nil
+}
+
+func PostGetDepedency(provider string, name string, version string, url string, path string, result string) (string, error) {
+	os.MkdirAll(path, os.ModePerm)
+	// resultBinary := []byte(result)
+	extensionCheck := regexp.MustCompile(`\.tgz$`)
+	tryExtension := extensionCheck.FindString(url)
+
+	if(tryExtension != "") {
+		utils.Untar(path, result)
+	} else {
+
+	}
+
+	return path, nil
 }
 
 func GetDependencyList(config map[string]interface {}) utils.PackageDepedencyListType {

@@ -29,6 +29,7 @@ func Setup(vm *otto.Otto) {
 		rangeStr, _ := call.Argument(0).ToString()
 		versionList, _ := call.Argument(1).Export()
 		var version string
+		var versionSem *semver.Version
 		rangeVer, _ := semver.NewConstraint(rangeStr)
 
 		for _, verCand := range versionList.([]string) {
@@ -36,9 +37,10 @@ func Setup(vm *otto.Otto) {
 			if err != nil {
 				fmt.Println(err)
 			}
-	
-			if(rangeVer.Check(sver)) {
+			
+			if(rangeVer.Check(sver) && (versionSem == nil || sver.GreaterThan(versionSem))) {
 				version = verCand
+				versionSem = sver
 			}
 		}
 		if(version != "") {

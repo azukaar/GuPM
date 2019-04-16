@@ -22,4 +22,13 @@ else {
 
 Depedency.version = finalVersion;
 
+var path = 
+    getDepedency('npm', name, finalVersion, 'https://registry.npmjs.org/' + 
+        name +
+        '/-/' +
+        name +
+        '-' +
+        finalVersion +
+        '.tgz');
+
 Depedency;
