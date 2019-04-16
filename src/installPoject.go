@@ -31,8 +31,7 @@ func InstallProject(path string) error {
 		if(errExpand != nil) {
 			return errExpand
 		}
-		fmt.Println(index, newDep, errExpand)
-		// TODO : RECURSIVE
+		depList[index] = newDep
 	}
 
 	// depList = provider.BuildDependencyTree(depList)
