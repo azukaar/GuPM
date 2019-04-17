@@ -29,15 +29,21 @@ func run(path string, input map[string]interface {}) (otto.Value, error) {
 	vm := otto.New()
 	jsVm.Setup(vm)
 	
-	vm.Set("getDepedency", func(call otto.FunctionCall) otto.Value {
+	vm.Set("getDependency", func(call otto.FunctionCall) otto.Value {
 		providerName, _ := call.Argument(0).ToString()
 		name, _ := call.Argument(1).ToString()
 		version, _ := call.Argument(2).ToString()
 		url, _ := call.Argument(3).ToString()
 		path := "./cache/" + providerName + "/" + name + "/" + version
 		
-		res, _ := GetDepedency(providerName, name, version, url, path)
-		postrest, _ := PostGetDepedency(providerName, name, version, url, path, res)
+		res, errorGD := GetDependency(providerName, name, version, url, path)
+		if(errorGD != nil) {
+			fmt.Println(errorGD)
+		}
+		postrest, errorPGD := PostGetDependency(providerName, name, version, url, path, res)
+		if(errorPGD != nil) {
+			fmt.Println(errorPGD)
+		}
 
 		result, _ :=  vm.ToValue(postrest)
 		return result
@@ -128,11 +134,11 @@ func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 	}
 }
 
-func ExpandDependency(depedency map[string]interface {}) (map[string]interface {}, error) {
+func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
 	var file, _ = utils.FileExists(ProviderPath + "/ExpandDependency.js")
 	if(file) {
 		input := make(map[string]interface {})
-		input["Depedency"] = depedency
+		input["Dependency"] = dependency
 
 		res, err :=  run(ProviderPath + "/ExpandDependency.js", input)
 		if(err != nil) {
@@ -146,8 +152,8 @@ func ExpandDependency(depedency map[string]interface {}) (map[string]interface {
 	}
 }
 
-func GetDepedency(provider string, name string, version string, url string, path string) (string, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/GetDepedency.js")
+func GetDependency(provider string, name string, version string, url string, path string) (string, error) {
+	var file, _ = utils.FileExists(ProviderPath + "/GetDependency.js")
 	if(file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
@@ -156,7 +162,7 @@ func GetDepedency(provider string, name string, version string, url string, path
 		input["Url"] = url
 		input["Path"] = path
 
-		res, err :=  run(ProviderPath + "/GetDepedency.js", input)
+		res, err :=  run(ProviderPath + "/GetDependency.js", input)
 		if(err != nil) {
 			return "", err
 		}
@@ -164,12 +170,12 @@ func GetDepedency(provider string, name string, version string, url string, path
 		resStr, err1 := res.ToString()
 		return resStr, err1
 	} else {
-		return defaultProvider.GetDepedency(provider, name, version, url, path)
+		return defaultProvider.GetDependency(provider, name, version, url, path)
 	}
 }
 
-func PostGetDepedency(provider string, name string, version string, url string, path string, result string) (string, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/PostGetDepedency.js")
+func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
+	var file, _ = utils.FileExists(ProviderPath + "/PostGetDependency.js")
 	if(file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
@@ -177,8 +183,9 @@ func PostGetDepedency(provider string, name string, version string, url string, 
 		input["Version"] = version
 		input["Url"] = url
 		input["Path"] = path
+		input["Result"] = result
 
-		res, err :=  run(ProviderPath + "/PostGetDepedency.js", input)
+		res, err :=  run(ProviderPath + "/PostGetDependency.js", input)
 		if(err != nil) {
 			return "", err
 		}
@@ -186,6 +193,6 @@ func PostGetDepedency(provider string, name string, version string, url string, 
 		resStr, err1 := res.ToString()
 		return resStr, err1
 	} else {
-		return defaultProvider.PostGetDepedency(provider, name, version, url, path, result)
+		return defaultProvider.PostGetDependency(provider, name, version, url, path, result)
 	}
 }

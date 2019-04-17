@@ -21,20 +21,18 @@ func GetPackageConfig(entryPoint string) map[string]interface {} {
 	return packageConfig
 }
 
-func GetDepedency(provider string, name string, version string, url string, path string) (string, error) {
+func GetDependency(provider string, name string, version string, url string, path string) (string, error) {
 	return string(utils.HttpGet(url)), nil
 }
 
-func PostGetDepedency(provider string, name string, version string, url string, path string, result string) (string, error) {
+func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	os.MkdirAll(path, os.ModePerm)
-	// resultBinary := []byte(result)
 	extensionCheck := regexp.MustCompile(`\.tgz$`)
 	tryExtension := extensionCheck.FindString(url)
 
 	if(tryExtension != "") {
 		resultFiles, _ := utils.Untar(result)
 		resultFiles.SaveAt(path)
-		// fmt.Println(resultFiles)
 	} else {
 
 	}
@@ -42,6 +40,6 @@ func PostGetDepedency(provider string, name string, version string, url string, 
 	return path, nil
 }
 
-func GetDependencyList(config map[string]interface {}) utils.PackageDepedencyListType {
-	return config["dependencies"].(utils.PackageDepedencyListType)
+func GetDependencyList(config map[string]interface {}) utils.PackageDependencyListType {
+	return config["dependencies"].(utils.PackageDependencyListType)
 }

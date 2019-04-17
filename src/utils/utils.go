@@ -10,7 +10,7 @@ import (
 
 type Json map[string]interface {}
 type JsonMap []interface {}
-type PackageDepedencyListType []map[string]interface {}
+type PackageDependencyListType []map[string]interface {}
 
 func StringToJSON(b string) map[string]interface {} {
 	var jsonString map[string]interface{}

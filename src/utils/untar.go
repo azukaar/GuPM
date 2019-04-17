@@ -12,9 +12,9 @@ import (
 func Untar(r string) (FileStructure, error) {
 	gzr, err := gzip.NewReader(strings.NewReader(r))
 	root := FileStructure{
-		children: make(map[string]FileStructure),
-		name : "/",
-		filetype: 0,
+		Children: make(map[string]FileStructure),
+		Name : "/",
+		Filetype: 0,
 	}
 
 	if err != nil {
@@ -44,7 +44,7 @@ func Untar(r string) (FileStructure, error) {
 		// if its a dir and it doesn't exist create it
 		case tar.TypeDir: {
 			root.getOrCreate(header.Name, FileStructure{
-				filetype: 0,
+				Filetype: 0,
 			})
 		}
 		
@@ -53,10 +53,11 @@ func Untar(r string) (FileStructure, error) {
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(tr)
 			s := buf.String() 
+			_ = s
 
 			root.getOrCreate(header.Name, FileStructure{
-				filetype: 1,
-				content: s,
+				Filetype: 1,
+				Content: s,
 			})
 		}	
 	}

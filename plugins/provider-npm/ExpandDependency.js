@@ -1,5 +1,5 @@
-var name = Depedency.name;
-var version = Depedency.version;
+var name = Dependency.name;
+var version = Dependency.version;
 var finalVersion;
 
 var payload = httpGet('https://registry.npmjs.org/'+name);
@@ -20,10 +20,10 @@ else {
     finalVersion = semverLatestInRange(version, versionList);
 }
 
-Depedency.version = finalVersion;
+Dependency.version = finalVersion;
 
 var path = 
-    getDepedency('npm', name, finalVersion, 'https://registry.npmjs.org/' + 
+    getDependency('npm', name, finalVersion, 'https://registry.npmjs.org/' + 
         name +
         '/-/' +
         name +
@@ -31,4 +31,6 @@ var path =
         finalVersion +
         '.tgz');
 
-Depedency;
+// TODO : read package.json
+
+Dependency;

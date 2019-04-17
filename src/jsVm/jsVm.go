@@ -3,6 +3,7 @@ package jsVm
 import (
 	"../utils"
 	"fmt"
+	"encoding/json"
 	"github.com/robertkrimen/otto"
 	"github.com/Masterminds/semver"
 )
@@ -12,6 +13,26 @@ func Setup(vm *otto.Otto) {
 		url, _ := call.Argument(0).ToString()
 		res := utils.HttpGet(url)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(res)))
+		return result
+	})
+
+	vm.Set("untar", func(call otto.FunctionCall) otto.Value {
+		var res utils.FileStructure
+		file, _ := call.Argument(0).ToString()
+		res, _ = utils.Untar(file)
+		b, _ := json.Marshal(res)
+		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		return result
+	})
+
+	vm.Set("saveFileAt", func(call otto.FunctionCall) otto.Value {
+		var fs utils.FileStructure
+		file, _ := call.Argument(0).Export()
+		path, _ := call.Argument(1).ToString()
+		bytes, _ := json.Marshal(file)
+		json.Unmarshal(bytes, &fs)
+		fs.SaveAt(path)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 

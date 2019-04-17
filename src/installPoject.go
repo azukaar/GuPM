@@ -9,7 +9,7 @@ import (
 func InstallProject(path string) error {
 	var err error
 	var packageConfig utils.Json
-	var depList utils.PackageDepedencyListType
+	var depList utils.PackageDependencyListType
 
 	if(Provider != "") {
 		err = provider.InitProvider(Provider)
@@ -38,7 +38,7 @@ func InstallProject(path string) error {
 	fmt.Println(depList)
 	
 	// depList.foreach
-	// provider.getDepedency()
+	// provider.getDependency()
 	// provider.postInstallation(path, packageConfig)
 	
 	// provider.finalHook(path, packageConfig)

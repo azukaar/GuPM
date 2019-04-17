@@ -6,34 +6,34 @@ import (
 )
 
 type FileStructure struct {
-	children map[string]FileStructure
+	Children map[string]FileStructure
 	// parent *FileStructure
-	name string
-	content string
-	filetype int
+	Name string
+	Content string
+	Filetype int
 }
 
 func (g *FileStructure) getOrCreate(path string, options FileStructure) FileStructure {
 	var folders = strings.Split(path, "/")
 	var folder = folders[0]
-	var child, _ = g.children[folder]
+	var child, _ = g.Children[folder]
 	
-	if(child.name == "") {
+	if(child.Name == "") {
 		if(len(folders) > 1) {
-			g.children[folder] = FileStructure{
-				children: make(map[string]FileStructure),
-				name: folder,
-				filetype: 0,
+			g.Children[folder] = FileStructure{
+				Children: make(map[string]FileStructure),
+				Name: folder,
+				Filetype: 0,
 			}
 		} else {			
-			g.children[folder] = FileStructure{
-				children: make(map[string]FileStructure),
-				name: folder,
-				filetype: options.filetype,
-				content: options.content,
+			g.Children[folder] = FileStructure{
+				Children: make(map[string]FileStructure),
+				Name: folder,
+				Filetype: options.Filetype,
+				Content: options.Content,
 			}
 		}
-		child, _ = g.children[folder]
+		child, _ = g.Children[folder]
 	}
 
 	if(len(folders) > 1) {
@@ -45,21 +45,21 @@ func (g *FileStructure) getOrCreate(path string, options FileStructure) FileStru
 }
 
 func (g *FileStructure) SaveSelfAt(path string) error {
-	if(g.filetype == 0) {
-		newPath := path+"/"+g.name
+	if(g.Filetype == 0) {
+		newPath := path+"/"+g.Name
 		os.MkdirAll(newPath, os.ModePerm);
-		for _, child := range g.children {
+		for _, child := range g.Children {
 			child.SaveSelfAt(newPath)
 		} 
 	} else {
-		filePath := path+"/"+g.name
+		filePath := path+"/"+g.Name
 		f, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR, os.FileMode(0777))
 
 		if err != nil {
 			return  err
 		}
 		
-		if _, err := f.WriteString(g.content); err != nil {
+		if _, err := f.WriteString(g.Content); err != nil {
 			return  err
 		}
 		
@@ -69,8 +69,8 @@ func (g *FileStructure) SaveSelfAt(path string) error {
 }
 
 func (g *FileStructure) SaveAt(path string) error {
-	if(g.filetype == 0) {
-		for _, child := range g.children {
+	if(g.Filetype == 0) {
+		for _, child := range g.Children {
 			child.SaveSelfAt(path)
 		} 
 	}
