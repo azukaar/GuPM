@@ -146,6 +146,8 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 		}
 
 		resObj, err1 := res.Export()
+		deps, _ := resObj.(map[string]interface{})["dependencies"].(otto.Value).Export()
+		resObj.(map[string]interface{})["dependencies"] = deps
 		return resObj.(map[string]interface {}), err1
 	} else {
 		return nil, nil

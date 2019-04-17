@@ -5,8 +5,9 @@ import (
 	"./utils"
 	"fmt"
 )
-
 func InstallProject(path string) error {
+	_ = fmt.Println
+	
 	var err error
 	var packageConfig utils.Json
 	var depList utils.PackageDependencyListType
@@ -28,6 +29,7 @@ func InstallProject(path string) error {
 	
 	for index, dep := range depList {
 		newDep, errExpand := provider.ExpandDependency(dep)
+
 		if(errExpand != nil) {
 			return errExpand
 		}

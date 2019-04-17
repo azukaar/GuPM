@@ -3,6 +3,7 @@ package jsVm
 import (
 	"../utils"
 	"fmt"
+	"io/ioutil"
 	"encoding/json"
 	"github.com/robertkrimen/otto"
 	"github.com/Masterminds/semver"
@@ -13,6 +14,13 @@ func Setup(vm *otto.Otto) {
 		url, _ := call.Argument(0).ToString()
 		res := utils.HttpGet(url)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(res)))
+		return result
+	})
+
+	vm.Set("readJsonFile", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		b, _ := ioutil.ReadFile(path)
+		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
 		return result
 	})
 
@@ -32,7 +40,7 @@ func Setup(vm *otto.Otto) {
 		bytes, _ := json.Marshal(file)
 		json.Unmarshal(bytes, &fs)
 		fs.SaveAt(path)
-		result, _ := vm.ToValue(true)
+		result, _ := vm.ToValue(path)
 		return result
 	})
 

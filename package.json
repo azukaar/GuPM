@@ -1,5 +1,6 @@
 {
     "dependencies" : {
+        "react": "latest",
         "babel-core": "latest",
         "lodash": ">1 ^3"
     }
