@@ -6,12 +6,13 @@ import (
 	"../utils"
 	"../jsVm"
 	"io/ioutil"
+	"os"
 	"github.com/robertkrimen/otto"
 )
 
 var Provider string
 var ProviderPath string
-var ProviderConfig *gupmEntryPoint
+var ProviderConfig *GupmEntryPoint
 var scriptCache = make(map[string]string)
 
 func run(path string, input map[string]interface {}) (otto.Value, error) {
@@ -28,26 +29,6 @@ func run(path string, input map[string]interface {}) (otto.Value, error) {
 
 	vm := otto.New()
 	jsVm.Setup(vm)
-	
-	vm.Set("getDependency", func(call otto.FunctionCall) otto.Value {
-		providerName, _ := call.Argument(0).ToString()
-		name, _ := call.Argument(1).ToString()
-		version, _ := call.Argument(2).ToString()
-		url, _ := call.Argument(3).ToString()
-		path := "./cache/" + providerName + "/" + name + "/" + version
-		
-		res, errorGD := GetDependency(providerName, name, version, url, path)
-		if(errorGD != nil) {
-			fmt.Println(errorGD)
-		}
-		postrest, errorPGD := PostGetDependency(providerName, name, version, url, path, res)
-		if(errorPGD != nil) {
-			fmt.Println(errorPGD)
-		}
-
-		result, _ :=  vm.ToValue(postrest)
-		return result
-	})
 
 	for varName, varValue := range input {
 		vm.Set(varName, varValue)
@@ -64,16 +45,25 @@ func run(path string, input map[string]interface {}) (otto.Value, error) {
 
 func InitProvider(provider string) error {
 	Provider = provider
-	ProviderPath = "plugins/provider-" + Provider
-	fmt.Println("Reading provider config for", Provider)
-	ProviderConfig = new(gupmEntryPoint) 
-	err := utils.ReadJSON(ProviderPath + "/gupm.json", ProviderConfig)
-	if(err != nil) {
-		return err
+	if(Provider != "") {
+		ProviderPath = "plugins/provider-" + Provider
+		fmt.Println("Reading provider config for", Provider)
+		ProviderConfig = new(GupmEntryPoint) 
+		err := utils.ReadJSON(ProviderPath + "/gupm.json", ProviderConfig)
+		if(err != nil) {
+			return err
+		} else {
+			fmt.Println("Initialisation OK for", ProviderConfig.Name);
+		}
 	} else {
-		fmt.Println("Initialisation OK for", ProviderConfig.Name);
+		ProviderConfig = new(GupmEntryPoint) 
+		err := utils.ReadJSON("gupm.json", ProviderConfig)
+		if(err != nil) {
+			return err
+		} else {
+			fmt.Println("Initialisation OK for", ProviderConfig.Name);
+		}
 	}
-
 	return nil
 }
 
@@ -82,8 +72,16 @@ func GetEntryPoint() string {
 	return ProviderConfig.Config.Default.Entrypoint
 }
 
+func GetProviderConfig() *GupmEntryPoint {
+	if(Provider != "") {
+		return ProviderConfig
+	} else {
+		return new(GupmEntryPoint) 
+	}
+}
+
 func GetPackageConfig() (utils.Json, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/GetPackageConfig.js")
+	var file = utils.FileExists(ProviderPath + "/GetPackageConfig.js")
 	if(file) {
 		input := make(map[string]interface {})		
 		res, err :=  run(ProviderPath + "/GetPackageConfig.js", input)
@@ -99,7 +97,7 @@ func GetPackageConfig() (utils.Json, error) {
 }
 
 func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/PostGetPackageConfig.js")
+	var file = utils.FileExists(ProviderPath + "/PostGetPackageConfig.js")
 	if(file) {
 		input := make(map[string]interface {})
 		input["PackageConfig"] = config
@@ -117,7 +115,7 @@ func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
 }
 
 func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/GetDependencyList.js")
+	var file = utils.FileExists(ProviderPath + "/GetDependencyList.js")
 	if(file) {
 		input := make(map[string]interface {})
 		input["PackageConfig"] = config
@@ -134,8 +132,26 @@ func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 	}
 }
 
+func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]interface {}, error) {
+	var file = utils.FileExists(ProviderPath + "/ResolveDependencyLocation.js")
+	if(file) {
+		input := make(map[string]interface {})
+		input["Dependency"] = dependency
+
+		res, err :=  run(ProviderPath + "/ResolveDependencyLocation.js", input)
+		if(err != nil) {
+			return nil, err
+		}
+
+		resObj, err1 := res.Export()
+		return resObj.(map[string]interface {}), err1
+	} else {
+		return nil, nil
+	}
+}
+
 func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/ExpandDependency.js")
+	var file = utils.FileExists(ProviderPath + "/ExpandDependency.js")
 	if(file) {
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
@@ -155,7 +171,7 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 }
 
 func GetDependency(provider string, name string, version string, url string, path string) (string, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/GetDependency.js")
+	var file = utils.FileExists(ProviderPath + "/GetDependency.js")
 	if(file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
@@ -177,7 +193,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 }
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
-	var file, _ = utils.FileExists(ProviderPath + "/PostGetDependency.js")
+	var file = utils.FileExists(ProviderPath + "/PostGetDependency.js")
 	if(file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
@@ -197,4 +213,14 @@ func PostGetDependency(provider string, name string, version string, url string,
 	} else {
 		return defaultProvider.PostGetDependency(provider, name, version, url, path, result)
 	}
+}
+
+func BuildDependencyTree(tree []map[string]interface {}) []map[string]interface {} {
+	return tree;
+}
+
+func InstallDependency(path string, dep map[string]interface {}) {
+	completePath := path + "/" + dep["name"].(string)
+	os.MkdirAll(completePath, os.ModePerm);
+	utils.CopyRecursive(completePath, dep["path"].(string))
 }

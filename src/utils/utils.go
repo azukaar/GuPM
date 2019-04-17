@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"fmt"
 	"io/ioutil"
+	"github.com/otiai10/copy"
 )
 
 type Json map[string]interface {}
@@ -44,10 +45,13 @@ func HttpGet(url string) []byte {
 	return body
 }
 
-func FileExists(path string) (bool, error) {
+func FileExists(path string) (bool) {
     _, err := os.Stat(path)
-    if err == nil { return true, nil }
-    if os.IsNotExist(err) { return false, nil }
-    return true, err
+    if err == nil { return true }
+    if os.IsNotExist(err) { return false }
+    return true
 }
 
+func CopyRecursive(dest string, source string) {
+	copy.Copy(source, dest)
+}

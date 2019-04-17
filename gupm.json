@@ -1,9 +1,15 @@
 {
-    "name": "sometest",
+    "name": "gupm:gupm",
     "version": "1.0.0",
     "dependencies": {
         "default" : {
             "npm://react": "latest"
+        }
+    },
+    "config": {
+        "default": {
+            "entrypoint": "gupm.json",
+            "installPath": "gupm_modules"
         }
     }
 }

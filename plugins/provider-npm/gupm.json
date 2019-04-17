@@ -3,7 +3,8 @@
     "version": "0.0.1",
     "config": {
         "default": {
-            "entrypoint": "package.json"
+            "entrypoint": "package.json",
+            "installPath": "node_modules"
         }
     }
 }

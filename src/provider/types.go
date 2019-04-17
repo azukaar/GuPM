@@ -1,6 +1,6 @@
 package provider
 
-type gupmEntryPoint struct {
+type GupmEntryPoint struct {
 	Name string
 	Version string
 	Config gupmEntryPointConfigList
@@ -12,4 +12,5 @@ type gupmEntryPointConfigList  struct {
 
 type gupmEntryPointConfig struct {
 	Entrypoint string
+	InstallPath string
 }

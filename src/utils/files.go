@@ -7,7 +7,6 @@ import (
 
 type FileStructure struct {
 	Children map[string]FileStructure
-	// parent *FileStructure
 	Name string
 	Content string
 	Filetype int
@@ -69,6 +68,7 @@ func (g *FileStructure) SaveSelfAt(path string) error {
 }
 
 func (g *FileStructure) SaveAt(path string) error {
+	os.MkdirAll(path, os.ModePerm);
 	if(g.Filetype == 0) {
 		for _, child := range g.Children {
 			child.SaveSelfAt(path)
