@@ -55,3 +55,16 @@ func FileExists(path string) (bool) {
 func CopyRecursive(dest string, source string) {
 	copy.Copy(source, dest)
 }
+
+func StringInSlice(a string, list []string) bool {
+    for _, b := range list {
+        if b == a {
+            return true
+        }
+    }
+    return false
+}
+
+func RemoveIndex(s []map[string]interface {}, index int) []map[string]interface {} {
+    return append(s[:index], s[index+1:]...)
+}

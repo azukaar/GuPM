@@ -2,6 +2,7 @@ package main
 
 import (
 	"./provider"
+	"os"
 	"./utils"
 	"fmt"
 )
@@ -71,7 +72,6 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 func installDep(path string, depList []map[string]interface {}) {
 	fmt.Println("Installing...", path)
 	for index, dep := range depList {
-		
 		provider.InstallDependency(path, dep)
 
 		nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
@@ -109,14 +109,8 @@ func InstallProject(path string) error {
 
 	depList = provider.BuildDependencyTree(depList)
 
+	os.MkdirAll(providerConfig.Config.Default.InstallPath, os.ModePerm);
 	installDep(providerConfig.Config.Default.InstallPath, depList)
 	
-	// fmt.Println(depList)
-	
-	// depList.foreach
-	// provider.postInstallation(path, packageConfig)
-	
-	// provider.finalHook(path, packageConfig)
-
 	return nil
 }
