@@ -10,75 +10,93 @@ import (
 var cacheExpanded = make(map[string]map[string]interface {})
 
 func expandDepList(depList []map[string]interface {}) []map[string]interface {} {
+	var channel = make(chan int)
 	var todo = len(depList)
 	for index, dep := range depList {
-		if(dep["expanded"] != true) {
-			newDep, errExpand := provider.ResolveDependencyLocation(dep)
-			newDep["path"] = "./cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
-
-			if(!utils.FileExists(newDep["path"].(string))) {
-				getRes, errorGD := provider.GetDependency(
-					newDep["provider"].(string),
-					newDep["name"].(string),
-					newDep["version"].(string),
-					newDep["url"].(string),
-					newDep["path"].(string),
-				)
-				if(errorGD != nil) {
-					fmt.Println(1, errorGD)
+		go (func(channel chan int, index int, dep map[string]interface {}){
+			if(dep["expanded"] != true) {
+				newDep, errExpand := provider.ResolveDependencyLocation(dep)
+				if(newDep == nil) {
+					fmt.Println("Error: Provider NPM didnt resolve ", dep)
 				}
-				_, errorPGD := provider.PostGetDependency(
-					newDep["provider"].(string),
-					newDep["name"].(string),
-					newDep["version"].(string),
-					newDep["url"].(string),
-					newDep["path"].(string),
-					getRes,
-				)
-				if(errorPGD != nil) {
-					fmt.Println(2, errorPGD)
-				}
-			}
+				newDep["path"] = "./cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
-			if(newDep["expanded"] != true) {
-				if(cacheExpanded[newDep["url"].(string)]["expanded"] != true) {
-					newDep, errExpand = provider.ExpandDependency(newDep)
-					if(errExpand != nil) {
-						fmt.Println(errExpand)
+				if(!utils.FileExists(newDep["path"].(string))) {
+					getRes, errorGD := provider.GetDependency(
+						newDep["provider"].(string),
+						newDep["name"].(string),
+						newDep["version"].(string),
+						newDep["url"].(string),
+						newDep["path"].(string),
+					)
+					if(errorGD != nil) {
+						fmt.Println(1, errorGD)
 					}
-	
-					newDep["expanded"] = true
-					cacheExpanded[newDep["url"].(string)] = newDep
-				} else {
-					newDep = cacheExpanded[newDep["url"].(string)]
+					_, errorPGD := provider.PostGetDependency(
+						newDep["provider"].(string),
+						newDep["name"].(string),
+						newDep["version"].(string),
+						newDep["url"].(string),
+						newDep["path"].(string),
+						getRes,
+					)
+					if(errorPGD != nil) {
+						fmt.Println(2, errorPGD)
+					}
+				}
+
+				if(newDep["expanded"] != true) {
+					if(cacheExpanded[newDep["url"].(string)]["expanded"] != true) {
+						newDep, errExpand = provider.ExpandDependency(newDep)
+						if(errExpand != nil) {
+							fmt.Println(errExpand)
+						}
+		
+						newDep["expanded"] = true
+						cacheExpanded[newDep["url"].(string)] = newDep
+					} else {
+						newDep = cacheExpanded[newDep["url"].(string)]
+					}
+				}
+
+				depList[index] = newDep
+
+				fmt.Println("Get dependency", index, "of", todo)
+				
+				nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
+
+				if(ok) {
+					depList[index]["dependencies"] = expandDepList(nextDepList)
 				}
 			}
+			channel <- 1
+		})(channel, index, dep)
+	}
 
-			depList[index] = newDep
-
-			fmt.Println("Get dependency", index, "of", todo)
-			
-			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
-
-			if(ok) {
-				depList[index]["dependencies"] = expandDepList(nextDepList)
-			}
-		}
+	for _,_ = range depList {
+		<-channel
 	}
 
 	return depList
 }
 
 func installDep(path string, depList []map[string]interface {}) {
+	var channel = make(chan int)
 	fmt.Println("Installing...", path)
 	for index, dep := range depList {
-		provider.InstallDependency(path, dep)
+		go (func(channel chan int, index int, dep map[string]interface {}){
+			provider.InstallDependency(path, dep)
 
-		nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
+			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 
-		if(ok) {
-			installDep(path + "/" + depList[index]["name"].(string) + "/" + providerConfig.Config.Default.InstallPath, nextDepList)
-		}
+			if(ok) {
+				installDep(path + "/" + depList[index]["name"].(string) + "/" + providerConfig.Config.Default.InstallPath, nextDepList)
+			}
+			channel <- 1
+		})(channel, index, dep)
+	}
+	for _,_ = range depList {
+		<-channel
 	}
 }
 
@@ -104,12 +122,15 @@ func InstallProject(path string) error {
 	if(err != nil) {
 		return err
 	}
-
+	fmt.Println("Expand dependency list...")
 	depList = expandDepList(depList)
-
+	
+	fmt.Println("Build dependency list...")
 	depList = provider.BuildDependencyTree(depList)
-
+	
 	os.MkdirAll(providerConfig.Config.Default.InstallPath, os.ModePerm);
+	
+	fmt.Println("Install dependencies...")
 	installDep(providerConfig.Config.Default.InstallPath, depList)
 	
 	return nil

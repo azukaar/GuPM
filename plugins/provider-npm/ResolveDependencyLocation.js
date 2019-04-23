@@ -6,7 +6,7 @@ var payload = httpGet('https://registry.npmjs.org/'+name);
 var versionList = Object.keys(payload.versions);
 
 // test tags
-if(version.match(/^\d*_*\w+[\d\w_]*$/)) {
+if(version.match(/^\d*_*[a-zA-Z]+[\w-_]*[\d\w_]*$/)) {
     finalVersion = payload['dist-tags'][version];
 }
 
@@ -18,6 +18,10 @@ else if (version.match(/^\d+\.\d+\.\d+/) && !version.match(/\sx/)) {
 // test ranges
 else {
     finalVersion = semverLatestInRange(version, versionList);
+}
+
+if(!finalVersion) {
+    console.error('Error: Couldn\'t resolve version for ' + name + ' with range ' + version)
 }
 
 Dependency.version = finalVersion;

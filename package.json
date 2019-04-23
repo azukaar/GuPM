@@ -1,7 +1,5 @@
 {
     "dependencies": {
-        "react": "latest",
-        "babel-core": "^6",
-        "lodash": "^3"
+        "webpack": "latest"
     }
 }
