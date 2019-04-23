@@ -292,9 +292,27 @@ func BuildDependencyTree(tree []map[string]interface {}) []map[string]interface 
 	return cleanTree
 }
 
+func readDir(path string) []os.FileInfo{
+    files, err := ioutil.ReadDir(path)
+    if err != nil {
+        fmt.Println(err)
+	}
+
+    return files
+}
+
 func InstallDependency(path string, dep map[string]interface {}) {
 	completePath := path + "/" + dep["name"].(string)
-	os.MkdirAll(completePath, os.ModePerm);
-	utils.CopyRecursive(completePath, dep["path"].(string))
-	// os.Symlink(dep["path"].(string), completePath)
+	
+	_, ok := dep["dependencies"].([]map[string]interface {})
+	
+	if(ok && len(dep["dependencies"].([]map[string]interface {})) > 0) {
+		os.MkdirAll(completePath, os.ModePerm);
+		files := readDir(dep["path"].(string))
+		for _, file := range files {
+			os.Symlink(dep["path"].(string) + "/" + file.Name(), completePath + "/" + file.Name())
+		}
+	} else {
+		os.Symlink(dep["path"].(string), completePath)
+	}
 }

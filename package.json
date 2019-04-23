@@ -1,5 +1,6 @@
 {
     "dependencies": {
-        "webpack": "latest"
+        "webpack": "latest",
+        "webpack-cli": "latest"
     }
 }
