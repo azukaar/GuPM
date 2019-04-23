@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"github.com/otiai10/copy"
+    "path/filepath"
 )
 
 type Json map[string]interface {}
@@ -76,4 +77,13 @@ func ReadDir(path string) []os.FileInfo{
 	}
 
     return files
+}
+
+func DIRNAME() string {
+    ex, err := os.Executable()
+    if err != nil {
+        panic(err)
+    }
+    dir := filepath.Dir(ex)
+	return dir
 }

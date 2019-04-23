@@ -19,7 +19,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 				if(newDep == nil) {
 					fmt.Println("Error: Provider NPM didnt resolve ", dep)
 				}
-				newDep["path"] = "./cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
+				newDep["path"] = utils.DIRNAME() + "/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
 				if(!utils.FileExists(newDep["path"].(string))) {
 					getRes, errorGD := provider.GetDependency(

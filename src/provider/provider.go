@@ -46,8 +46,8 @@ func run(path string, input map[string]interface {}) (otto.Value, error) {
 func InitProvider(provider string) error {
 	Provider = provider
 	if(Provider != "") {
-		ProviderPath = "plugins/provider-" + Provider
-		fmt.Println("Reading provider config for", Provider)
+		ProviderPath = utils.DIRNAME() + "/plugins/provider-" + Provider
+		fmt.Println("Reading provider config for", ProviderPath)
 		ProviderConfig = new(GupmEntryPoint) 
 		err := utils.ReadJSON(ProviderPath + "/gupm.json", ProviderConfig)
 		if(err != nil) {
