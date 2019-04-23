@@ -1,6 +1,12 @@
 # GuPM
 
-Global Universal Project Manager -- Package manager, cli tool, scripts for all your projects and your system
+Global Universal Project Manager -- Package manager, cli tool, scripts for all your projects and your system.
+
+How to install : 
+
+```
+curl -fsSL  https://azukaar.github.io/GuPM/install.sh | bash 
+```
 
 ## Dependency Manager
 ### install
