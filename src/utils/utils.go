@@ -68,3 +68,12 @@ func StringInSlice(a string, list []string) bool {
 func RemoveIndex(s []map[string]interface {}, index int) []map[string]interface {} {
     return append(s[:index], s[index+1:]...)
 }
+
+func ReadDir(path string) []os.FileInfo{
+    files, err := ioutil.ReadDir(path)
+    if err != nil {
+        fmt.Println(err)
+	}
+
+    return files
+}

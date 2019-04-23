@@ -1,4 +1,7 @@
 {
+    "scripts": {
+        "start": "webpack"
+    },
     "dependencies": {
         "webpack": "latest",
         "webpack-cli": "latest"

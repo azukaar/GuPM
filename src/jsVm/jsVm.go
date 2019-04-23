@@ -4,6 +4,7 @@ import (
 	"../utils"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"encoding/json"
 	"github.com/robertkrimen/otto"
 	"github.com/Masterminds/semver"
@@ -21,6 +22,35 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		b, _ := ioutil.ReadFile(path)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		return result
+	})
+
+	vm.Set("mkdir", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		os.MkdirAll(path, os.ModePerm)
+		result, _ :=  vm.ToValue(true)
+		return result
+	})
+
+	vm.Set("readDir", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		var filenames = make([]string, 0)
+		files := utils.ReadDir(path)
+		for _, file := range files {
+			filenames = append(filenames, file.Name())
+		}
+		result, _ :=  vm.ToValue(filenames)
+		return result
+	})
+
+	vm.Set("createSymLink", func(call otto.FunctionCall) otto.Value {
+		from, _ := call.Argument(0).ToString()
+		to, _ := call.Argument(1).ToString()
+		err := os.Symlink(from, to)
+		if(err != nil) {
+			fmt.Println(err)
+		}
+		result, _ :=  vm.ToValue(true)
 		return result
 	})
 

@@ -5,7 +5,9 @@ for(depName in PackageConfig.dependencies) {
     result.push({
         provider: 'npm',
         name: depName,
-        version: depVersion.replace(/(\d) ([\>\<\=\^\~\!])/g, '$1, $2')
+        version: depVersion
+            .replace(/(\d) ([\>\<\=\^\~\!])/g, '$1, $2')
+            .replace(/^\^0/, '~0')
     })
 }
 

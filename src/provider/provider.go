@@ -191,6 +191,25 @@ func GetDependency(provider string, name string, version string, url string, pat
 	}
 }
 
+func BinaryInstall(path string) (error) {
+	var file = utils.FileExists(ProviderPath + "/BinaryInstall.js")
+	if(file) {
+		input := make(map[string]interface {})
+		input["Destination"] = "node_modules/.bin"
+		input["Source"] = "node_modules"
+
+		res, err :=  run(ProviderPath + "/BinaryInstall.js", input)
+		if(err != nil) {
+			return err
+		}
+
+		_, err1 := res.ToString()
+		return err1
+	} else {
+		return nil
+	}
+}
+
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	var file = utils.FileExists(ProviderPath + "/PostGetDependency.js")
 	if(file) {
@@ -246,32 +265,28 @@ func eliminateRedundancy(tree []map[string]interface {}, path map[string]bool) [
 }
 
 func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]interface {}) ([]map[string]interface {}, []map[string]interface {}) {
-	var rootDeps = make(map[string]string)
 	var cleanTree = make([]map[string]interface {}, 0)
 
-	for _, dep := range tree {
-		rootDeps[dep["name"].(string)] = dep["version"].(string)
-	}
-	
 	for index, dep := range subTree {
-		if(rootDeps[dep["name"].(string)] == dep["version"].(string)) {
-			// delete
-		} else {
-			if (rootDeps[dep["name"].(string)] == "") {
-				tree = append(tree, dep)
-			}
+		var rootDeps = make(map[string]string)
+
+		for _, dep := range tree {
+			rootDeps[dep["name"].(string)] = dep["version"].(string)
+		}
+
+		if(rootDeps[dep["name"].(string)] == "") {
+			tree = append(tree, dep)
 
 			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
 	
 			if(ok) {
+				fmt.Println("Flatten", dep["name"])
 				newTree, newSubTree := flattenDependencyTree(tree, nextDepList)
 				tree = newTree
 				subTree[index]["dependencies"] = newSubTree
 			}
-
-			if (rootDeps[dep["name"].(string)] != "") {
-				cleanTree = append(cleanTree, subTree[index])
-			}
+		} else if(rootDeps[dep["name"].(string)] != dep["version"].(string)) {
+			cleanTree = append(cleanTree, subTree[index])
 		}
 	}
 
@@ -280,11 +295,12 @@ func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]
 
 func BuildDependencyTree(tree []map[string]interface {}) []map[string]interface {} {
 	cleanTree := eliminateRedundancy(tree, make(map[string]bool))
+
 	for index, dep := range cleanTree {
 		nextDepList, ok := dep["dependencies"].([]map[string]interface {})
 
 		if(ok) {
-			newCleanTree, newDepList := flattenDependencyTree(tree, nextDepList)
+			newCleanTree, newDepList := flattenDependencyTree(cleanTree, nextDepList)
 			cleanTree = newCleanTree
 			cleanTree[index]["dependencies"] = newDepList
 		}
@@ -292,27 +308,22 @@ func BuildDependencyTree(tree []map[string]interface {}) []map[string]interface 
 	return cleanTree
 }
 
-func readDir(path string) []os.FileInfo{
-    files, err := ioutil.ReadDir(path)
-    if err != nil {
-        fmt.Println(err)
-	}
+func installDependencySubFolders(path string, depPath string) {
+	files := utils.ReadDir(path)
 
-    return files
+	for _, file := range files {
+		if(file.IsDir()) {
+			folderPath := depPath + "/" + file.Name()
+			os.MkdirAll(folderPath, os.ModePerm);
+			installDependencySubFolders(path + "/" + file.Name(), folderPath)
+		} else {
+			os.Link(path + "/" + file.Name(), depPath + "/" + file.Name())
+		}
+	}
 }
 
 func InstallDependency(path string, dep map[string]interface {}) {
-	completePath := path + "/" + dep["name"].(string)
-	
-	_, ok := dep["dependencies"].([]map[string]interface {})
-	
-	if(ok && len(dep["dependencies"].([]map[string]interface {})) > 0) {
-		os.MkdirAll(completePath, os.ModePerm);
-		files := readDir(dep["path"].(string))
-		for _, file := range files {
-			os.Symlink(dep["path"].(string) + "/" + file.Name(), completePath + "/" + file.Name())
-		}
-	} else {
-		os.Symlink(dep["path"].(string), completePath)
-	}
+	depPath := path + "/" + dep["name"].(string)
+	os.MkdirAll(depPath, os.ModePerm);
+	installDependencySubFolders(dep["path"].(string), depPath)
 }

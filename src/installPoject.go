@@ -132,6 +132,12 @@ func InstallProject(path string) error {
 	
 	fmt.Println("Install dependencies...")
 	installDep(providerConfig.Config.Default.InstallPath, depList)
+
+	fmt.Println("Install Binaries...")
+	err = provider.BinaryInstall(providerConfig.Config.Default.InstallPath)
+	if(err != nil) {
+		return err
+	}
 	
 	return nil
 }
