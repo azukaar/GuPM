@@ -1,7 +1,7 @@
 rm -rf gupm/
 rm -rf docs/
 mkdir docs
-go build -o gupm/gupm src/*.go
+go build -o gupm/g src/*.go
 cp -R plugins gupm/plugins
 sed -i 's/\r//g' install.sh
 cp -R install.sh docs/install.sh

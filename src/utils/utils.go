@@ -32,7 +32,7 @@ func ReadJSON(path string, target interface{}) error  {
 func HttpGet(url string) []byte {
 	resp, httperr := http.Get(url)
 	if httperr != nil {
-		fmt.Println("Error trying to dl file ", url, " trying again. Check your network.")
+		fmt.Println("Error accessing ", url, " trying again. Check your network.")
 		return HttpGet(url)
 	}
 
@@ -40,7 +40,8 @@ func HttpGet(url string) []byte {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error reading HTTP response", err)
+		return HttpGet(url)
 	}
 	
 	return body

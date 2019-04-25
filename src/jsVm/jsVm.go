@@ -10,6 +10,36 @@ import (
 	"github.com/Masterminds/semver"
 )
 
+var scriptCache = make(map[string]string)
+
+func Run(path string, input map[string]interface {}) (otto.Value, error) {
+	var err error
+	var ret otto.Value
+
+	if(scriptCache[path] == "") {
+		file, err := ioutil.ReadFile(path)
+		if(err != nil) {
+			return otto.UndefinedValue(),  err
+		}
+		scriptCache[path] = string(file)
+	}
+
+	vm := otto.New()
+	Setup(vm)
+
+	for varName, varValue := range input {
+		vm.Set(varName, varValue)
+	}
+
+	ret, err = vm.Run(scriptCache[path])
+
+	if(err != nil) {
+		return otto.UndefinedValue(),  err
+	}
+
+	return ret, nil
+}
+
 func Setup(vm *otto.Otto) {	
 	vm.Set("httpGet", func(call otto.FunctionCall) otto.Value {
 		url, _ := call.Argument(0).ToString()

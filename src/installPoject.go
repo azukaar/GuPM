@@ -49,6 +49,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 					if(cacheExpanded[newDep["url"].(string)]["expanded"] != true) {
 						newDep, errExpand = provider.ExpandDependency(newDep)
 						if(errExpand != nil) {
+							fmt.Println(newDep)
 							fmt.Println(errExpand)
 						}
 		

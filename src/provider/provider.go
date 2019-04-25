@@ -5,7 +5,6 @@ import (
 	"../defaultProvider"
 	"../utils"
 	"../jsVm"
-	"io/ioutil"
 	"os"
 	"github.com/robertkrimen/otto"
 )
@@ -13,35 +12,6 @@ import (
 var Provider string
 var ProviderPath string
 var ProviderConfig *GupmEntryPoint
-var scriptCache = make(map[string]string)
-
-func run(path string, input map[string]interface {}) (otto.Value, error) {
-	var err error
-	var ret otto.Value
-
-	if(scriptCache[path] == "") {
-		file, err := ioutil.ReadFile(path)
-		if(err != nil) {
-			return otto.UndefinedValue(),  err
-		}
-		scriptCache[path] = string(file)
-	}
-
-	vm := otto.New()
-	jsVm.Setup(vm)
-
-	for varName, varValue := range input {
-		vm.Set(varName, varValue)
-	}
-
-	ret, err = vm.Run(scriptCache[path])
-
-	if(err != nil) {
-		return otto.UndefinedValue(),  err
-	}
-
-	return ret, nil
-}
 
 func InitProvider(provider string) error {
 	Provider = provider
@@ -51,13 +21,14 @@ func InitProvider(provider string) error {
 		ProviderConfig = new(GupmEntryPoint) 
 		err := utils.ReadJSON(ProviderPath + "/gupm.json", ProviderConfig)
 		if(err != nil) {
+			fmt.Println()
 			return err
 		} else {
 			fmt.Println("Initialisation OK for", ProviderConfig.Name);
 		}
 	} else {
 		ProviderConfig = new(GupmEntryPoint) 
-		err := utils.ReadJSON("gupm.json", ProviderConfig)
+		err := utils.ReadJSON(utils.DIRNAME() + "/gupm.json", ProviderConfig)
 		if(err != nil) {
 			return err
 		} else {
@@ -83,7 +54,7 @@ func GetPackageConfig() (utils.Json, error) {
 	var file = utils.FileExists(ProviderPath + "/GetPackageConfig.js")
 	if(file) {
 		input := make(map[string]interface {})		
-		res, err :=  run(ProviderPath + "/GetPackageConfig.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/GetPackageConfig.js", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -101,7 +72,7 @@ func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
 		input := make(map[string]interface {})
 		input["PackageConfig"] = config
 		
-		res, err :=  run(ProviderPath + "/PostGetPackageConfig.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/PostGetPackageConfig.js", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -119,7 +90,7 @@ func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 		input := make(map[string]interface {})
 		input["PackageConfig"] = config
 		
-		res, err :=  run(ProviderPath + "/GetDependencyList.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/GetDependencyList.js", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -137,12 +108,17 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
 
-		res, err :=  run(ProviderPath + "/ResolveDependencyLocation.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/ResolveDependencyLocation.js", input)
 		if(err != nil) {
 			return nil, err
 		}
 
 		resObj, err1 := res.Export()
+		
+		if(resObj == nil) {
+			fmt.Println("ERROR Failed to resolve", dependency)
+			return nil, err1
+		}
 		return resObj.(map[string]interface {}), err1
 	} else {
 		return nil, nil
@@ -155,12 +131,16 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
 
-		res, err :=  run(ProviderPath + "/ExpandDependency.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/ExpandDependency.js", input)
 		if(err != nil) {
 			return nil, err
 		}
 
 		resObj, err1 := res.Export()
+		if(err1 != nil) {
+			fmt.Println(err1)
+			fmt.Println(dependency)
+		}
 		deps, _ := resObj.(map[string]interface{})["dependencies"].(otto.Value).Export()
 		resObj.(map[string]interface{})["dependencies"] = deps
 		return resObj.(map[string]interface {}), err1
@@ -179,7 +159,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 		input["Url"] = url
 		input["Path"] = path
 
-		res, err :=  run(ProviderPath + "/GetDependency.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/GetDependency.js", input)
 		if(err != nil) {
 			return "", err
 		}
@@ -198,7 +178,7 @@ func BinaryInstall(path string) (error) {
 		input["Destination"] = "node_modules/.bin"
 		input["Source"] = "node_modules"
 
-		res, err :=  run(ProviderPath + "/BinaryInstall.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/BinaryInstall.js", input)
 		if(err != nil) {
 			return err
 		}
@@ -221,7 +201,7 @@ func PostGetDependency(provider string, name string, version string, url string,
 		input["Path"] = path
 		input["Result"] = result
 
-		res, err :=  run(ProviderPath + "/PostGetDependency.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/PostGetDependency.js", input)
 		if(err != nil) {
 			return "", err
 		}

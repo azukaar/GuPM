@@ -40,6 +40,11 @@ func PostGetDependency(provider string, name string, version string, url string,
 	return path, nil
 }
 
-func GetDependencyList(config map[string]interface {}) utils.PackageDependencyListType {
-	return config["dependencies"].(utils.PackageDependencyListType)
+func GetDependencyList(config map[string]interface {}) []map[string]interface {} {
+	// depList := (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {})
+	result := make([]map[string]interface {}, 0)
+	// for name, version := range depList {
+	// 	result.append()
+	// }
+	return result
 }
