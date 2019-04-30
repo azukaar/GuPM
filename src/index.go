@@ -5,6 +5,9 @@ import (
 	"github.com/spf13/cobra"
 	"./utils"
 	"./jsVm"
+	"strings"
+	"strconv"
+	"regexp"
 	"fmt"
 	"time"
 )
@@ -63,8 +66,29 @@ func ScriptExists(path string) string {
 	}
 }
 
-func executeFile(path string) {
-	_, err := jsVm.Run(path, nil)
+func executeFile(path string, args []string) {
+	i := 1
+	next := ""
+	input := make(map[string]interface {})
+	input["$0"] = strings.Join(args," ")
+	
+	for _, value := range args[2:] {	
+		nameCheck := regexp.MustCompile(`^-(\w+)`)
+		tryname := nameCheck.FindString(value)
+		if(tryname != "") {
+			next = strings.ToUpper(tryname[1:2]) + tryname[2:]
+		} else {
+			if(next != "") {
+				input[next] = value
+				next = ""
+			} else {
+				input["$" + strconv.FormatInt(int64(i), 10)] = value
+				i++
+			}
+		}
+	}
+
+	_, err := jsVm.Run(path, input)
 	if(err != nil) {
 		fmt.Println("File execution failed")
 		fmt.Println(err)
@@ -86,10 +110,10 @@ func main() {
 		c == "i" || c == "m" || c == "u") {
 			Execute();
 			if (script != "") {
-				executeFile(script)
+				executeFile(script, os.Args)
 			}
 	} else if (script != "") {
-		executeFile(script)
+		executeFile(script, os.Args)
 	}
 
 	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
