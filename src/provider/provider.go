@@ -139,8 +139,8 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 		resObj, err1 := res.Export()
 		
 		if(resObj == nil) {
-			fmt.Println("ERROR Failed to resolve", dependency)
-			return nil, err1
+			fmt.Println("ERROR Failed to resolve", dependency, "Trying again.")
+			return ResolveDependencyLocation(dependency)
 		}
 		return resObj.(map[string]interface {}), err1
 	} else {
@@ -293,6 +293,14 @@ func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]
 				subTree[index]["dependencies"] = newSubTree
 			}
 		} else if(rootDeps[dep["name"].(string)] != dep["version"].(string)) {
+			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
+	
+			if(ok) {
+				newTree, newSubTree := flattenDependencyTree(tree, nextDepList)
+				tree = newTree
+				subTree[index]["dependencies"] = newSubTree
+			}
+
 			cleanTree = append(cleanTree, subTree[index])
 		}
 	}
@@ -331,6 +339,10 @@ func installDependencySubFolders(path string, depPath string) {
 
 func InstallDependency(path string, dep map[string]interface {}) {
 	depPath := path + "/" + dep["name"].(string)
-	os.MkdirAll(depPath, os.ModePerm);
-	installDependencySubFolders(dep["path"].(string), depPath)
+	if(utils.FileExists(depPath)) {
+		// TODO: check version
+	} else {
+		os.MkdirAll(depPath, os.ModePerm);
+		installDependencySubFolders(dep["path"].(string), depPath)
+	}
 }
