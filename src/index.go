@@ -6,7 +6,9 @@ import (
 	"./utils"
 	"./jsVm"
 	"strings"
+	"path/filepath"
 	"strconv"
+	"os/exec"
 	"regexp"
 	"fmt"
 	"time"
@@ -15,6 +17,31 @@ import (
 type json map[string]interface {}
 
 var Provider string
+
+var installCmd = &cobra.Command{
+	Use:   "install [--provider=] package-name",
+	Short: "install package",
+	Long:  `install package based on info in the entry point (depends on provider)`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(args)
+		err := AddDependency(".", args)
+		if(err != nil) {
+			fmt.Println(err)
+		} 
+	},
+}
+
+var iCmd = &cobra.Command{
+	Use:   "i [--provider=] package-name",
+	Short: "install package",
+	Long:  `install package based on info in the entry point (depends on provider)`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := AddDependency(".", args)
+		if(err != nil) {
+			fmt.Println(err)
+		} 
+	},
+}
 
 var makeCmd = &cobra.Command{
 	Use:   "make [--provider=]",
@@ -96,13 +123,38 @@ func executeFile(path string, args []string) {
 	}
 }
 
+func binFile(name string, args []string) {
+	path := "./.bin/"+name
+	realPath, _ := filepath.EvalSymlinks(path)
+	bashargs := []string{"-c"}
+	bashargs = append(bashargs, realPath)
+	bashargs = append(bashargs, args...)
+	
+	cmd := exec.Command("/bin/bash", bashargs...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	cmd.Run()
+}
+
 func main() {
 	start := time.Now()
+
+	binFolder := make(map[string]bool)
+	for _, file := range utils.ReadDir("./.bin") {
+		binFolder[file.Name()] = true
+	}
 
 	rootCmd.AddCommand(makeCmd)
 	makeCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	rootCmd.AddCommand(mCmd)
 	mCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+
+	rootCmd.AddCommand(installCmd)
+	installCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	rootCmd.AddCommand(iCmd)
+	iCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 
 	c := os.Args[1]
 	script := ScriptExists(c)
@@ -112,6 +164,8 @@ func main() {
 			if (script != "") {
 				executeFile(script, os.Args)
 			}
+	} else if (binFolder[c] == true) {
+		binFile(c, os.Args[2:])	
 	} else if (script != "") {
 		executeFile(script, os.Args)
 	}

@@ -46,8 +46,8 @@ g install -p brew mysql
 
 -- use NPM
 
-g install npm://rails@1
-g install -p npm rails@1
+g install npm://react@1 #will save in gupm.json
+g install -p npm react@1 #will save in package.json
 ```
 
 ### remove

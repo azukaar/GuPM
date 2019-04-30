@@ -55,6 +55,16 @@ func Setup(vm *otto.Otto) {
 		return result
 	})
 
+	vm.Set("saveJsonFile", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		file := utils.JsonExport(call.Argument(1))
+		fmt.Println(file)
+		bytes, _ := json.Marshal(file)
+		ioutil.WriteFile(path, bytes, os.ModePerm)
+		result, _ :=  vm.ToValue(true)
+		return result
+	})
+
 	vm.Set("mkdir", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		os.MkdirAll(path, os.ModePerm)

@@ -84,6 +84,23 @@ func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
 	}
 }
 
+func SaveDependencyList(depList []map[string]interface {}) error {
+	var file = utils.FileExists(ProviderPath + "/SaveDependencyList.js")
+	if(file) {
+		input := make(map[string]interface {})
+		input["Dependencies"] = depList
+		
+		_, err :=  jsVm.Run(ProviderPath + "/SaveDependencyList.js", input)
+		if(err != nil) {
+			return err
+		}
+
+		return nil
+	} else {
+		return defaultProvider.SaveDependencyList(depList)
+	}
+}
+
 func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 	var file = utils.FileExists(ProviderPath + "/GetDependencyList.js")
 	if(file) {
@@ -96,7 +113,13 @@ func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 		}
 
 		resObj, err1 := res.Export()
-		return resObj.([]map[string]interface {}), err1
+		resMap, ok := resObj.([]map[string]interface {})
+
+		if(ok) {
+			return resMap, err1
+		} else {
+			return make([]map[string]interface {}, 0), err1
+		}
 	} else {
 		return defaultProvider.GetDependencyList(config), nil
 	}
@@ -141,6 +164,10 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 			fmt.Println(err1)
 			fmt.Println(dependency)
 		}
+		if(resObj == nil) {
+			fmt.Println("ERROR Failed to resolve", dependency, ". Trying again.")
+			return ExpandDependency(dependency)
+		}
 		deps, _ := resObj.(map[string]interface{})["dependencies"].(otto.Value).Export()
 		resObj.(map[string]interface{})["dependencies"] = deps
 		return resObj.(map[string]interface {}), err1
@@ -172,6 +199,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 }
 
 func BinaryInstall(path string) (error) {
+	os.RemoveAll("./.bin")
 	var file = utils.FileExists(ProviderPath + "/BinaryInstall.js")
 	if(file) {
 		input := make(map[string]interface {})
@@ -260,7 +288,6 @@ func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]
 			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
 	
 			if(ok) {
-				fmt.Println("Flatten", dep["name"])
 				newTree, newSubTree := flattenDependencyTree(tree, nextDepList)
 				tree = newTree
 				subTree[index]["dependencies"] = newSubTree

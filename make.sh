@@ -1,4 +1,4 @@
-rm -rf bin/dg bin/plugins bin/gupm.json
-go build -o bin/dg src/*.go
-cp -R plugins bin/plugins
-cp gupm.json bin/gupm.json
+rm -rf build/dg build/plugins build/gupm.json
+go build -o build/dg src/*.go
+cp -R plugins build/plugins
+cp gupm.json build/gupm.json

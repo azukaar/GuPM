@@ -9,6 +9,11 @@ import (
 	"fmt"
 )
 
+func SaveDependencyList(depList []map[string]interface{}) error {
+	fmt.Println(depList)
+	return nil
+}
+
 func GetPackageConfig(entryPoint string) map[string]interface {} {
 	var packageConfig map[string]interface{}
 	b, err := ioutil.ReadFile(entryPoint)
