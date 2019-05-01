@@ -1,5 +1,4 @@
 curl --output gupm.tar.gz https://azukaar.github.io/GuPM/gupm.tar.gz
-su
 tar -C /etc/ -zxvf gupm.tar.gz
 rm gupm.tar.gz
 
