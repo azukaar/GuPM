@@ -15,7 +15,7 @@ mysql -u <user> -p -e "select * from schema.table" -- Does NOT work, MySQL has o
 How to install : 
 
 ```
-curl -fsSL  https://azukaar.github.io/GuPM/install.sh | bash 
+curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash 
 ```
 
 ## Dependency Manager
