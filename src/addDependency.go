@@ -18,7 +18,7 @@ func AddDependency(path string, rls []string) error {
 		return err
 	}
 
-	providerConfig = provider.GetProviderConfig()
+	providerConfig = provider.GetProviderConfig(Provider)
 	packageConfig, _ = provider.GetPackageConfig()
 	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
 

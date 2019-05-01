@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"fmt"
+    "reflect"
 )
 
 func SaveDependencyList(depList []map[string]interface{}) error {
@@ -46,10 +47,22 @@ func PostGetDependency(provider string, name string, version string, url string,
 }
 
 func GetDependencyList(config map[string]interface {}) []map[string]interface {} {
-	// depList := (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {})
+	depList := (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {})
 	result := make([]map[string]interface {}, 0)
-	// for name, version := range depList {
-	// 	result.append()
-	// }
+	for name, value := range depList {
+		dep := utils.BuildDependencyFromString("gupm", name)
+		if(reflect.TypeOf(value).String() == "string") {
+			dep["version"] = value
+		} else {
+			valueObject := value.(map[string]interface {})
+			if(valueObject["provider"].(string) != "") {
+				dep["provider"] = valueObject["provider"]
+			}
+			if(valueObject["version"].(string) != "") {
+				dep["version"] = valueObject["version"]
+			}
+		}
+		result = append(result, dep)
+	}
 	return result
 }

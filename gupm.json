@@ -3,7 +3,12 @@
     "version": "1.0.0",
     "dependencies": {
         "default" : {
-            "npm://react": "latest"
+            "git://github.com/spf13/cobra/cobra": ""
+        }
+    },
+    "cli": {
+        "aliases": {
+            "build" : "fish build.sh"
         }
     },
     "config": {

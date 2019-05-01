@@ -11,42 +11,47 @@ import (
 
 var Provider string
 var ProviderPath string
-var ProviderConfig *GupmEntryPoint
+var providerConfigCache = make(map[string]*GupmEntryPoint)
 
 func InitProvider(provider string) error {
 	Provider = provider
-	if(Provider != "") {
-		ProviderPath = utils.DIRNAME() + "/plugins/provider-" + Provider
-		fmt.Println("Reading provider config for", ProviderPath)
-		ProviderConfig = new(GupmEntryPoint) 
-		err := utils.ReadJSON(ProviderPath + "/gupm.json", ProviderConfig)
-		if(err != nil) {
-			fmt.Println()
-			return err
-		} else {
-			fmt.Println("Initialisation OK for", ProviderConfig.Name);
-		}
+	
+	if(provider == "gupm") {
+		ProviderPath = utils.DIRNAME()
 	} else {
-		ProviderConfig = new(GupmEntryPoint) 
-		err := utils.ReadJSON(utils.DIRNAME() + "/gupm.json", ProviderConfig)
-		if(err != nil) {
-			return err
-		} else {
-			fmt.Println("Initialisation OK for", ProviderConfig.Name);
-		}
+		ProviderPath = utils.DIRNAME() + "/plugins/provider-" + Provider
+	}
+
+	if(Provider != "") {
+		providerConfig := GetProviderConfig(Provider) 
+		fmt.Println("Initialisation OK for", providerConfig.Name);
+	} else {
+		providerConfig := GetProviderConfig("gupm") 
+		fmt.Println("Initialisation OK for", providerConfig.Name);
 	}
 	return nil
 }
 
-func GetEntryPoint() string {
-	return ProviderConfig.Config.Default.Entrypoint
-}
+func GetProviderConfig(providerName string) *GupmEntryPoint {
+	var providerConfigPath string
 
-func GetProviderConfig() *GupmEntryPoint {
-	if(Provider != "") {
-		return ProviderConfig
+	if(providerName == "gupm") {
+		providerConfigPath = utils.DIRNAME() + "/gupm.json"
 	} else {
-		return new(GupmEntryPoint) 
+		providerConfigPath = utils.DIRNAME() + "/plugins/provider-" + providerName + "/gupm.json"
+	}
+
+	if(providerConfigCache[providerName] == nil) {
+		config := new(GupmEntryPoint)
+		err := utils.ReadJSON(providerConfigPath, config)
+		if(err != nil) {
+			fmt.Println(err)
+			return nil
+		}
+		providerConfigCache[providerName] = config
+		return config
+	} else {
+		return providerConfigCache[providerName]
 	}
 }
 
@@ -62,7 +67,7 @@ func GetPackageConfig() (utils.Json, error) {
 		resObj, err1 := res.Export()
 		return resObj.(utils.Json), err1
 	} else {
-		return defaultProvider.GetPackageConfig(GetEntryPoint()), nil
+		return defaultProvider.GetPackageConfig(GetProviderConfig(Provider).Config.Default.Entrypoint), nil
 	}
 }
 
@@ -126,12 +131,13 @@ func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 }
 
 func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]interface {}, error) {
-	var file = utils.FileExists(ProviderPath + "/ResolveDependencyLocation.js")
-	if(file) {
+	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + dependency["provider"].(string)
+	var file = utils.FileExists(depProviderPath + "/ResolveDependencyLocation.js")
+	if(dependency["provider"].(string) != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
 
-		res, err :=  jsVm.Run(ProviderPath + "/ResolveDependencyLocation.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/ResolveDependencyLocation.js", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -149,12 +155,13 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 }
 
 func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
-	var file = utils.FileExists(ProviderPath + "/ExpandDependency.js")
-	if(file) {
+	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + dependency["provider"].(string)
+	var file = utils.FileExists(depProviderPath + "/ExpandDependency.js")
+	if(dependency["provider"].(string) != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
 
-		res, err :=  jsVm.Run(ProviderPath + "/ExpandDependency.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/ExpandDependency.js", input)
 		if(err != nil) {
 			return nil, err
 		}

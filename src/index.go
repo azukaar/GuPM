@@ -4,6 +4,7 @@ import (
 	"os"
 	"github.com/spf13/cobra"
 	"./utils"
+	"./provider"
 	"./jsVm"
 	"strings"
 	"path/filepath"
@@ -18,12 +19,18 @@ type json map[string]interface {}
 
 var Provider string
 
+func setProvider(cmd *cobra.Command, args []string) {
+	if(Provider == "") {
+		Provider = "gupm"
+	}
+}
+
 var installCmd = &cobra.Command{
 	Use:   "install [--provider=] package-name",
 	Short: "install package",
 	Long:  `install package based on info in the entry point (depends on provider)`,
+	PreRun: setProvider,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(args)
 		err := AddDependency(".", args)
 		if(err != nil) {
 			fmt.Println(err)
@@ -35,6 +42,7 @@ var iCmd = &cobra.Command{
 	Use:   "i [--provider=] package-name",
 	Short: "install package",
 	Long:  `install package based on info in the entry point (depends on provider)`,
+	PreRun: setProvider,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := AddDependency(".", args)
 		if(err != nil) {
@@ -47,6 +55,7 @@ var makeCmd = &cobra.Command{
 	Use:   "make [--provider=]",
 	Short: "make package",
 	Long:  `make package based on info in the entry point (depends on provider)`,
+	PreRun: setProvider,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := InstallProject(".")
 		if(err != nil) {
@@ -59,6 +68,7 @@ var mCmd = &cobra.Command{
 	Use:   "m [--provider=]",
 	Short: "make package",
 	Long:  `make package based on info in the entry point (depends on provider)`,
+	PreRun: setProvider,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := InstallProject(".")
 		if(err != nil) {
@@ -126,8 +136,12 @@ func executeFile(path string, args []string) {
 func binFile(name string, args []string) {
 	path := "./.bin/"+name
 	realPath, _ := filepath.EvalSymlinks(path)
+	runCommand(realPath, args)
+}
+
+func runCommand(toRun string, args []string) {
 	bashargs := []string{"-c"}
-	bashargs = append(bashargs, realPath)
+	bashargs = append(bashargs, toRun)
 	bashargs = append(bashargs, args...)
 	
 	cmd := exec.Command("/bin/bash", bashargs...)
@@ -145,6 +159,10 @@ func main() {
 	for _, file := range utils.ReadDir("./.bin") {
 		binFolder[file.Name()] = true
 	}
+
+	packageConfig := new(provider.GupmEntryPoint)
+	utils.ReadJSON("./gupm.json", &packageConfig)
+	aliases := packageConfig.Cli.Aliases
 
 	rootCmd.AddCommand(makeCmd)
 	makeCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
@@ -164,6 +182,8 @@ func main() {
 			if (script != "") {
 				executeFile(script, os.Args)
 			}
+	} else if (aliases[c] != nil) {
+		runCommand(aliases[c].(string), os.Args[2:])	
 	} else if (binFolder[c] == true) {
 		binFile(c, os.Args[2:])	
 	} else if (script != "") {

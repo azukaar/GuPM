@@ -2,11 +2,10 @@ var name = Dependency.name;
 var version = Dependency.version;
 var finalVersion;
 
-var payload = httpGet('https://registry.npmjs.org/'+name);
-var versionList = Object.keys(payload.versions);
 
 // test tags
 if(version.match(/^\d*_*[a-zA-Z]+[\w-_]*[\d\w_]*$/)) {
+    var payload = httpGet('https://registry.npmjs.org/'+name);
     finalVersion = payload['dist-tags'][version];
 }
 
@@ -17,6 +16,8 @@ else if (version.match(/^\d+\.\d+\.\d+/) && !version.match(/\sx/)) {
 
 // test ranges
 else {
+    var payload = httpGet('https://registry.npmjs.org/'+name);
+    var versionList = Object.keys(payload.versions);
     finalVersion = semverLatestInRange(version, versionList);
 }
 

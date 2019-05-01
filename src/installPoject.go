@@ -17,7 +17,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 			if(dep["expanded"] != true) {
 				newDep, errExpand := provider.ResolveDependencyLocation(dep)
 				if(newDep == nil) {
-					fmt.Println("Error: Provider NPM didnt resolve ", dep)
+					fmt.Println("Error: Provider " + dep["provider"].(string) + " didnt resolve", dep)
 				}
 				newDep["path"] = utils.DIRNAME() + "/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
@@ -83,15 +83,16 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 
 func installDep(path string, depList []map[string]interface {}) {
 	var channel = make(chan int)
-	fmt.Println("Installing...", path)
+	fmt.Println("Installing in", path)
 	for index, dep := range depList {
 		go (func(channel chan int, index int, dep map[string]interface {}){
+			depProviderConfig := provider.GetProviderConfig(dep["provider"].(string))
 			provider.InstallDependency(path, dep)
 
 			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 
 			if(ok) {
-				installDep(path + "/" + depList[index]["name"].(string) + "/" + providerConfig.Config.Default.InstallPath, nextDepList)
+				installDep(path + "/" + depList[index]["name"].(string) + "/" + depProviderConfig.Config.Default.InstallPath, nextDepList)
 			}
 			channel <- 1
 		})(channel, index, dep)
@@ -115,7 +116,7 @@ func InstallProject(path string) error {
 		return err
 	}
 
-	providerConfig = provider.GetProviderConfig()
+	providerConfig = provider.GetProviderConfig(Provider)
 	packageConfig, _ = provider.GetPackageConfig()
 	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
 
@@ -123,6 +124,7 @@ func InstallProject(path string) error {
 	if(err != nil) {
 		return err
 	}
+
 	fmt.Println("Expand dependency list...")
 	depList = expandDepList(depList)
 	
