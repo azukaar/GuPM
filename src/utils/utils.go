@@ -22,21 +22,30 @@ type Dependency struct {
 	Version string
 }
 
-func JsonExport(input otto.Value) map[string] interface {} {
-	var obj map[string] interface {}
-	result := make(map[string] interface {})
-	exported, _ := input.Export()
-	obj, _ = exported.(map[string]interface {})
-	for index, value := range obj {
-		ottoValue, _ := otto.ToValue(value)
-		if (otto.Value.IsObject(ottoValue)) {
-			result[index] = JsonExport(ottoValue)
-		} else {
-			result[index] = value
+func JsonExport(input interface {}) interface {} {
+	asMap, isMap := input.(map[string] interface {})
+	asSlice, isSlice := input.([] interface {})
+	if(isMap) {
+		for index, value := range asMap {
+			asValue, ok := value.(otto.Value)
+			if(ok) {
+				exported, _ := asValue.Export()
+				asMap[index] = JsonExport(exported)
+			}
 		}
+		return asMap
+	} else if(isSlice) {
+		for index, value := range asSlice {
+			asValue, ok := value.(otto.Value)
+			if(ok) {
+				exported, _ := asValue.Export()
+				asSlice[index] = JsonExport(exported)
+			}
+		}
+		return asSlice
+	} else {
+		return input
 	}
-
-	return result
 }
 
 func BuildDependencyFromString(defaultProvider string, dep string) map[string]interface {} {

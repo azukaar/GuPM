@@ -33,7 +33,7 @@ func AddDependency(path string, rls []string) error {
 		dep :=  utils.BuildDependencyFromString(Provider, str)
 		resolved, err := provider.ResolveDependencyLocation(dep)
 		if(err != nil) {
-			fmt.Println(1, dep)
+			fmt.Println("Error can't resolve", dep)
 			return err
 		}
 		dep["version"] = resolved["version"]

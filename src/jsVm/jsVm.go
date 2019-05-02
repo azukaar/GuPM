@@ -57,8 +57,8 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("saveJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
-		file := utils.JsonExport(call.Argument(1))
-		fmt.Println(file)
+		toExport, _ := call.Argument(1).Export()
+		file := utils.JsonExport(toExport).(map[string] interface {})
 		bytes, _ := json.Marshal(file)
 		ioutil.WriteFile(path, bytes, os.ModePerm)
 		result, _ :=  vm.ToValue(true)

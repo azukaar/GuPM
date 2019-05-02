@@ -10,7 +10,6 @@ function installDir(files, parent) {
             installDir(subfiles, dirName + '/')
         }
         else {
-            // console.log('node_modules/' + parent + dirName + '/package.json')
             var package = readJsonFile('node_modules/' + parent + dirName + '/package.json')
             if(package.bin) {
                 if(typeof package.bin == 'string') {
@@ -27,6 +26,7 @@ function installDir(files, parent) {
         }
     }
 }
+
 
 var files = readDir(Source)
 installDir(files)

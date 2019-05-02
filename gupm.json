@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "dependencies": {
         "default" : {
-            "git://github.com/spf13/cobra/cobra": ""
+            "go://github.com/spf13/cobra/cobra": ""
         }
     },
     "cli": {

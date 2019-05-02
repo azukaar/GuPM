@@ -4,10 +4,12 @@ import (
 	"./provider"
 	"os"
 	"./utils"
+    "sync"
 	"fmt"
 )
 
 var cacheExpanded = make(map[string]map[string]interface {})
+var lock = sync.RWMutex{}
 
 func expandDepList(depList []map[string]interface {}) []map[string]interface {} {
 	var channel = make(chan int)
@@ -46,7 +48,9 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 				}
 
 				if(newDep["expanded"] != true) {
+					lock.RLock()
 					if(cacheExpanded[newDep["url"].(string)]["expanded"] != true) {
+						lock.RUnlock()
 						newDep, errExpand = provider.ExpandDependency(newDep)
 						if(errExpand != nil) {
 							fmt.Println(newDep)
@@ -54,9 +58,12 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 						}
 		
 						newDep["expanded"] = true
+						lock.Lock()
 						cacheExpanded[newDep["url"].(string)] = newDep
+						lock.Unlock()
 					} else {
 						newDep = cacheExpanded[newDep["url"].(string)]
+						lock.RUnlock()
 					}
 				}
 

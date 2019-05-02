@@ -6,7 +6,6 @@ import (
 	"../utils"
 	"../jsVm"
 	"os"
-	"github.com/robertkrimen/otto"
 )
 
 var Provider string
@@ -166,18 +165,16 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 			return nil, err
 		}
 
-		resObj, err1 := res.Export()
-		if(err1 != nil) {
-			fmt.Println(err1)
-			fmt.Println(dependency)
-		}
+		toExport, _ := res.Export()
+		resObj := utils.JsonExport(toExport).(map[string] interface {})
+		// fmt.Println(resObj["dependencies"])
+
 		if(resObj == nil) {
 			fmt.Println("ERROR Failed to resolve", dependency, ". Trying again.")
 			return ExpandDependency(dependency)
 		}
-		deps, _ := resObj.(map[string]interface{})["dependencies"].(otto.Value).Export()
-		resObj.(map[string]interface{})["dependencies"] = deps
-		return resObj.(map[string]interface {}), err1
+
+		return resObj, nil
 	} else {
 		return nil, nil
 	}
@@ -210,7 +207,7 @@ func BinaryInstall(path string) (error) {
 	var file = utils.FileExists(ProviderPath + "/BinaryInstall.js")
 	if(file) {
 		input := make(map[string]interface {})
-		input["Destination"] = "node_modules/.bin"
+		input["Destination"] = ".bin"
 		input["Source"] = "node_modules"
 
 		res, err :=  jsVm.Run(ProviderPath + "/BinaryInstall.js", input)
@@ -346,10 +343,10 @@ func installDependencySubFolders(path string, depPath string) {
 
 func InstallDependency(path string, dep map[string]interface {}) {
 	depPath := path + "/" + dep["name"].(string)
-	if(utils.FileExists(depPath)) {
-		// TODO: check version
-	} else {
-		os.MkdirAll(depPath, os.ModePerm);
-		installDependencySubFolders(dep["path"].(string), depPath)
-	}
+	// if(utils.FileExists(depPath)) {
+	// 	// TODO: check version
+	// } else {
+	// }
+	os.MkdirAll(depPath, os.ModePerm);
+	installDependencySubFolders(dep["path"].(string), depPath)
 }
