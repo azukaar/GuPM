@@ -33,15 +33,18 @@ func GetDependency(provider string, name string, version string, url string, pat
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	os.MkdirAll(path, os.ModePerm)
-	extensionCheck := regexp.MustCompile(`\.tgz$`)
-	tryExtension := extensionCheck.FindString(url)
+	tarCheck := regexp.MustCompile(`\.tgz$`)
+	tryTar := tarCheck.FindString(url)
+	zipCheck := regexp.MustCompile(`\.zip$`)
+	tryZip := zipCheck.FindString(url)
 
-	if(tryExtension != "") {
+	if(tryTar != "") {
 		resultFiles, _ := utils.Untar(result)
 		resultFiles.SaveAt(path)
-	} else {
-
-	}
+	} else if(tryZip != "") {
+		resultFiles, _ := utils.Unzip(result)
+		resultFiles.SaveAt(path)
+	} 
 
 	return path, nil
 }

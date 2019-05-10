@@ -176,13 +176,14 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 
 		return resObj, nil
 	} else {
-		return nil, nil
+		return dependency, nil
 	}
 }
 
 func GetDependency(provider string, name string, version string, url string, path string) (string, error) {
-	var file = utils.FileExists(ProviderPath + "/GetDependency.js")
-	if(file) {
+	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + provider
+	var file = utils.FileExists(depProviderPath + "/GetDependency.js")
+	if(provider != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
 		input["Name"] = name
@@ -190,7 +191,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 		input["Url"] = url
 		input["Path"] = path
 
-		res, err :=  jsVm.Run(ProviderPath + "/GetDependency.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/GetDependency.js", input)
 		if(err != nil) {
 			return "", err
 		}
@@ -223,8 +224,9 @@ func BinaryInstall(path string) (error) {
 }
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
-	var file = utils.FileExists(ProviderPath + "/PostGetDependency.js")
-	if(file) {
+	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + provider
+	var file = utils.FileExists(depProviderPath + "/PostGetDependency.js")
+	if(provider != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
 		input["Name"] = name
@@ -233,7 +235,7 @@ func PostGetDependency(provider string, name string, version string, url string,
 		input["Path"] = path
 		input["Result"] = result
 
-		res, err :=  jsVm.Run(ProviderPath + "/PostGetDependency.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/PostGetDependency.js", input)
 		if(err != nil) {
 			return "", err
 		}

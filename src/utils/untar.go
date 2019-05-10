@@ -1,6 +1,7 @@
 package utils
 
 import "archive/tar"
+import "archive/zip"
 import "compress/gzip"
 
 import (
@@ -62,5 +63,36 @@ func Untar(r string) (FileStructure, error) {
 		}	
 	}
 
+	return root, nil
+}
+
+func Unzip(r string) (FileStructure, error) {
+	root := FileStructure{
+		Children: make(map[string]FileStructure),
+		Name : "/",
+		Filetype: 0,
+	}
+
+	tr, _ := zip.NewReader(strings.NewReader(r), int64(len(r)))
+
+	for _, f := range tr.File {
+		// if its a dir and it doesn't exist create it
+		if(f.FileInfo().IsDir()) {
+			root.getOrCreate(f.Name, FileStructure{
+				Filetype: 0,
+			})
+		} else {
+			rc, _ := f.Open()
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(rc)
+			s := buf.String() 
+			_ = s
+
+			root.getOrCreate(f.Name, FileStructure{
+				Filetype: 1,
+				Content: s,
+			})
+		}	
+	}
 	return root, nil
 }

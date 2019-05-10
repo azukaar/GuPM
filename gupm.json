@@ -3,7 +3,9 @@
     "version": "1.0.0",
     "dependencies": {
         "default" : {
-            "go://github.com/spf13/cobra/cobra": ""
+            "go://github.com/spf13/cobra": "",
+            "git://github.com/robertkrimen/otto": "",
+            "git://github.com/Masterminds/semver": ""
         }
     },
     "cli": {

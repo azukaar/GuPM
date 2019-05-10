@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"fmt"
 	"io/ioutil"
-	"github.com/otiai10/copy"
 	"github.com/robertkrimen/otto"
     "path/filepath"
 )
@@ -112,10 +111,6 @@ func FileExists(path string) (bool) {
     if err == nil { return true }
     if os.IsNotExist(err) { return false }
     return true
-}
-
-func CopyRecursive(dest string, source string) {
-	copy.Copy(source, dest)
 }
 
 func StringInSlice(a string, list []string) bool {

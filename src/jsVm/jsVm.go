@@ -44,6 +44,7 @@ func Setup(vm *otto.Otto) {
 	vm.Set("httpGet", func(call otto.FunctionCall) otto.Value {
 		url, _ := call.Argument(0).ToString()
 		res := utils.HttpGet(url)
+		fmt.Println(res)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(res)))
 		return result
 	})
@@ -52,6 +53,13 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		b, _ := ioutil.ReadFile(path)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		return result
+	})
+
+	vm.Set("readFile", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		b, _ := ioutil.ReadFile(path)
+		result, _ :=  vm.ToValue(string(b))
 		return result
 	})
 
@@ -98,6 +106,15 @@ func Setup(vm *otto.Otto) {
 		var res utils.FileStructure
 		file, _ := call.Argument(0).ToString()
 		res, _ = utils.Untar(file)
+		b, _ := json.Marshal(res)
+		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		return result
+	})
+
+	vm.Set("unzip", func(call otto.FunctionCall) otto.Value {
+		var res utils.FileStructure
+		file, _ := call.Argument(0).ToString()
+		res, _ = utils.Unzip(file)
 		b, _ := json.Marshal(res)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
 		return result
