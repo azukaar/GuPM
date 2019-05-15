@@ -10,8 +10,8 @@
     },
     "cli": {
         "aliases": {
-            "build" : "fish build.sh",
-            "publish" : "fish publish.sh",
+            "build" : "sh build.sh",
+            "publish" : "sh publish.sh",
             "start" : "./build/dg"
         }
     },
