@@ -48,6 +48,13 @@ func Setup(vm *otto.Otto) {
 		return result
 	})
 
+	vm.Set("dir", func(call otto.FunctionCall) otto.Value {
+		glob, _ := call.Argument(0).ToString()
+		res, _ := utils.Dir(glob)
+		result, _ :=  vm.ToValue(res)
+		return result
+	})
+
 	vm.Set("readJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		b, _ := ioutil.ReadFile(path)
@@ -59,6 +66,39 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		b, _ := ioutil.ReadFile(path)
 		result, _ :=  vm.ToValue(string(b))
+		return result
+	})
+
+	vm.Set("removeFiles", func(call otto.FunctionCall) otto.Value {
+		files, _ := call.Argument(0).Export()
+		_, isString := files.(string)
+		if(isString) {
+			files = []string{files.(string)}
+		}
+		utils.RemoveFiles(files.([]string))
+		result, _ :=  vm.ToValue(true)
+		return result
+	})
+
+	vm.Set("copyFiles", func(call otto.FunctionCall) otto.Value {
+		files, _ := call.Argument(0).Export()
+		_, isString := files.(string)
+		if(isString) {
+			files = []string{files.(string)}
+		}
+		path, _ := call.Argument(1).ToString()
+		utils.CopyFiles(files.([]string), path)
+		result, _ :=  vm.ToValue(true)
+		return result
+	})
+
+	vm.Set("exec", func(call otto.FunctionCall) otto.Value {
+		exec, _ := call.Argument(0).ToString()
+		args, _ := call.Argument(1).Export()
+
+		utils.RunCommand(exec, args.([]string))
+
+		result, _ :=  vm.ToValue(true)
 		return result
 	})
 
@@ -76,6 +116,21 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		os.MkdirAll(path, os.ModePerm)
 		result, _ :=  vm.ToValue(true)
+		return result
+	})
+
+	vm.Set("tar", func(call otto.FunctionCall) otto.Value {
+		files, _ := call.Argument(0).Export()
+		_, isString := files.(string)
+		if(isString) {
+			files = []string{files.(string)}
+		}
+		res, err := utils.Tar(files.([]string))
+		if(err != nil) {
+			fmt.Println(err)
+		}
+		b, _ := json.Marshal(res)
+		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
 		return result
 	})
 

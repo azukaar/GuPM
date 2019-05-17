@@ -7,7 +7,6 @@ import (
 	"./provider"
 	"./jsVm"
 	"strings"
-	"runtime"
 	"path/filepath"
 	"strconv"
 	"os/exec"
@@ -95,10 +94,10 @@ func Execute() {
 }
 
 func ScriptExists(path string) string {
-	if(utils.FileExists(path)) {
-		return path
-	} else if (utils.FileExists(path + ".gs")) {
+	if (utils.FileExists(path + ".gs")) {
 		return path + ".gs"
+	} else if(utils.FileExists(path)) {
+		return path
 	} else {
 		return ""
 	}
@@ -141,41 +140,28 @@ func binFile(name string, args []string) {
 }
 
 func runCommand(toRun string, args []string) {
-	if (runtime.GOOS == "windows") {
-		isNode := regexp.MustCompile(`.js$`)
-		var cmd *exec.Cmd
-		bashargs := []string{}
+	isNode := regexp.MustCompile(`.js$`)
+	var cmd *exec.Cmd
+	bashargs := []string{}
 
-		// temporary hack to make windows execute js file with node
-		if(isNode.FindString(toRun) != "") {
-			bashargs = append(bashargs, toRun)
-			bashargs = append(bashargs, args...)
-			cmd = exec.Command("node", bashargs...)	
-		} else {
-			bashargs = append(bashargs, "/b", "\"\"")
-			bashargs = append(bashargs, toRun)
-			bashargs = append(bashargs, args...)
-			
-			cmd = exec.Command("start", bashargs...)	
-		}
-		
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Stdin = os.Stdin
-	
-		cmd.Run()
+	// temporary hack to make windows execute js file with node
+	if(isNode.FindString(toRun) != "") {
+		bashargs = append(bashargs, toRun)
+		bashargs = append(bashargs, args...)
+		cmd = exec.Command("node", bashargs...)	
 	} else {
-		bashargs := []string{"-c"}
+		bashargs = append(bashargs, "/b", "\"\"")
 		bashargs = append(bashargs, toRun)
 		bashargs = append(bashargs, args...)
 		
-		cmd := exec.Command("/bin/bash", bashargs...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Stdin = os.Stdin
-	
-		cmd.Run()
+		cmd = exec.Command("start", bashargs...)	
 	}
+	
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	cmd.Run()
 }
 
 func main() {
@@ -216,5 +202,5 @@ func main() {
 		executeFile(script, os.Args)
 	}
 
-	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
+	fmt.Printf("Done - %.2fs elapsed\n", time.Since(start).Seconds())
 }

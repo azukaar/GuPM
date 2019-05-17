@@ -5,13 +5,12 @@
         "default" : {
             "go://github.com/spf13/cobra": "",
             "git://github.com/robertkrimen/otto": "",
-            "git:// ": ""
+            "git://github.com/otiai10/copy": "",
+            "git://github.com/Masterminds/semver": ""
         }
     },
     "cli": {
         "aliases": {
-            "build" : "sh build.sh",
-            "publish" : "sh publish.sh",
             "start" : "./build/dg"
         }
     },

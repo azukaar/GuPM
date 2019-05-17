@@ -6,9 +6,67 @@ import "compress/gzip"
 
 import (
 	"io"
+	"io/ioutil"
 	"strings"
+	"fmt"
 	"bytes"
 )
+
+func Tar(files []string) (FileStructure, error) {
+	_ = fmt.Println
+	var buf bytes.Buffer
+	gzw := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gzw)
+	finalList := make([]string, 0)
+
+	for _, file := range files {
+		if(IsDirectory(file)) {
+			finalList = append(finalList, RecursiveFileWalkDir(file)...)
+		} else {
+			finalList = append(finalList, file)
+		}
+	}
+	
+	for _, file := range finalList {
+		content, err := ioutil.ReadFile(file)
+		if(err != nil) {
+			fmt.Println(err)
+		}
+	
+		hdr := &tar.Header{
+			Name: file,
+			Mode: 0600,
+			Size: int64(len(content)),
+		}
+
+		if err := tw.WriteHeader(hdr); err != nil {
+			fmt.Println(err)			
+			return FileStructure{}, err
+		}
+
+		if _, err := tw.Write([]byte(content)); err != nil {
+			fmt.Println(err)
+			return FileStructure{}, err
+		}
+	}
+
+	if err := tw.Close(); err != nil {
+		fmt.Println(err)
+		return FileStructure{}, err
+	}
+
+	if err := gzw.Close(); err != nil {
+		fmt.Println(err)
+		return FileStructure{}, err
+	}
+
+	root := FileStructure{
+		Content: buf.Bytes(),
+		Filetype: 1,
+	}
+
+	return root, nil
+}
 
 func Untar(r string) (FileStructure, error) {
 	gzr, err := gzip.NewReader(strings.NewReader(r))
@@ -19,6 +77,7 @@ func Untar(r string) (FileStructure, error) {
 	}
 
 	if err != nil {
+		fmt.Println(err)
 		return FileStructure{}, err
 	}
 	defer gzr.Close()
@@ -27,6 +86,7 @@ func Untar(r string) (FileStructure, error) {
 
 	for {
 		header, err := tr.Next()
+		fmt.Println(err)
 
 		switch {
 
@@ -53,12 +113,10 @@ func Untar(r string) (FileStructure, error) {
 		case tar.TypeReg:
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(tr)
-			s := buf.String() 
-			_ = s
 
 			root.getOrCreate(header.Name, FileStructure{
 				Filetype: 1,
-				Content: s,
+				Content: buf.Bytes(),
 			})
 		}	
 	}
@@ -85,12 +143,10 @@ func Unzip(r string) (FileStructure, error) {
 			rc, _ := f.Open()
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(rc)
-			s := buf.String() 
-			_ = s
 
 			root.getOrCreate(f.Name, FileStructure{
 				Filetype: 1,
-				Content: s,
+				Content: buf.Bytes(),
 			})
 		}	
 	}

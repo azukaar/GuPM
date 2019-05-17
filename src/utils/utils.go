@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"regexp"
 	"fmt"
+	"os/exec"
 	"io/ioutil"
 	"github.com/robertkrimen/otto"
     "path/filepath"
@@ -45,6 +46,28 @@ func JsonExport(input interface {}) interface {} {
 	} else {
 		return input
 	}
+}
+
+func RunCommand(toRun string, args []string) {
+	isNode := regexp.MustCompile(`.js$`)
+	var cmd *exec.Cmd
+	bashargs := []string{}
+
+	// temporary hack to make windows execute js file with node
+	if(isNode.FindString(toRun) != "") {
+		bashargs = append(bashargs, toRun)
+		bashargs = append(bashargs, args...)
+		cmd = exec.Command("node", bashargs...)	
+	} else {
+		bashargs = append(bashargs, args...)
+		cmd = exec.Command(toRun, bashargs...)	
+	}
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	cmd.Run()
 }
 
 func BuildDependencyFromString(defaultProvider string, dep string) map[string]interface {} {
@@ -126,6 +149,24 @@ func RemoveIndex(s []map[string]interface {}, index int) []map[string]interface 
     return append(s[:index], s[index+1:]...)
 }
 
+func RecursiveFileWalkDir(source string) []string {
+	result := make([]string, 0)
+	err := filepath.Walk(source,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if(!info.IsDir()){
+				result = append(result, path)
+			}
+			return nil
+		})
+	if err != nil {
+		fmt.Println(err)
+	}
+	return result
+}
+
 func ReadDir(path string) []os.FileInfo{
     files, err := ioutil.ReadDir(path)
     if err != nil {
@@ -135,11 +176,20 @@ func ReadDir(path string) []os.FileInfo{
     return files
 }
 
-func DIRNAME() string {
-    ex, err := os.Executable()
+func IsDirectory(path string) (bool) {
+    fileInfo, err := os.Stat(path)
     if err != nil {
-        panic(err)
+      return false
     }
-    dir := filepath.Dir(ex)
+    return fileInfo.IsDir()
+}
+
+
+func DIRNAME() string {
+    // ex, err := os.Executable()
+    // if err != nil {
+    //     panic(err)
+    // }
+    dir := filepath.Dir(".")
 	return dir
 }
