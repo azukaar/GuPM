@@ -44,7 +44,6 @@ func Setup(vm *otto.Otto) {
 	vm.Set("httpGet", func(call otto.FunctionCall) otto.Value {
 		url, _ := call.Argument(0).ToString()
 		res := utils.HttpGet(url)
-		fmt.Println(res)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(res)))
 		return result
 	})

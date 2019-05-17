@@ -7,6 +7,7 @@ import (
 	"./provider"
 	"./jsVm"
 	"strings"
+	"runtime"
 	"path/filepath"
 	"strconv"
 	"os/exec"
@@ -140,23 +141,48 @@ func binFile(name string, args []string) {
 }
 
 func runCommand(toRun string, args []string) {
-	bashargs := []string{"-c"}
-	bashargs = append(bashargs, toRun)
-	bashargs = append(bashargs, args...)
-	
-	cmd := exec.Command("/bin/bash", bashargs...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
+	if (runtime.GOOS == "windows") {
+		isNode := regexp.MustCompile(`.js$`)
+		var cmd *exec.Cmd
+		bashargs := []string{}
 
-	cmd.Run()
+		// temporary hack to make windows execute js file with node
+		if(isNode.FindString(toRun) != "") {
+			bashargs = append(bashargs, toRun)
+			bashargs = append(bashargs, args...)
+			cmd = exec.Command("node", bashargs...)	
+		} else {
+			bashargs = append(bashargs, "/b", "\"\"")
+			bashargs = append(bashargs, toRun)
+			bashargs = append(bashargs, args...)
+			
+			cmd = exec.Command("start", bashargs...)	
+		}
+		
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+	
+		cmd.Run()
+	} else {
+		bashargs := []string{"-c"}
+		bashargs = append(bashargs, toRun)
+		bashargs = append(bashargs, args...)
+		
+		cmd := exec.Command("/bin/bash", bashargs...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+	
+		cmd.Run()
+	}
 }
 
 func main() {
 	start := time.Now()
 
 	binFolder := make(map[string]bool)
-	for _, file := range utils.ReadDir("./.bin") {
+	for _, file := range utils.ReadDir(".bin") {
 		binFolder[file.Name()] = true
 	}
 

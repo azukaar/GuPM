@@ -5,7 +5,7 @@
         "default" : {
             "go://github.com/spf13/cobra": "",
             "git://github.com/robertkrimen/otto": "",
-            "git://github.com/Masterminds/semver": ""
+            "git:// ": ""
         }
     },
     "cli": {
