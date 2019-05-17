@@ -77,16 +77,15 @@ func Untar(r string) (FileStructure, error) {
 	}
 
 	if err != nil {
-		fmt.Println(err)
 		return FileStructure{}, err
 	}
+
 	defer gzr.Close()
 
 	tr := tar.NewReader(gzr)
 
 	for {
 		header, err := tr.Next()
-		fmt.Println(err)
 
 		switch {
 
