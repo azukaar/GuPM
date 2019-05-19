@@ -6,9 +6,7 @@ import (
 	"fmt"
 )
 
-func AddDependency(path string, rls []string) error {
-	_ = fmt.Println
-	
+func AddDependency(path string, rls []string) error {	
 	var err error
 	var packageConfig utils.Json
 	var depList []map[string]interface {}
