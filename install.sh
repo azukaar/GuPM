@@ -1,4 +1,4 @@
-curl --output gupm.tar.gz https://azukaar.github.io/GuPM/gupm.tar.gz	
+curl --output gupm.tar.gz https://azukaar.github.io/GuPM/gupm.tar.gz
 tar -C /usr/local/ -zxvf gupm.tar.gz	
 rm gupm.tar.gz
 echo 'export PATH="\$PATH:/usr/local/gupm"' >> ~/.bashrc
