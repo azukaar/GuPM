@@ -35,7 +35,7 @@ func Tar(files []string) (FileStructure, error) {
 	
 		hdr := &tar.Header{
 			Name: file,
-			Mode: 0600,
+			Mode: 0740,
 			Size: int64(len(content)),
 		}
 
