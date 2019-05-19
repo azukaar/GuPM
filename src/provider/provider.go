@@ -203,7 +203,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 }
 
 func BinaryInstall(path string) (error) {
-	os.RemoveAll("./.bin")
+	os.RemoveAll(".bin")
 	var file = utils.FileExists(ProviderPath + "/BinaryInstall.js")
 	if(file) {
 		input := make(map[string]interface {})

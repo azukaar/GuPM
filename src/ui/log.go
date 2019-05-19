@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"github.com/fatih/color"
+	"time"
 )
 
 var errorList = make([]string, 0)
@@ -13,30 +14,36 @@ var progress int
 var screenWidth int
 var positionToDrawAt int 
 
+var redrawNeeded = false
+
 func Title(log string) {
 	currentTitle = log
 	currentLog = ""
-	draw()
+	redrawNeeded = true
 }
 
 func Log(log string) {
 	currentLog = log
-	draw()
+	redrawNeeded = true
 }
 
 func Error(err string) {
 	errorList = append(errorList, err)
-	draw()
+	if(len(errorList) <= 10) {
+		Draw()
+	}
 }
 
 func Debug(err string) {
 	debugList = append(debugList, err)
-	draw()
+	if(len(debugList) <= 10) {
+		Draw()
+	}
 }
 
 func Progress(p int) {
 	progress = p
-	draw()
+	redrawNeeded = true
 }
 
 // https://github.com/ahmetb/go-cursor/blob/master/cursor.go
@@ -53,15 +60,33 @@ func moveCursor(x int, y int) {
 
 func init() {
 	positionToDrawAt = 0
+
+	go (func() {
+		for _ = range time.Tick(300 * time.Millisecond) {
+			if(redrawNeeded) {
+				Draw()
+			}
+		}
+	})()
 }
 
-func draw() {
+func drawTitle() {
+	title := color.New(color.FgBlue, color.Bold)
+	title.Println("🐶   " + currentTitle)
+}
+
+func drawLog() {
+	if(currentLog != "") {
+		color.Green("✔️   " + currentLog)
+	} 
+}
+
+func Draw() {
 	moveCursor(1,1)
 	fmt.Print("\033[2J")
 	
-	title := color.New(color.FgBlue, color.Bold)
-	title.Println("🐶   " + currentTitle)
-	
+	drawTitle()
+
 	if(progress > 0) {
 		fmt.Print("📦📦")
 		for i := 0; i < 20; i++  {
@@ -73,16 +98,28 @@ func draw() {
 		}
 		fmt.Println("🏠")
 	}
+	
+	drawLog()
 
-	if(currentLog != "") {
-		color.Green("✔️   " + currentLog)
-	} 
-
+	limit := 0
 	for _, v := range errorList {
-		color.Red("❌ " + v)
+		if(limit == 10) {
+			color.Red("❌❌❌ Too many errors to display...")
+			limit++
+		} else if(limit < 10) {
+			color.Red("❌ " + v)
+			limit++
+		}
 	}
 
+	limit = 0
 	for _, v := range debugList {
-		fmt.Println(v)
+		if(limit == 10) {
+			fmt.Println("Too many debugs...")
+			limit++
+		} else if(limit < 10) {
+			fmt.Println(v)
+			limit++
+		}
 	}
 }

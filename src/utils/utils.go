@@ -5,6 +5,7 @@ import (
 	"os"
 	"net/http"
 	"regexp"
+	"time"
 	"../ui"
 	"os/exec"
 	"io/ioutil"
@@ -111,10 +112,23 @@ func ReadJSON(path string, target interface{}) error  {
 	return json.NewDecoder(b).Decode(target)
 }
 
+var numberConnectionOpened = 0
+
 func HttpGet(url string) []byte {
+	if(numberConnectionOpened > 50) {
+		time.Sleep(1000 * time.Millisecond)
+		return HttpGet(url)
+	}
+
+	numberConnectionOpened++
 	resp, httperr := http.Get(url)
 	if httperr != nil {
-		ui.Error("Error accessing " + url + " trying again. Check your network.")
+		numberConnectionOpened--
+		isRateLimit, _ := regexp.MatchString(`unexpected EOF$`, httperr.Error())
+		if(!isRateLimit) {
+			ui.Error("Error accessing " + url + " trying again. " + httperr.Error())
+		}
+		time.Sleep(1000 * time.Millisecond)
 		return HttpGet(url)
 	}
 
@@ -122,10 +136,12 @@ func HttpGet(url string) []byte {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		numberConnectionOpened--
 		ui.Error("Error reading HTTP response " + err.Error())
 		return HttpGet(url)
 	}
 	
+	numberConnectionOpened--
 	return body
 }
 

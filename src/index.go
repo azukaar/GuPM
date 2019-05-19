@@ -89,7 +89,6 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		ui.Error(err.Error())
-		os.Exit(1)
 	}
 }
 
@@ -204,6 +203,7 @@ func main() {
 		executeFile(script, os.Args)
 	}
 
+	ui.Draw()
 	timeElapsed := fmt.Sprintf("%f", time.Since(start).Seconds())
-	ui.Log("Done - "+timeElapsed+"s elapsed\n")
+	fmt.Println("Done - "+timeElapsed+"s elapsed\n")
 }

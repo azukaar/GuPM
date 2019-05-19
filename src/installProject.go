@@ -11,17 +11,19 @@ import (
 var cacheExpanded = make(map[string]map[string]interface {})
 var lock = sync.RWMutex{}
 
-func expandDepList(depList []map[string]interface {}) []map[string]interface {} {
+func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}) {
 	var channel = make(chan int)
 	var todo = len(depList)
 	_ = todo
 	for index, dep := range depList {
-		go (func(channel chan int, index int, dep map[string]interface {}){
+		go (func(channel chan int, index int, dep map[string]interface {}) {
 			if(dep["expanded"] != true) {
 				newDep, errExpand := provider.ResolveDependencyLocation(dep)
 				if(newDep == nil) {
 					ui.Error("Error: Provider " + dep["provider"].(string) + " didnt resolve " + dep["name"].(string) + "@" + dep["version"].(string))
+					ui.Error(errExpand.Error())
 				}
+
 				newDep["path"] = utils.DIRNAME() + "/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
 				if(!utils.FileExists(newDep["path"].(string))) {
@@ -53,7 +55,8 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 					if(cacheExpanded[newDep["url"].(string)]["expanded"] != true) {
 						lock.RUnlock()
 						newDep, errExpand = provider.ExpandDependency(newDep)
-						if(errExpand != nil) {
+						if(errExpand != nil || newDep == nil) {
+							ui.Error("Error: Provider " + dep["provider"].(string) + " didnt expand " + dep["name"].(string) + "@" + dep["version"].(string))
 							ui.Error(errExpand.Error())
 						}
 		

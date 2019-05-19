@@ -34,6 +34,7 @@ func Run(path string, input map[string]interface {}) (otto.Value, error) {
 	ret, err = vm.Run(scriptCache[path])
 
 	if(err != nil) {
+		ui.Error("Error occured while executing the GS code")
 		return otto.UndefinedValue(),  err
 	}
 
