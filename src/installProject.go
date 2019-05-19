@@ -4,8 +4,8 @@ import (
 	"./provider"
 	"os"
 	"./utils"
-    "sync"
-	"fmt"
+	"./ui"
+	"sync"
 )
 
 var cacheExpanded = make(map[string]map[string]interface {})
@@ -20,7 +20,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 			if(dep["expanded"] != true) {
 				newDep, errExpand := provider.ResolveDependencyLocation(dep)
 				if(newDep == nil) {
-					fmt.Println("Error: Provider " + dep["provider"].(string) + " didnt resolve", dep)
+					ui.Error("Error: Provider " + dep["provider"].(string) + " didnt resolve " + dep["name"].(string) + "@" + dep["version"].(string))
 				}
 				newDep["path"] = utils.DIRNAME() + "/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
@@ -33,7 +33,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 						newDep["path"].(string),
 					)
 					if(errorGD != nil) {
-						fmt.Println(1, errorGD)
+						ui.Error(errorGD.Error())
 					}
 					_, errorPGD := provider.PostGetDependency(
 						newDep["provider"].(string),
@@ -44,7 +44,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 						getRes,
 					)
 					if(errorPGD != nil) {
-						fmt.Println(2, errorPGD)
+						ui.Error(errorPGD.Error())
 					}
 				}
 
@@ -54,8 +54,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 						lock.RUnlock()
 						newDep, errExpand = provider.ExpandDependency(newDep)
 						if(errExpand != nil) {
-							fmt.Println(newDep)
-							fmt.Println(errExpand)
+							ui.Error(errExpand.Error())
 						}
 		
 						newDep["expanded"] = true
@@ -70,7 +69,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 
 				depList[index] = newDep
 
-				fmt.Println("Get dependency", newDep["name"])
+				ui.Log("Get dependency " + newDep["name"].(string))
 				
 				nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 
@@ -91,7 +90,7 @@ func expandDepList(depList []map[string]interface {}) []map[string]interface {} 
 
 func installDep(path string, depList []map[string]interface {}) {
 	var channel = make(chan int)
-	fmt.Println("Installing in", path)
+	ui.Log("Installing " + path)
 	for index, dep := range depList {
 		go (func(channel chan int, index int, dep map[string]interface {}){
 			depProviderConfig := provider.GetProviderConfig(dep["provider"].(string))
@@ -113,7 +112,7 @@ func installDep(path string, depList []map[string]interface {}) {
 var providerConfig *provider.GupmEntryPoint
 
 func InstallProject(path string) error {
-	_ = fmt.Println
+	ui.Title("Installing project...")
 	
 	var err error
 	var packageConfig utils.Json
@@ -133,18 +132,18 @@ func InstallProject(path string) error {
 		return err
 	}
 
-	fmt.Println("Expand dependency list...")
+	ui.Title("Expand dependency list...")
 	depList = expandDepList(depList)
 	
-	fmt.Println("Build dependency list...")
+	ui.Title("Build dependency list...")
 	depList = provider.BuildDependencyTree(depList)
 	
 	os.MkdirAll(providerConfig.Config.Default.InstallPath, os.ModePerm);
 	
-	fmt.Println("Install dependencies...")
+	ui.Title("Install dependencies...")
 	installDep(providerConfig.Config.Default.InstallPath, depList)
 
-	fmt.Println("Install Binaries...")
+	ui.Title("Install Binaries...")
 	err = provider.BinaryInstall(providerConfig.Config.Default.InstallPath)
 	if(err != nil) {
 		return err

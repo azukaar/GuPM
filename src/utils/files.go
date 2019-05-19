@@ -8,6 +8,8 @@ import (
 	"github.com/otiai10/copy"
 )
 
+var EmptyFileStructure = FileStructure{}
+
 type FileStructure struct {
 	Children map[string]FileStructure
 	Name string

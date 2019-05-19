@@ -4,6 +4,7 @@ import (
 	"os"
 	"github.com/spf13/cobra"
 	"./utils"
+	"./ui"
 	"./provider"
 	"./jsVm"
 	"strings"
@@ -33,7 +34,7 @@ var installCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := AddDependency(".", args)
 		if(err != nil) {
-			fmt.Println(err)
+			ui.Error(err.Error())
 		} 
 	},
 }
@@ -46,7 +47,7 @@ var iCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := AddDependency(".", args)
 		if(err != nil) {
-			fmt.Println(err)
+			ui.Error(err.Error())
 		} 
 	},
 }
@@ -59,7 +60,7 @@ var makeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := InstallProject(".")
 		if(err != nil) {
-			fmt.Println(err)
+			ui.Error(err.Error())
 		} 
 	},
 }
@@ -72,7 +73,7 @@ var mCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := InstallProject(".")
 		if(err != nil) {
-			fmt.Println(err)
+			ui.Error(err.Error())
 		} 
 	},
 }
@@ -82,13 +83,12 @@ var rootCmd = &cobra.Command{
 	Short: "GuPM is the Global Universal Project Manager",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("test")
 	},
 }
   
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		ui.Error(err.Error())
 		os.Exit(1)
 	}
 }
@@ -127,8 +127,8 @@ func executeFile(path string, args []string) {
 
 	_, err := jsVm.Run(path, input)
 	if(err != nil) {
-		fmt.Println("File execution failed")
-		fmt.Println(err)
+	  ui.Error("File execution failed")
+		ui.Error(err.Error())
 		os.Exit(1)
 	}
 }
@@ -202,5 +202,6 @@ func main() {
 		executeFile(script, os.Args)
 	}
 
-	fmt.Printf("Done - %.2fs elapsed\n", time.Since(start).Seconds())
+	timeElapsed := fmt.Sprintf("%f", time.Since(start).Seconds())
+	ui.Log("Done - "+timeElapsed+"s elapsed\n")
 }

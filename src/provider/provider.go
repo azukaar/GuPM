@@ -1,10 +1,10 @@
 package provider
 
 import (
-	"fmt"
 	"../defaultProvider"
 	"../utils"
 	"../jsVm"
+	"../ui"
 	"os"
 )
 
@@ -23,10 +23,10 @@ func InitProvider(provider string) error {
 
 	if(Provider != "") {
 		providerConfig := GetProviderConfig(Provider) 
-		fmt.Println("Initialisation OK for", providerConfig.Name);
+		ui.Log("Initialisation OK for " + providerConfig.Name);
 	} else {
 		providerConfig := GetProviderConfig("gupm") 
-		fmt.Println("Initialisation OK for", providerConfig.Name);
+		ui.Log("Initialisation OK for " + providerConfig.Name);
 	}
 	return nil
 }
@@ -44,7 +44,7 @@ func GetProviderConfig(providerName string) *GupmEntryPoint {
 		config := new(GupmEntryPoint)
 		err := utils.ReadJSON(providerConfigPath, config)
 		if(err != nil) {
-			fmt.Println(err)
+			ui.Error(err.Error())
 			return nil
 		}
 		providerConfigCache[providerName] = config
@@ -144,7 +144,7 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 		resObj, err1 := res.Export()
 		
 		if(resObj == nil) {
-			fmt.Println("ERROR Failed to resolve", dependency, "Trying again.")
+			ui.Error("ERROR Failed to resolve" + dependency["name"].(string) + "Trying again.")
 			return ResolveDependencyLocation(dependency)
 		}
 		return resObj.(map[string]interface {}), err1
@@ -167,10 +167,9 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 
 		toExport, _ := res.Export()
 		resObj := utils.JsonExport(toExport).(map[string] interface {})
-		// fmt.Println(resObj["dependencies"])
 
 		if(resObj == nil) {
-			fmt.Println("ERROR Failed to resolve", dependency, ". Trying again.")
+			ui.Error("ERROR Failed to resolve" + dependency["name"].(string) + ". Trying again.")
 			return ExpandDependency(dependency)
 		}
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"net/http"
 	"regexp"
-	"fmt"
+	"../ui"
 	"os/exec"
 	"io/ioutil"
 	"github.com/robertkrimen/otto"
@@ -114,7 +114,7 @@ func ReadJSON(path string, target interface{}) error  {
 func HttpGet(url string) []byte {
 	resp, httperr := http.Get(url)
 	if httperr != nil {
-		fmt.Println("Error accessing ", url, " trying again. Check your network.")
+		ui.Error("Error accessing " + url + " trying again. Check your network.")
 		return HttpGet(url)
 	}
 
@@ -122,7 +122,7 @@ func HttpGet(url string) []byte {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error reading HTTP response", err)
+		ui.Error("Error reading HTTP response " + err.Error())
 		return HttpGet(url)
 	}
 	
@@ -162,7 +162,7 @@ func RecursiveFileWalkDir(source string) []string {
 			return nil
 		})
 	if err != nil {
-		fmt.Println(err)
+		ui.Error(err.Error())
 	}
 	return result
 }
@@ -170,7 +170,7 @@ func RecursiveFileWalkDir(source string) []string {
 func ReadDir(path string) []os.FileInfo{
     files, err := ioutil.ReadDir(path)
     if err != nil {
-        fmt.Println(err)
+        ui.Error(err.Error())
 	}
 
     return files

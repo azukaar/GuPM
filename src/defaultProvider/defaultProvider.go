@@ -4,14 +4,14 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"../utils"
+	"../ui"
 	"os"
 	"regexp"
-	"fmt"
-    "reflect"
+	"reflect"
 )
 
 func SaveDependencyList(depList []map[string]interface{}) error {
-	fmt.Println(depList)
+	_ = depList
 	return nil
 }
 
@@ -19,7 +19,7 @@ func GetPackageConfig(entryPoint string) map[string]interface {} {
 	var packageConfig map[string]interface{}
 	b, err := ioutil.ReadFile(entryPoint)
 	if err != nil {
-		fmt.Println(err, entryPoint)
+		ui.Error(err.Error() + " : " + entryPoint)
 	}
 
 	json.Unmarshal([]byte(string(b)), &packageConfig)

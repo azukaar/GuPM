@@ -2,7 +2,7 @@ package jsVm
 
 import (
 	"../utils"
-	"fmt"
+	"../ui"
 	"io/ioutil"
 	"os"
 	"encoding/json"
@@ -127,7 +127,7 @@ func Setup(vm *otto.Otto) {
 		}
 		res, err := utils.Tar(files.([]string))
 		if(err != nil) {
-			fmt.Println(err)
+			ui.Error(err.Error())
 		}
 		b, _ := json.Marshal(res)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
@@ -150,7 +150,7 @@ func Setup(vm *otto.Otto) {
 		to, _ := call.Argument(1).ToString()
 		err := os.Symlink(from, to)
 		if(err != nil) {
-			fmt.Println(err)
+			ui.Error(err.Error())
 		}
 		result, _ :=  vm.ToValue(true)
 		return result
@@ -205,7 +205,7 @@ func Setup(vm *otto.Otto) {
 		for _, verCand := range versionList.([]string) {
 			sver, err := semver.NewVersion(verCand)
 			if err != nil {
-				fmt.Println(err)
+				ui.Error(err.Error())
 			}
 			
 			if(rangeVer.Check(sver) && (versionSem == nil || sver.GreaterThan(versionSem))) {

@@ -3,7 +3,7 @@ package main
 import (
 	"./provider"
 	"./utils"
-	"fmt"
+	"./ui"
 )
 
 func AddDependency(path string, rls []string) error {	
@@ -25,13 +25,13 @@ func AddDependency(path string, rls []string) error {
 		return err
 	}
 
-	fmt.Println("Adding to dependency list...")
+	ui.Title("Adding to dependency list...")
 
 	for _, str := range rls {
 		dep :=  utils.BuildDependencyFromString(Provider, str)
 		resolved, err := provider.ResolveDependencyLocation(dep)
 		if(err != nil) {
-			fmt.Println("Error can't resolve", dep)
+			ui.Error("Error can't resolve : " + dep["Name"].(string) + "@" +  dep["version"].(string))
 			return err
 		}
 		dep["version"] = resolved["version"]

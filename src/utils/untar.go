@@ -8,12 +8,10 @@ import (
 	"io"
 	"io/ioutil"
 	"strings"
-	"fmt"
 	"bytes"
 )
 
 func Tar(files []string) (FileStructure, error) {
-	_ = fmt.Println
 	var buf bytes.Buffer
 	gzw := gzip.NewWriter(&buf)
 	tw := tar.NewWriter(gzw)
@@ -30,7 +28,7 @@ func Tar(files []string) (FileStructure, error) {
 	for _, file := range finalList {
 		content, err := ioutil.ReadFile(file)
 		if(err != nil) {
-			fmt.Println(err)
+			return EmptyFileStructure, err
 		}
 	
 		hdr := &tar.Header{
@@ -40,24 +38,20 @@ func Tar(files []string) (FileStructure, error) {
 		}
 
 		if err := tw.WriteHeader(hdr); err != nil {
-			fmt.Println(err)			
-			return FileStructure{}, err
+			return EmptyFileStructure, err
 		}
 
 		if _, err := tw.Write([]byte(content)); err != nil {
-			fmt.Println(err)
-			return FileStructure{}, err
+			return EmptyFileStructure, err
 		}
 	}
 
 	if err := tw.Close(); err != nil {
-		fmt.Println(err)
-		return FileStructure{}, err
+		return EmptyFileStructure, err
 	}
 
 	if err := gzw.Close(); err != nil {
-		fmt.Println(err)
-		return FileStructure{}, err
+		return EmptyFileStructure, err
 	}
 
 	root := FileStructure{
@@ -77,7 +71,7 @@ func Untar(r string) (FileStructure, error) {
 	}
 
 	if err != nil {
-		return FileStructure{}, err
+		return EmptyFileStructure, err
 	}
 
 	defer gzr.Close()
