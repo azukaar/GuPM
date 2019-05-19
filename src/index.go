@@ -168,10 +168,12 @@ func main() {
 	start := time.Now()
 
 	binFolder := make(map[string]bool)
-	for _, file := range utils.ReadDir(".bin") {
-		binFolder[file.Name()] = true
-	}
 
+	if(utils.FileExists(".bin")) {
+		for _, file := range utils.ReadDir(".bin") {
+			binFolder[file.Name()] = true
+		}
+	}
 	packageConfig := new(provider.GupmEntryPoint)
 	utils.ReadJSON("./gupm.json", &packageConfig)
 	aliases := packageConfig.Cli.Aliases
