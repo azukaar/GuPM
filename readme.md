@@ -1,6 +1,9 @@
-# GuPM
+![dog](./dog.png)
 
 Global Universal Project Manager -- Package manager, cli tool, scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are amoung friends.
+
+---
+
 GuPM is born from the fustration of having to give up my habbits whenever I would switch off Javascript and loose NPM (Whether it would be in Ruby, Go, or even non dev situation). GuPM is claiming to take inspiration from the best things from Brew, NPM, Gem, etc... And compile them in a single tool, usable in any situation.
 
 Example commands :
@@ -103,3 +106,5 @@ List of function : [./functions.md](Functions)
 Allow you to install / add from a repo
 
 List of hooks : [./hooklist.md](Hooklist)
+
+Dog Icon made by [Freepik](https://www.freepik.com/)
