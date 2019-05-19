@@ -107,4 +107,5 @@ Allow you to install / add from a repo
 
 List of hooks : [./hooklist.md](Hooklist)
 
+Package Icon made by [smashicons](https://www.smashicons.com/)
 Dog Icon made by [Freepik](https://www.freepik.com/)
