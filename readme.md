@@ -1,4 +1,4 @@
-![dog](./dog.png)
+![dog](./banner.png)
 
 Global Universal Project Manager -- Package manager, cli tool, scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are amoung friends.
 
