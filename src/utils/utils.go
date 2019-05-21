@@ -202,10 +202,11 @@ func IsDirectory(path string) (bool) {
 
 
 func DIRNAME() string {
-    // ex, err := os.Executable()
-    // if err != nil {
-    //     panic(err)
-    // }
-    dir := filepath.Dir(".")
+	ex, err := os.Executable()
+	exr, err := filepath.EvalSymlinks(ex)
+    if err != nil {
+        panic(err)
+    }
+    dir := filepath.Dir(exr)
 	return dir
 }

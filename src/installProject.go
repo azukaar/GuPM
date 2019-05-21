@@ -7,6 +7,7 @@ import (
 	"./utils"
 	"./ui"
 	"sync"
+	"github.com/mitchellh/go-homedir"
 )
 
 var cacheExpanded = make(map[string]map[string]interface {})
@@ -31,7 +32,12 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 					return;
 				}
 
-				newDep["path"] = utils.DIRNAME() + "/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
+				hdir, errH := homedir.Dir()
+				if(errH != nil) {
+					ui.Error(errH.Error())
+					hdir = "."
+				}
+				newDep["path"] = hdir + "/.gupm/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
 				if(!utils.FileExists(newDep["path"].(string))) {
 					getRes, errorGD := provider.GetDependency(

@@ -6,7 +6,7 @@ fi
 
 mkdir /usr/local
 tar -C /usr/local -zxvf gupm.tar.gz
-chmod 755 /usr/local/gupm/g
+chmod -R 755 /usr/local/gupm/
 rm gupm.tar.gz
 
 if [ -d "/usr/local/bin" ] 

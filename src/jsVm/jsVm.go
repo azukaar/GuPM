@@ -66,14 +66,20 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("readJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
-		b, _ := ioutil.ReadFile(path)
+		b, err := ioutil.ReadFile(path)
+		if(err != nil) {
+			ui.Error(err.Error())
+		}
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
 		return result
 	})
 
 	vm.Set("readFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
-		b, _ := ioutil.ReadFile(path)
+		b, err := ioutil.ReadFile(path)
+		if(err != nil) {
+			ui.Error(err.Error())
+		}
 		result, _ :=  vm.ToValue(string(b))
 		return result
 	})

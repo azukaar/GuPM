@@ -19,6 +19,7 @@ var positionToDrawAt int
 var logBox = uilive.New()
 
 var lock = sync.RWMutex{}
+var errorLock = sync.RWMutex{}
 
 var redrawNeeded = false
 var running = true
@@ -36,7 +37,9 @@ func Log(log string) {
 }
 
 func Error(err string) {
+	errorLock.Lock()
 	errorList = append(errorList, err)
+	errorLock.Unlock()
 	if(len(errorList) <= 10) {
 		redrawNeeded = true
 		// Draw()
@@ -130,6 +133,7 @@ func Draw() {
 
 	errorColor := color.New(color.FgRed)
 	limit := 0
+	errorLock.RLock()
 	for _, v := range errorList {
 		_ = v
 		if(limit == 10) {
@@ -140,6 +144,7 @@ func Draw() {
 			limit++
 		}
 	}
+	errorLock.RUnlock()
 
 	limit = 0
 	for _, v := range debugList {

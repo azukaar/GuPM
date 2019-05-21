@@ -8,7 +8,8 @@
             "git://github.com/otiai10/copy": "",
             "git://github.com/Masterminds/semver": "",
             "go://github.com/fatih/color": "",
-            "go://github.com/gdamore/tcell": ""
+            "go://github.com/gosuri/uilive": "",
+            "go://github.com/mitchellh/go-homedir": ""
         }
     },
     "cli": {

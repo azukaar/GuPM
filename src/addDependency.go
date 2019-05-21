@@ -11,6 +11,8 @@ func AddDependency(path string, rls []string) error {
 	var packageConfig utils.Json
 	var depList []map[string]interface {}
 
+	ui.Title("Add dependency...")
+
 	err = provider.InitProvider(Provider)
 	if(err != nil) {
 		return err

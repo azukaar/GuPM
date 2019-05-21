@@ -47,6 +47,7 @@ func GetProviderConfig(providerName string) *GupmEntryPoint {
 			ui.Error(err.Error())
 			return nil
 		}
+
 		providerConfigCache[providerName] = config
 		return config
 	} else {
