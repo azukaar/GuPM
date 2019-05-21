@@ -82,8 +82,12 @@ func init() {
 }
 
 func drawTitle() string {
-	title := color.New(color.FgBlue, color.Bold)
-	return title.Sprintln("🐶   " + currentTitle)
+	if(currentTitle != "") {
+		title := color.New(color.FgBlue, color.Bold)
+		return title.Sprintln("🐶   " + currentTitle)
+	} else {
+		return ""
+	}
 }
 
 func drawLog() string {
