@@ -14,6 +14,7 @@ func AddDependency(path string, rls []string) error {
 	ui.Title("Add dependency...")
 
 	err = provider.InitProvider(Provider)
+
 	if(err != nil) {
 		return err
 	}
