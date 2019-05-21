@@ -10,9 +10,9 @@ import (
 	"strings"
 	"path/filepath"
 	"strconv"
-	"os/exec"
 	"regexp"
 	"fmt"
+	"runtime"
 	"time"
 )
 
@@ -161,37 +161,16 @@ func executeFile(path string, args []string) {
 func binFile(name string, args []string) {
 	path := "./.bin/"+name
 	realPath, _ := filepath.EvalSymlinks(path)
-	runCommand(realPath, args)
-}
-
-func runCommand(toRun string, args []string) {
-	isNode := regexp.MustCompile(`.js$`)
-	var cmd *exec.Cmd
-	bashargs := []string{}
-
-	// temporary hack to make windows execute js file with node
-	if(isNode.FindString(toRun) != "") {
-		bashargs = append(bashargs, toRun)
-		bashargs = append(bashargs, args...)
-		cmd = exec.Command("node", bashargs...)	
-	} else {
-		bashargs = append(bashargs, "/b", "\"\"")
-		bashargs = append(bashargs, toRun)
-		bashargs = append(bashargs, args...)
-		
-		cmd = exec.Command("start", bashargs...)	
-	}
-	
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-
-	cmd.Run()
+	utils.RunCommand(realPath, args)
 }
 
 func main() {
 	start := time.Now()
 
+	if runtime.GOOS == "darwin" {
+		utils.RunCommand("ulimit", []string{"-n", "2048"})
+	}
+	
 	binFolder := make(map[string]bool)
 
 	if(utils.FileExists(".bin")) {
@@ -235,7 +214,7 @@ func main() {
 				executeFile(script, os.Args)
 			}
 	} else if (aliases[c] != nil) {
-		runCommand(aliases[c].(string), os.Args[2:])	
+		utils.RunCommand(aliases[c].(string), os.Args[2:])	
 	} else if (binFolder[c] == true) {
 		binFile(c, os.Args[2:])	
 	} else if (script != "") {
