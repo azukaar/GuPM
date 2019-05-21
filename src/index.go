@@ -26,31 +26,31 @@ func setProvider(cmd *cobra.Command, args []string) {
 	}
 }
 
-// var bootstrapCmd = &cobra.Command{
-// 	Use:   "bootstrap [--provider=]",
-// 	Short: "bootstrap a new project",
-// 	Long:  `bootstrap a new project based on the model of your specific provider`,
-// 	PreRun: setProvider,
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		err := AddDependency(".", args)
-// 		if(err != nil) {
-// 			ui.Error(err.Error())
-// 		} 
-// 	},
-// }
+var bootstrapCmd = &cobra.Command{
+	Use:   "bootstrap [--provider=]",
+	Short: "bootstrap a new project",
+	Long:  `bootstrap a new project based on the model of your specific provider`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := Bootstrap(".", args)
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
 
-// var bCmd = &cobra.Command{
-// 	Use:   "b [--provider=]",
-// 	Short: "bootstrap a new project",
-// 	Long:  `bootstrap a new project based on the model of your specific provider`,
-// 	PreRun: setProvider,
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		err := AddDependency(".", args)
-// 		if(err != nil) {
-// 			ui.Error(err.Error())
-// 		} 
-// 	},
-// }
+var bCmd = &cobra.Command{
+	Use:   "b [--provider=]",
+	Short: "bootstrap a new project",
+	Long:  `bootstrap a new project based on the model of your specific provider`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := Bootstrap(".", args)
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
 
 var installCmd = &cobra.Command{
 	Use:   "install [--provider=] package-name",
@@ -214,14 +214,19 @@ func main() {
 	rootCmd.AddCommand(iCmd)
 	iCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	
+	rootCmd.AddCommand(bootstrapCmd)
+	bootstrapCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	rootCmd.AddCommand(bCmd)
+	bCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+
 	c := ""
 	if(len(os.Args) > 1) {
 		c = os.Args[1]
 	}
 
 	script := ScriptExists(c)
-	if( c == "install" || c == "make" || c == "uninstall" ||
-		c == "i" || c == "m" || c == "u" || c == "") {
+	if( c == "install" || c == "bootstrap" || c == "make" || c == "uninstall" ||
+		c == "i" || c == "b" || c == "m" || c == "u") {
 			Execute();
 			if (script != "") {
 				executeFile(script, os.Args)
@@ -238,7 +243,7 @@ func main() {
 		fmt.Println("Command not found. Try 'g help' or check filename.")
 	}
 
-	ui.Draw()
+	ui.Stop()
 	timeElapsed := fmt.Sprintf("%f", time.Since(start).Seconds())
-	fmt.Println("Done - "+timeElapsed+"s elapsed\n")
+	fmt.Println(timeElapsed+"s elapsed\n")
 }

@@ -104,5 +104,16 @@ Allow you to install / add from a repo
 
 List of hooks : [./hooklist.md](Hooklist)
 
+### VS Code 
+
+Add this to your `settings.json` to treat .gs file as javascript (temporary fix to plain text)
+
+```
+"files.associations": {
+    "*.gs": "javascript"
+}
+```
+
+### Thanks you!
 Package Icon made by [smashicons](https://www.smashicons.com/)
 Dog Icon made by [Freepik](https://www.freepik.com/)

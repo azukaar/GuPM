@@ -1,4 +1,8 @@
 removeFiles(["build/dg", "build/plugins", "build/gupm.json"]) 
-exec("go", ["build", "-o", "build/dg", "src/index.go", "src/addDependency.go", "src/installProject.go"])
+
+var goArgs = ["build", "-o", "build/dg"]
+goArgs = goArgs.concat(dir("src/*.go"))
+exec("go", goArgs)
+
 copyFiles("plugins", "build/plugins")
 copyFiles("gupm.json", "build/gupm.json")

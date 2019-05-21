@@ -15,6 +15,10 @@ func SaveDependencyList(depList []map[string]interface{}) error {
 	return nil
 }
 
+func Bootstrap(path string) {
+	
+}
+
 func GetPackageConfig(entryPoint string) map[string]interface {} {
 	var packageConfig map[string]interface{}
 	b, err := ioutil.ReadFile(entryPoint)

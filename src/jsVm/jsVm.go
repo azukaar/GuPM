@@ -5,17 +5,21 @@ import (
 	"../ui"
 	"io/ioutil"
 	"os"
+	"errors"
+	"sync"
 	"encoding/json"
 	"github.com/robertkrimen/otto"
 	"github.com/Masterminds/semver"
 )
 
+var lock = sync.RWMutex{}
 var scriptCache = make(map[string]string)
 
 func Run(path string, input map[string]interface {}) (otto.Value, error) {
 	var err error
 	var ret otto.Value
 
+	lock.Lock()
 	if(scriptCache[path] == "") {
 		file, err := ioutil.ReadFile(path)
 		if(err != nil) {
@@ -23,6 +27,8 @@ func Run(path string, input map[string]interface {}) (otto.Value, error) {
 		}
 		scriptCache[path] = string(file)
 	}
+	script := scriptCache[path]
+	lock.Unlock()
 
 	vm := otto.New()
 	Setup(vm)
@@ -31,11 +37,13 @@ func Run(path string, input map[string]interface {}) (otto.Value, error) {
 		vm.Set(varName, varValue)
 	}
 
-	ret, err = vm.Run(scriptCache[path])
+	ret, err = vm.Run(script)
 
 	if(err != nil) {
-		ui.Error("Error occured while executing the GS code")
-		return otto.UndefinedValue(),  err
+		if ottoError, ok := err.(*otto.Error); ok {
+		  ui.Error(ottoError.String()) //  line numbers 
+		}    
+		return otto.UndefinedValue(),  errors.New("Error occured while executing the GS code")
 	}
 
 	return ret, nil

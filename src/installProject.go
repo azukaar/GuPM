@@ -3,6 +3,7 @@ package main
 import (
 	"./provider"
 	"os"
+	"errors"
 	"./utils"
 	"./ui"
 	"sync"
@@ -12,16 +13,22 @@ var cacheExpanded = make(map[string]map[string]interface {})
 var lock = sync.RWMutex{}
 
 func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}) {
-	var channel = make(chan int)
-	var todo = len(depList)
-	_ = todo
+	channel := make(chan int)
+	// todo := len(depList)
+	
 	for index, dep := range depList {
 		go (func(channel chan int, index int, dep map[string]interface {}) {
 			if(dep["expanded"] != true) {
-				newDep, errExpand := provider.ResolveDependencyLocation(dep)
+				newDep := make(map[string]interface {})
+				for key, value := range dep {
+					newDep[key] = value
+				}
+				newDep, errExpand := provider.ResolveDependencyLocation(newDep)
 				if(newDep == nil) {
 					ui.Error("Error: Provider " + dep["provider"].(string) + " didnt resolve " + dep["name"].(string) + "@" + dep["version"].(string))
 					ui.Error(errExpand.Error())
+					channel <- 0
+					return;
 				}
 
 				newDep["path"] = utils.DIRNAME() + "/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
@@ -50,25 +57,24 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 					}
 				}
 
+				lock.Lock()
 				if(newDep["expanded"] != true) {
-					lock.RLock()
 					if(cacheExpanded[newDep["url"].(string)]["expanded"] != true) {
-						lock.RUnlock()
 						newDep, errExpand = provider.ExpandDependency(newDep)
-						if(errExpand != nil || newDep == nil) {
+						if(errExpand != nil || newDep == nil || len(newDep) == 0)  {
 							ui.Error("Error: Provider " + dep["provider"].(string) + " didnt expand " + dep["name"].(string) + "@" + dep["version"].(string))
 							ui.Error(errExpand.Error())
+							channel <- 0
+							return;
 						}
 		
 						newDep["expanded"] = true
-						lock.Lock()
 						cacheExpanded[newDep["url"].(string)] = newDep
-						lock.Unlock()
 					} else {
 						newDep = cacheExpanded[newDep["url"].(string)]
-						lock.RUnlock()
 					}
 				}
+				lock.Unlock()
 
 				depList[index] = newDep
 
@@ -85,7 +91,10 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 	}
 
 	for _,_ = range depList {
-		<-channel
+		i := <-channel
+		if(i == 0) {
+			return nil
+		}
 	}
 
 	return depList
@@ -134,12 +143,21 @@ func InstallProject(path string) error {
 	if(err != nil) {
 		return err
 	}
+	if(depList == nil) {
+		return errors.New("Failed to get dependancy list")
+	}
 
 	ui.Title("Expand dependency list...")
 	depList = expandDepList(depList)
+	if(depList == nil) {
+		return errors.New("Failed to expand dependancy list")
+	}
 	
 	ui.Title("Build dependency list...")
 	depList = provider.BuildDependencyTree(depList)
+	if(depList == nil) {
+		return errors.New("Failed to build dependancy list")
+	}
 	
 	os.MkdirAll(providerConfig.Config.Default.InstallPath, os.ModePerm);
 	
@@ -151,6 +169,8 @@ func InstallProject(path string) error {
 	if(err != nil) {
 		return err
 	}
+
+	ui.Title("Installation done ❤️")
 	
 	return nil
 }
