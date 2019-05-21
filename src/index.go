@@ -26,6 +26,32 @@ func setProvider(cmd *cobra.Command, args []string) {
 	}
 }
 
+// var bootstrapCmd = &cobra.Command{
+// 	Use:   "bootstrap [--provider=]",
+// 	Short: "bootstrap a new project",
+// 	Long:  `bootstrap a new project based on the model of your specific provider`,
+// 	PreRun: setProvider,
+// 	Run: func(cmd *cobra.Command, args []string) {
+// 		err := AddDependency(".", args)
+// 		if(err != nil) {
+// 			ui.Error(err.Error())
+// 		} 
+// 	},
+// }
+
+// var bCmd = &cobra.Command{
+// 	Use:   "b [--provider=]",
+// 	Short: "bootstrap a new project",
+// 	Long:  `bootstrap a new project based on the model of your specific provider`,
+// 	PreRun: setProvider,
+// 	Run: func(cmd *cobra.Command, args []string) {
+// 		err := AddDependency(".", args)
+// 		if(err != nil) {
+// 			ui.Error(err.Error())
+// 		} 
+// 	},
+// }
+
 var installCmd = &cobra.Command{
 	Use:   "install [--provider=] package-name",
 	Short: "install package",
@@ -173,6 +199,7 @@ func main() {
 			binFolder[file.Name()] = true
 		}
 	}
+
 	packageConfig := new(provider.GupmEntryPoint)
 	utils.ReadJSON("./gupm.json", &packageConfig)
 	aliases := packageConfig.Cli.Aliases
@@ -186,11 +213,15 @@ func main() {
 	installCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	rootCmd.AddCommand(iCmd)
 	iCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	
+	c := ""
+	if(len(os.Args) > 1) {
+		c = os.Args[1]
+	}
 
-	c := os.Args[1]
 	script := ScriptExists(c)
 	if( c == "install" || c == "make" || c == "uninstall" ||
-		c == "i" || c == "m" || c == "u") {
+		c == "i" || c == "m" || c == "u" || c == "") {
 			Execute();
 			if (script != "") {
 				executeFile(script, os.Args)
@@ -201,6 +232,10 @@ func main() {
 		binFile(c, os.Args[2:])	
 	} else if (script != "") {
 		executeFile(script, os.Args)
+	} else if (c == "") {
+		fmt.Println("Welcome to GuPM version 1.0.0 \ntry 'g help' for a list of commands. Try 'g filename' to execute a file.")
+	} else {
+		fmt.Println("Command not found. Try 'g help' or check filename.")
 	}
 
 	ui.Draw()

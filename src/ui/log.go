@@ -63,9 +63,7 @@ func init() {
 
 	go (func() {
 		for _ = range time.Tick(300 * time.Millisecond) {
-			if(redrawNeeded) {
-				Draw()
-			}
+			Draw()
 		}
 	})()
 }
@@ -82,6 +80,10 @@ func drawLog() {
 }
 
 func Draw() {
+	if(!redrawNeeded) {
+		return;
+	}
+
 	moveCursor(1,1)
 	fmt.Print("\033[2J")
 	

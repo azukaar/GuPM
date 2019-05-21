@@ -18,11 +18,8 @@ mysql -u <user> -p -e "select * from schema.table" -- Does NOT work, MySQL has o
 How to install : 
 
 ```
--- LINUX 
+-- LINUX or Mac OS
 curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash 
-
--- MAC OS
-curl -fsSL  https://azukaar.github.io/GuPM/install_mac.sh | sudo bash
 ```
 
 ## Dependency Manager
