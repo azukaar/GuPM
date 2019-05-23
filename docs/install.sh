@@ -1,6 +1,8 @@
-if [ "$(uname)" == "Darwin" ]; then
+#!/bin/sh
+
+if [ "$(uname)" = "Darwin" ]; then
     curl --output gupm.tar.gz https://azukaar.github.io/GuPM/gupm_mac.tar.gz       
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+elif [ "$(uname)" = "Linux" ]; then
     curl --output gupm.tar.gz https://azukaar.github.io/GuPM/gupm.tar.gz
 fi
 
