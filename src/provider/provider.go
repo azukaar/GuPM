@@ -6,11 +6,14 @@ import (
 	"../jsVm"
 	"../ui"
 	"os"
+	"regexp"
+	"io/ioutil"
 )
 
 var Provider string
 var ProviderPath string
 var providerConfigCache = make(map[string]*GupmEntryPoint)
+var linkHasErrored = false
 
 func InitProvider(provider string) error {
 	Provider = provider
@@ -338,7 +341,27 @@ func installDependencySubFolders(path string, depPath string) {
 			os.MkdirAll(folderPath, os.ModePerm);
 			installDependencySubFolders(path + "/" + file.Name(), folderPath)
 		} else {
-			os.Link(path + "/" + file.Name(), depPath + "/" + file.Name())
+			err := os.Link(path + "/" + file.Name(), depPath + "/" + file.Name())
+			isFileExists, _ := regexp.MatchString(`file exists$`, err.Error())
+
+			if(err != nil && !isFileExists) {
+				if(!linkHasErrored) {
+					ui.Error(err.Error())
+					ui.Error("Error, cannot use hard link on your system. Falling back to copying file (Will be slower!)")
+					linkHasErrored = true
+				}
+				input, err := ioutil.ReadFile(path + "/" + file.Name())
+        if err != nil {
+                ui.Error(err.Error())
+                return
+        }
+
+        err = ioutil.WriteFile(depPath + "/" + file.Name(), input, 0644)
+        if err != nil {
+                ui.Error(err.Error())
+                return
+        }
+			}
 		}
 	}
 }
