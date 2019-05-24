@@ -31,6 +31,7 @@ func Run(path string, input map[string]interface {}) (otto.Value, error) {
 	lock.Unlock()
 
 	vm := otto.New()
+	vm.Interrupt = make(chan func(), 1) 
 	Setup(vm)
 
 	for varName, varValue := range input {
@@ -40,9 +41,7 @@ func Run(path string, input map[string]interface {}) (otto.Value, error) {
 	ret, err = vm.Run(script)
 
 	if(err != nil) {
-		if ottoError, ok := err.(*otto.Error); ok {
-		  ui.Error(ottoError.String()) //  line numbers 
-		}    
+		ui.Error(err.Error())
 		return otto.UndefinedValue(),  errors.New("Error occured while executing the GS code")
 	}
 
@@ -116,6 +115,10 @@ func Setup(vm *otto.Otto) {
 		result, _ :=  vm.ToValue(true)
 		return result
 	})
+	
+	vm.Set("exit", func() {
+		os.Exit(1)
+	})
 
 	vm.Set("saveJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
@@ -130,6 +133,33 @@ func Setup(vm *otto.Otto) {
 	vm.Set("mkdir", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		os.MkdirAll(path, os.ModePerm)
+		result, _ :=  vm.ToValue(true)
+		return result
+	})
+	
+	vm.Set("fileExists", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		res := utils.FileExists(path)
+		result, _ :=  vm.ToValue(res)
+		return result
+	})
+
+	vm.Set("waitForInput", func(call otto.FunctionCall) otto.Value {
+		msg, _ := call.Argument(0).ToString()
+		res := ui.WaitForInput(msg)
+		result, _ :=  vm.ToValue(res)
+		return result
+	})
+
+	vm.Set("waitForMenu", func(call otto.FunctionCall) otto.Value {
+		msg, _ := call.Argument(0).Export()
+		res := ui.WaitForMenu(msg.([]string))
+		result, _ :=  vm.ToValue(res)
+		return result
+	})
+
+	vm.Set("waitForKey", func(call otto.FunctionCall) otto.Value {
+		ui.WaitForKey()
 		result, _ :=  vm.ToValue(true)
 		return result
 	})

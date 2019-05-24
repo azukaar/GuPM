@@ -6,7 +6,9 @@ import (
 	"github.com/gosuri/uilive"
 	"time"
 	"sync"
-	// "io"
+	"bufio"
+	"strconv"
+	"os"
 )
 
 var errorList = make([]string, 0)
@@ -23,6 +25,8 @@ var errorLock = sync.RWMutex{}
 
 var redrawNeeded = false
 var running = true
+
+var isWaitingForInput = false
 
 func Title(log string) {
     _ = color.Green
@@ -108,8 +112,54 @@ func Stop() {
 	Draw()
 }
 
+func WaitForKey() {
+	isWaitingForInput = true
+	logBox.Flush()
+
+	reader := bufio.NewReader(os.Stdin)
+	reader.ReadRune()
+	isWaitingForInput = false
+}
+
+func WaitForInput(msg string) string {
+	isWaitingForInput = true
+	logBox.Flush()
+	fmt.Printf(msg)
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for scanner.Scan() {
+		var result = scanner.Text()
+		isWaitingForInput = false
+		return result
+	}
+
+	if scanner.Err() != nil {
+		
+	}
+
+	return ""
+}
+
+func WaitForMenu(msgs []string) int {
+	lgth := len(msgs)
+	i := 1
+	res := 0
+
+	for _, msg := range msgs {
+		fmt.Println(strconv.Itoa(i)+" : " + msg)
+		i++
+	}
+
+	for res <= 0 || res > lgth {
+		resString := WaitForInput("Please input choice 1 - " + strconv.Itoa(lgth) + ": ")
+		res, _ = strconv.Atoi(resString)
+	}
+	return res
+}
+
 func Draw() {
-	if(!redrawNeeded) {
+	if(!redrawNeeded || isWaitingForInput) {
 		return;
 	}
 

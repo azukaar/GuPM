@@ -16,7 +16,33 @@ func SaveDependencyList(depList []map[string]interface{}) error {
 }
 
 func Bootstrap(path string) {
+	if(utils.FileExists(path + "/gupm.json")) {
+		ui.Error("A project already exists in this folder. Aborting bootstrap.")
+		return
+	}
+
+	name := ui.WaitForInput("Please enter the name of the project: ")
+	description := ui.WaitForInput("Enter a description: ")
+	author := ui.WaitForInput("Enter the author: ")
+	licence := ui.WaitForInput("Enter the licence (ISC): ")
 	
+	if (name == "") {
+		ui.Error("Name cannot be empty. Try again")
+		return
+	} else {
+		if(licence == "") {
+			licence = "ISC"
+		}
+
+		fileContent := `{
+	"name": "` + name + `",
+	"name": "0.0.1",
+	"description": "` + description + `",
+	"author": "` + author + `",
+	"licence": "` + licence + `"
+}`
+		ioutil.WriteFile(path + "/gupm.json", []byte(fileContent), os.ModePerm)
+	}
 }
 
 func GetPackageConfig(entryPoint string) map[string]interface {} {
