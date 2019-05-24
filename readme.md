@@ -77,6 +77,10 @@ g i -g brew://mysql
 mysql ....
 ```
 
+### New projects
+
+In order to simply bootstrap a new project you can run `g bootstrap` you can also use `b` and add a provider `g b -p npm`
+
 ### Write GuPM scripts
 
 You can use GuScript to write bash-like files, used for setting up your project, or use it, or anything really.
