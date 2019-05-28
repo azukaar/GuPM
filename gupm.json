@@ -1,17 +1,18 @@
 {	
-     "name": "gupm:gupm",
+    "name": "gupm:gupm",
     "version": "1.0.0",
     "dependencies": {
         "default" : {
             "go://github.com/spf13/cobra": "",
-            "git://github.com/robertkrimen/otto": "",
-            "git://github.com/otiai10/copy": "",	
-             "git://github.com/Masterminds/semver": "",	
+            "go://github.com/robertkrimen/otto": "",
+            "go://github.com/otiai10/copy": "",	
+            "go://github.com/Masterminds/semver": "",	
             "go://github.com/fatih/color": "",	
             "go://github.com/gosuri/uilive": "",	
-            "go://github.com/mitchellh/go-homedir": ""	
+            "go://github.com/mitchellh/go-homedir": "",
+            "go://gopkg.in/sourcemap.v1": ""
         }	
-    },	
+    },
     "cli": {	
         "aliases": {	
             "start" : "./build/dg"	

@@ -8,4 +8,5 @@ cache
 sampleproject
 test.gs
 package.json
+go_modules
 gupm_modules

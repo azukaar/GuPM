@@ -1,20 +1,26 @@
 var name = Dependency.name;
 var version = Dependency.version;
 
-
 if(name.match(/^github/)) {
-    Dependency.url = 'https://' + name + '/archive/master.zip'
+    var realname = name.match(/^github.com\/([\w\.\-\_]+\/[\w\.\-\_]+)/)
+    Dependency.url = 'https://github.com/' + realname[1] + '/archive/'+(version || 'master')+'.zip'
 } else if(name.match(/^gopkg.in/)) {
-    versionMatch = name.match(/([\w\.\-\_]+\/[\w\.\-\_]+)\.v(\d+\.?[\d+]?\.?[\d+]?)$/);
-    packageName = versionMatch[1].replace(/^gopkg\.in/, 'go-yaml')
+    var payload = httpGet("https://"+name)
+    versionMatch = payload.match(/https:\/\/github.com\/([\w\.\-\_]+\/[\w\.\-\_]+)\/tree\/([\w\.\-\_]+)/);
+
+    if(!versionMatch) {
+        console.error("Couldn't resolve " + name)
+        exit()
+    }
+
+    packageName = versionMatch[1]
     packageVersion = versionMatch[2]
-    var url = 'https://api.github.com/repos/' + packageName + '/branches';
-
-    var payload = httpGet(url);
-    // console.log(payload);
+    
+    // Dependency.name = 'github.com/' + packageName;
+    Dependency.version = packageVersion;
+    Dependency.url = 'https://github.com/' + packageName + '/archive/'+packageVersion+'.zip'
+} else {
+    Dependency.url = ""
 }
-
-
-// https://github.com/src-d/go-git/archive/6e931e4fdefa202c76242109453447182ae16444.zip
 
 Dependency;

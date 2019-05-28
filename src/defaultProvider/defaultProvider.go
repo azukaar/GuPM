@@ -80,7 +80,16 @@ func PostGetDependency(provider string, name string, version string, url string,
 }
 
 func GetDependencyList(config map[string]interface {}) []map[string]interface {} {
-	depList := (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {})
+	if(config == nil) {
+		ui.Error("no config found. Please bootstrap the project with `g bootstrap`")
+		return nil
+	}
+	depEnv, ok := config["dependencies"].(map[string]interface {})
+	if(!ok) {
+		ui.Log("no dependencies")
+		return nil
+	}
+	depList := depEnv["default"].(map[string]interface {})
 	result := make([]map[string]interface {}, 0)
 	for name, value := range depList {
 		dep := utils.BuildDependencyFromString("gupm", name)

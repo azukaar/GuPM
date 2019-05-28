@@ -3,10 +3,11 @@ package jsVm
 import (
 	"../utils"
 	"../ui"
-	"io/ioutil"
-	"os"
 	"errors"
 	"sync"
+	"io/ioutil"
+	"os"
+	"time"
 	"encoding/json"
 	"github.com/robertkrimen/otto"
 	"github.com/Masterminds/semver"
@@ -49,10 +50,17 @@ func Run(path string, input map[string]interface {}) (otto.Value, error) {
 }
 
 func Setup(vm *otto.Otto) {	
-	vm.Set("httpGet", func(call otto.FunctionCall) otto.Value {
+	vm.Set("httpGetJson", func(call otto.FunctionCall) otto.Value {
 		url, _ := call.Argument(0).ToString()
 		res := utils.HttpGet(url)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(res)))
+		return result
+	})
+
+	vm.Set("httpGet", func(call otto.FunctionCall) otto.Value {
+		url, _ := call.Argument(0).ToString()
+		res := utils.HttpGet(url)
+		result, _ :=  vm.ToValue(string(res))
 		return result
 	})
 
@@ -60,6 +68,13 @@ func Setup(vm *otto.Otto) {
 		glob, _ := call.Argument(0).ToString()
 		res, _ := utils.Dir(glob)
 		result, _ :=  vm.ToValue(res)
+		return result
+	})
+	
+	vm.Set("osSleep", func(call otto.FunctionCall) otto.Value {
+		timeMs, _ := call.Argument(0).ToInteger()
+		time.Sleep(time.Duration(timeMs) * time.Millisecond)
+		result, _ :=  vm.ToValue(true)
 		return result
 	})
 

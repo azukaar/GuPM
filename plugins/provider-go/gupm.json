@@ -4,7 +4,7 @@
     "config": {
         "default": {
             "entrypoint": "go.mod",
-            "installPath": "go_modules"
+            "installPath": "go_modules/src"
         }
     }
 }

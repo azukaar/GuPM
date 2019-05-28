@@ -5,15 +5,14 @@ import (
 	"../utils"
 	"../jsVm"
 	"../ui"
-	"os"
-	"regexp"
-	"io/ioutil"
+	"sync"
 )
 
 var Provider string
 var ProviderPath string
 var providerConfigCache = make(map[string]*GupmEntryPoint)
 var linkHasErrored = false
+var pConfigLock = sync.RWMutex{}
 
 func InitProvider(provider string) error {
 	Provider = provider
@@ -43,6 +42,7 @@ func GetProviderConfig(providerName string) *GupmEntryPoint {
 		providerConfigPath = utils.DIRNAME() + "/plugins/provider-" + providerName + "/gupm.json"
 	}
 
+	pConfigLock.Lock()
 	if(providerConfigCache[providerName] == nil) {
 		config := new(GupmEntryPoint)
 		err := utils.ReadJSON(providerConfigPath, config)
@@ -52,9 +52,13 @@ func GetProviderConfig(providerName string) *GupmEntryPoint {
 		}
 
 		providerConfigCache[providerName] = config
+		
+		pConfigLock.Unlock()
 		return config
 	} else {
-		return providerConfigCache[providerName]
+		config := providerConfigCache[providerName]
+		pConfigLock.Unlock()
+		return config
 	}
 }
 
@@ -206,26 +210,6 @@ func GetDependency(provider string, name string, version string, url string, pat
 	}
 }
 
-func BinaryInstall(path string) (error) {
-	os.RemoveAll(".bin")
-	var file = utils.FileExists(ProviderPath + "/BinaryInstall.js")
-	if(file) {
-		input := make(map[string]interface {})
-		input["Destination"] = ".bin"
-		input["Source"] = "node_modules"
-
-		res, err :=  jsVm.Run(ProviderPath + "/BinaryInstall.js", input)
-		if(err != nil) {
-			return err
-		}
-
-		_, err1 := res.ToString()
-		return err1
-	} else {
-		return nil
-	}
-}
-
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + provider
 	var file = utils.FileExists(depProviderPath + "/PostGetDependency.js")
@@ -250,131 +234,3 @@ func PostGetDependency(provider string, name string, version string, url string,
 	}
 }
 
-func eliminateRedundancy(tree []map[string]interface {}, path map[string]bool) []map[string]interface {} {
-	var cleanTree = make([]map[string]interface {}, 0)
-	for index, dep := range tree {
-		if(dep["name"] != nil) {
-			_ = index
-			depKey := dep["name"].(string) + "@" + dep["version"].(string)
-			if(path[depKey] != true) {
-				cleanTree = append(cleanTree, dep)
-			}
-		}
-	}
-	
-	for index, dep := range cleanTree {
-		if(dep["name"] != nil) {
-			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
-
-			if(ok) {
-				depKey := dep["name"].(string) + "@" + dep["version"].(string)
-				newPath := make(map[string]bool)
-				for key, value := range path {
-					newPath[key] = value
-				}
-				newPath[depKey] = true
-				newSubTree := eliminateRedundancy(nextDepList, newPath)
-				cleanTree[index]["dependencies"] = newSubTree
-			}
-		}
-	}
-	return cleanTree
-}
-
-func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]interface {}) ([]map[string]interface {}, []map[string]interface {}) {
-	var cleanTree = make([]map[string]interface {}, 0)
-
-	for index, dep := range subTree {
-		var rootDeps = make(map[string]string)
-
-		for _, dep := range tree {
-			rootDeps[dep["name"].(string)] = dep["version"].(string)
-		}
-
-		if(rootDeps[dep["name"].(string)] == "") {
-			tree = append(tree, dep)
-
-			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
-	
-			if(ok) {
-				newTree, newSubTree := flattenDependencyTree(tree, nextDepList)
-				tree = newTree
-				subTree[index]["dependencies"] = newSubTree
-			}
-		} else if(rootDeps[dep["name"].(string)] != dep["version"].(string)) {
-			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
-	
-			if(ok) {
-				newTree, newSubTree := flattenDependencyTree(tree, nextDepList)
-				tree = newTree
-				subTree[index]["dependencies"] = newSubTree
-			}
-
-			cleanTree = append(cleanTree, subTree[index])
-		}
-	}
-
-	return tree, cleanTree
-}
-
-func BuildDependencyTree(tree []map[string]interface {}) []map[string]interface {} {
-	cleanTree := eliminateRedundancy(tree, make(map[string]bool))
-
-	for index, dep := range cleanTree {
-		nextDepList, ok := dep["dependencies"].([]map[string]interface {})
-
-		if(ok) {
-			newCleanTree, newDepList := flattenDependencyTree(cleanTree, nextDepList)
-			cleanTree = newCleanTree
-			cleanTree[index]["dependencies"] = newDepList
-		}
-	}
-	return cleanTree
-}
-
-func installDependencySubFolders(path string, depPath string) {
-	files := utils.ReadDir(path)
-
-	for _, file := range files {
-		if(file.IsDir()) {
-			folderPath := depPath + "/" + file.Name()
-			os.MkdirAll(folderPath, os.ModePerm);
-			installDependencySubFolders(path + "/" + file.Name(), folderPath)
-		} else {
-			isFileExists := false
-			err := os.Link(path + "/" + file.Name(), depPath + "/" + file.Name())
-			if(err != nil) {
-				isFileExists, _ = regexp.MatchString(`file exists$`, err.Error())
-			}
-
-			if(err != nil && !isFileExists) {
-				if(!linkHasErrored) {
-					ui.Error(err.Error())
-					ui.Error("Error, cannot use hard link on your system. Falling back to copying file (Will be slower!)")
-					linkHasErrored = true
-				}
-				input, err := ioutil.ReadFile(path + "/" + file.Name())
-        if err != nil {
-                ui.Error(err.Error())
-                return
-        }
-
-        err = ioutil.WriteFile(depPath + "/" + file.Name(), input, 0644)
-        if err != nil {
-                ui.Error(err.Error())
-                return
-        }
-			}
-		}
-	}
-}
-
-func InstallDependency(path string, dep map[string]interface {}) {
-	depPath := path + "/" + dep["name"].(string)
-	// if(utils.FileExists(depPath)) {
-	// 	// TODO: check version
-	// } else {
-	// }
-	os.MkdirAll(depPath, os.ModePerm);
-	installDependencySubFolders(dep["path"].(string), depPath)
-}

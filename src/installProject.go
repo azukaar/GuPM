@@ -37,6 +37,13 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 					ui.Error(errH.Error())
 					hdir = "."
 				}
+				_, ok := newDep["url"].(string)
+				if(!ok || newDep["url"].(string) == "") {
+					ui.Error("Cannot resolve : " + newDep["name"].(string))
+					channel <- 1
+					return;
+				}
+
 				newDep["path"] = hdir + "/.gupm/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
 				if(!utils.FileExists(newDep["path"].(string))) {
@@ -106,18 +113,27 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 	return depList
 }
 
-func installDep(path string, depList []map[string]interface {}) {
+func installDep(path string, depList []map[string]interface {}) map[string]string {
+	installPaths := make(map[string]string)
+	installPathsLock := sync.RWMutex{}
+
 	var channel = make(chan int)
-	ui.Log("Installing " + path)
 	for index, dep := range depList {
 		go (func(channel chan int, index int, dep map[string]interface {}){
 			depProviderConfig := provider.GetProviderConfig(dep["provider"].(string))
-			provider.InstallDependency(path, dep)
+			ui.Log("Installing " + path + "/" + depProviderConfig.Config.Default.InstallPath)
+			provider.InstallDependency(path + "/" + depProviderConfig.Config.Default.InstallPath, dep)
+
+			if(path == ".") {
+				installPathsLock.Lock()
+				installPaths[dep["provider"].(string)] = depProviderConfig.Config.Default.InstallPath
+				installPathsLock.Unlock()
+			}
 
 			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 
 			if(ok) {
-				installDep(path + "/" + depList[index]["name"].(string) + "/" + depProviderConfig.Config.Default.InstallPath, nextDepList)
+				installDep(path + "/" + depList[index]["name"].(string), nextDepList)
 			}
 			channel <- 1
 		})(channel, index, dep)
@@ -125,6 +141,7 @@ func installDep(path string, depList []map[string]interface {}) {
 	for _,_ = range depList {
 		<-channel
 	}
+	return installPaths
 }
 
 var providerConfig *provider.GupmEntryPoint
@@ -168,10 +185,10 @@ func InstallProject(path string) error {
 	os.MkdirAll(providerConfig.Config.Default.InstallPath, os.ModePerm);
 	
 	ui.Title("Install dependencies...")
-	installDep(providerConfig.Config.Default.InstallPath, depList)
+	installPaths := installDep(".", depList)
 
 	ui.Title("Install Binaries...")
-	err = provider.BinaryInstall(providerConfig.Config.Default.InstallPath)
+	err = provider.BinaryInstall(installPaths)
 	if(err != nil) {
 		return err
 	}
