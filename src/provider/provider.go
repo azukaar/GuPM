@@ -341,8 +341,11 @@ func installDependencySubFolders(path string, depPath string) {
 			os.MkdirAll(folderPath, os.ModePerm);
 			installDependencySubFolders(path + "/" + file.Name(), folderPath)
 		} else {
+			isFileExists := false
 			err := os.Link(path + "/" + file.Name(), depPath + "/" + file.Name())
-			isFileExists, _ := regexp.MatchString(`file exists$`, err.Error())
+			if(err != nil) {
+				isFileExists, _ = regexp.MatchString(`file exists$`, err.Error())
+			}
 
 			if(err != nil && !isFileExists) {
 				if(!linkHasErrored) {
