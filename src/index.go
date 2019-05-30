@@ -133,8 +133,12 @@ func executeFile(path string, args []string) {
 	next := ""
 	input := make(map[string]interface {})
 	input["$0"] = strings.Join(args," ")
+
+	if(len(args) > 2) {
+		args = args[2:]
+	}
 	
-	for _, value := range args[2:] {	
+	for _, value := range args {	
 		nameCheck := regexp.MustCompile(`^-(\w+)`)
 		tryname := nameCheck.FindString(value)
 		if(tryname != "") {
