@@ -57,6 +57,20 @@ g install -p npm react@1 #will save in package.json
 ### remove
 
 ## Config Manager
+
+## Env Manager
+
+```
+g env A=B env
+....
+A=B
+```
+
+## .gupm_rc.gs
+
+equivalent of .bash_rc but written in .gs.
+Put at the root of your folder, will be executed every time you execute `g ...` in your folder
+
 ## Script Manager
 
 GuPM also allow you to manage your CLI application.

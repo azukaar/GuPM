@@ -1,0 +1,1 @@
+env("GOPATH", run("go", ["env", "GOROOT"]) + ":" + pwd() + "/go_modules")

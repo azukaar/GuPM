@@ -49,7 +49,7 @@ func JsonExport(input interface {}) interface {} {
 	}
 }
 
-func RunCommand(toRun string, args []string) {
+func buildCmd(toRun string, args []string) *exec.Cmd{
 	isNode := regexp.MustCompile(`.js$`)
 	var cmd *exec.Cmd
 	bashargs := []string{}
@@ -64,11 +64,25 @@ func RunCommand(toRun string, args []string) {
 		cmd = exec.Command(toRun, bashargs...)	
 	}
 
+	return cmd
+}
+
+func ExecCommand(toRun string, args []string) error {
+	cmd := buildCmd(toRun, args)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
-
 	cmd.Run()
+	return nil
+}
+
+func RunCommand(toRun string, args []string) (string, error) {
+	cmd := buildCmd(toRun, args)
+	res, err := cmd.Output()
+	if(err != nil) {
+		return "", err
+	}
+	return string(res), nil
 }
 
 func BuildDependencyFromString(defaultProvider string, dep string) map[string]interface {} {

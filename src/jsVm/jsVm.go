@@ -121,13 +121,52 @@ func Setup(vm *otto.Otto) {
 		return result
 	})
 
+	vm.Set("pwd", func(call otto.FunctionCall) otto.Value {
+		dir, _ := os.Getwd()
+		result, _ :=  vm.ToValue(dir)
+		return result
+	})
+
+	vm.Set("env", func(call otto.FunctionCall) otto.Value {
+		name, _ := call.Argument(0).ToString()
+		value, _ := call.Argument(1).ToString()
+
+		if(value == "undefined") {
+			result, _ :=  vm.ToValue(os.Getenv(name))
+			return result
+		} else {
+			os.Setenv(name, value)
+			res, _ := vm.ToValue(true)
+			return res
+		}
+	})
+
 	vm.Set("exec", func(call otto.FunctionCall) otto.Value {
 		exec, _ := call.Argument(0).ToString()
 		args, _ := call.Argument(1).Export()
+		_, ok := args.([]string)
+		if(!ok) {
+			args = make([]string, 0)
+		}
 
-		utils.RunCommand(exec, args.([]string))
+		utils.ExecCommand(exec, args.([]string))
 
 		result, _ :=  vm.ToValue(true)
+		return result
+	})
+
+	vm.Set("run", func(call otto.FunctionCall) otto.Value {
+		exec, _ := call.Argument(0).ToString()
+		args, _ := call.Argument(1).Export()
+		_, ok := args.([]string)
+		if(!ok) {
+			args = make([]string, 0)
+		}
+
+		res, _ := utils.RunCommand(exec, args.([]string))
+		res = res[:len(res)-1]
+
+		result, _ :=  vm.ToValue(res)
 		return result
 	})
 	

@@ -161,24 +161,28 @@ func executeFile(path string, args []string) {
 func binFile(name string, args []string) {
 	path := "./.bin/"+name
 	realPath, _ := filepath.EvalSymlinks(path)
-	utils.RunCommand(realPath, args)
+	utils.ExecCommand(realPath, args)
 }
 
 func main() {
 	start := time.Now()
 
 	if runtime.GOOS == "darwin" {
-		utils.RunCommand("ulimit", []string{"-n", "2048"})
+		utils.ExecCommand("ulimit", []string{"-n", "2048"})
 	}
 	
 	binFolder := make(map[string]bool)
+
+	if(utils.FileExists(".gupm_rc.gs")) {
+		executeFile(".gupm_rc.gs", os.Args)
+	}
 
 	if(utils.FileExists(".bin")) {
 		for _, file := range utils.ReadDir(".bin") {
 			binFolder[file.Name()] = true
 		}
 	}
-
+	
 	packageConfig := new(provider.GupmEntryPoint)
 	errConfig := utils.ReadJSON(utils.DIRNAME() + "/gupm.json", &packageConfig)
 	if(errConfig != nil) {
@@ -213,8 +217,20 @@ func main() {
 			if (script != "") {
 				executeFile(script, os.Args)
 			}
+	} else if (c == "env" || c == "e") {
+		toProcess := os.Args[2:]
+		re := regexp.MustCompile(`([\w\-\_]+)=([\w\-\_]+)`)
+		isEnv := re.FindAllStringSubmatch(toProcess[0], -1)
+		for(isEnv != nil) {
+			name := isEnv[0][1]
+			value := isEnv[0][2]
+			os.Setenv(name, value)
+			toProcess = toProcess[1:]
+			isEnv = re.FindAllStringSubmatch(toProcess[0], -1)
+		}
+		utils.ExecCommand(toProcess[0], toProcess[1:])
 	} else if (aliases[c] != nil) {
-		utils.RunCommand(aliases[c].(string), os.Args[2:])	
+		utils.ExecCommand(aliases[c].(string), os.Args[2:])	
 	} else if (binFolder[c] == true) {
 		binFile(c, os.Args[2:])	
 	} else if (script != "") {

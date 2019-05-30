@@ -2,7 +2,6 @@ package main
 
 import (
 	"./provider"
-	"os"
 	"errors"
 	"./utils"
 	"./ui"
@@ -15,7 +14,6 @@ var lock = sync.RWMutex{}
 
 func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}) {
 	channel := make(chan int)
-	// todo := len(depList)
 	
 	for index, dep := range depList {
 		go (func(channel chan int, index int, dep map[string]interface {}) {
@@ -181,9 +179,7 @@ func InstallProject(path string) error {
 	if(depList == nil) {
 		return errors.New("Failed to build dependancy list")
 	}
-	
-	os.MkdirAll(providerConfig.Config.Default.InstallPath, os.ModePerm);
-	
+
 	ui.Title("Install dependencies...")
 	installPaths := installDep(".", depList)
 
