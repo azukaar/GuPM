@@ -30,7 +30,7 @@ jobs:
 
       - run:
           name: Install GuPM
-          command: curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash
+          command: curl -fsSL  https://azukaar.github.io/GuPM/install.sh | bash
 
       - run:
           name: Build
