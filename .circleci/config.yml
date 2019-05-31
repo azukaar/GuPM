@@ -1,33 +1,6 @@
 version: 2
 jobs:
-  macbuild:
-    macos:
-      xcode: "9.0"
-
-    steps:
-      - checkout
-      - run: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-      - run: brew install go
-
-      - run:
-          name: Install GuPM
-          command: curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash
-
-      - run:
-          name: Make
-          command: g make
-
-      - run:
-          name: Build
-          command: g publish mac
-      
-      - run: git config user.email "nobody@circleci.com"
-      - run: git config user.name "Circle Ci"
-      - run: git add docs
-      - run: git commit -m "[skip ci] Mac Release"
-      - run: git push origin master
-
-  linuxbuild:
+  build:
     docker:
       - image: golang:1.12.5-stretch
 
@@ -43,25 +16,26 @@ jobs:
           command: g make
 
       - run:
-          name: Build
+          name: Build Linux
           command: g publish
+      - run:
+          name: Build Mac
+          command: g publish mac
+      - run:
+          name: Build Windows
+          command: g publish windows
       
       - run: git config user.email "nobody@circleci.com"
       - run: git config user.name "Circle Ci"
       - run: git add docs
-      - run: git commit -m "[skip ci] Linux Release"
+      - run: git commit -m "[skip ci] Release"
       - run: git push origin master
 
 workflows:
   version: 2
   build-all:
     jobs:
-      - macbuild:
-          filters:
-            branches:
-              only:
-                - master
-      - linuxbuild:
+      - build:
           filters:
             branches:
               only:
