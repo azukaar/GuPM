@@ -22,9 +22,6 @@ jobs:
       - run: git push origin master
 
   linuxbuild:
-    branches:
-      only:
-
     docker:
       - image: golang:1.12.5-stretch
 
@@ -46,6 +43,9 @@ jobs:
 workflows:
   version: 2
   build-all:
+    branches:
+      only:
+        - master
     jobs:
       - macbuild
       - linuxbuild
