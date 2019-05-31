@@ -16,6 +16,7 @@
     },
     "cli": {	
         "aliases": {	
+            "buildwi" : "go run windows_install.go",
             "start" : "./build/dg"
         }	
     },	

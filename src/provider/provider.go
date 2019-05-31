@@ -174,7 +174,7 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 		}
 
 		toExport, _ := res.Export()
-		resObj := utils.JsonExport(toExport).(map[string] interface {})
+		resObj := jsVm.JsonExport(toExport).(map[string] interface {})
 
 		if(resObj == nil) {
 			ui.Error("ERROR Failed to resolve" + dependency["name"].(string) + ". Trying again.")

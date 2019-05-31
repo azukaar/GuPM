@@ -188,7 +188,7 @@ func main() {
 	}
 	
 	packageConfig := new(provider.GupmEntryPoint)
-	errConfig := utils.ReadJSON(utils.DIRNAME() + "/gupm.json", &packageConfig)
+	errConfig := utils.ReadJSON("gupm.json", &packageConfig)
 	if(errConfig != nil) {
 		fmt.Println("Config file not found.")
 	}

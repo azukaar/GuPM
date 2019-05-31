@@ -178,7 +178,7 @@ func Setup(vm *otto.Otto) {
 	vm.Set("writeJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		toExport, _ := call.Argument(1).Export()
-		file := utils.JsonExport(toExport).(map[string] interface {})
+		file := JsonExport(toExport).(map[string] interface {})
 		bytes, _ := json.Marshal(file)
 		err := ioutil.WriteFile(path, bytes, os.ModePerm)
 		if(err != nil) {
@@ -337,3 +337,29 @@ func Setup(vm *otto.Otto) {
 		}
 	})
 } 
+
+func JsonExport(input interface {}) interface {} {
+	asMap, isMap := input.(map[string] interface {})
+	asSlice, isSlice := input.([] interface {})
+	if(isMap) {
+		for index, value := range asMap {
+			asValue, ok := value.(otto.Value)
+			if(ok) {
+				exported, _ := asValue.Export()
+				asMap[index] = JsonExport(exported)
+			}
+		}
+		return asMap
+	} else if(isSlice) {
+		for index, value := range asSlice {
+			asValue, ok := value.(otto.Value)
+			if(ok) {
+				exported, _ := asValue.Export()
+				asSlice[index] = JsonExport(exported)
+			}
+		}
+		return asSlice
+	} else {
+		return input
+	}
+}

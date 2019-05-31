@@ -22,6 +22,11 @@ How to install :
 curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash 
 ```
 
+```
+-- Windows
+Simply execute : https://azukaar.github.io/GuPM/windows_install.exe
+```
+
 ## Dependency Manager
 
 ### Make

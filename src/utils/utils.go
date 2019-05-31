@@ -9,7 +9,6 @@ import (
 	"../ui"
 	"os/exec"
 	"io/ioutil"
-	"github.com/robertkrimen/otto"
     "path/filepath"
 )
 
@@ -21,32 +20,6 @@ type Dependency struct {
 	Name string
 	Provider string
 	Version string
-}
-
-func JsonExport(input interface {}) interface {} {
-	asMap, isMap := input.(map[string] interface {})
-	asSlice, isSlice := input.([] interface {})
-	if(isMap) {
-		for index, value := range asMap {
-			asValue, ok := value.(otto.Value)
-			if(ok) {
-				exported, _ := asValue.Export()
-				asMap[index] = JsonExport(exported)
-			}
-		}
-		return asMap
-	} else if(isSlice) {
-		for index, value := range asSlice {
-			asValue, ok := value.(otto.Value)
-			if(ok) {
-				exported, _ := asValue.Export()
-				asSlice[index] = JsonExport(exported)
-			}
-		}
-		return asSlice
-	} else {
-		return input
-	}
 }
 
 func buildCmd(toRun string, args []string) *exec.Cmd{
