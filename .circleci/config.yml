@@ -24,7 +24,7 @@ jobs:
       - run: git config user.email "nobody@circleci.com"
       - run: git config user.name "Circle Ci"
       - run: git add docs
-      - run: git commit -m "[skip-ci] Mac Release"
+      - run: git commit -m "[skip ci] Mac Release"
       - run: git push origin master
 
   linuxbuild:
@@ -49,7 +49,7 @@ jobs:
       - run: git config user.email "nobody@circleci.com"
       - run: git config user.name "Circle Ci"
       - run: git add docs
-      - run: git commit -m "[skip-ci] Linux Release"
+      - run: git commit -m "[skip ci] Linux Release"
       - run: git push origin master
 
 workflows:
