@@ -7,7 +7,7 @@ jobs:
     steps:
       - add_ssh_keys:
         fingerprints:
-          - "3e:e5:ba:f2:fe:cf:0c:3a:86:c4:8e:ed:47:92:46:05"
+          - "13:51:7c:9e:b7:8f:99:d5:17:38:7f:fe:66:4e:3f:a8"
       - checkout
       - run: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
       - run: brew install go
