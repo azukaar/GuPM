@@ -6,4 +6,4 @@ for(d in Dependencies) {
     package.dependencies[dep.name] = dep.version;
 }
 
-saveJsonFile('./package.json', package)
+writeJsonFile('./package.json', package)

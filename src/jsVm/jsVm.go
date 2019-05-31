@@ -174,12 +174,26 @@ func Setup(vm *otto.Otto) {
 		os.Exit(1)
 	})
 
-	vm.Set("saveJsonFile", func(call otto.FunctionCall) otto.Value {
+	vm.Set("writeJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		toExport, _ := call.Argument(1).Export()
 		file := utils.JsonExport(toExport).(map[string] interface {})
 		bytes, _ := json.Marshal(file)
-		ioutil.WriteFile(path, bytes, os.ModePerm)
+		err := ioutil.WriteFile(path, bytes, os.ModePerm)
+		if(err != nil) {
+			ui.Error(err.Error())
+		}
+		result, _ :=  vm.ToValue(true)
+		return result
+	})
+
+	vm.Set("writeFile", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		toExport, _ := call.Argument(1).ToString()
+		err := ioutil.WriteFile(path, []byte(toExport), os.ModePerm)
+		if(err != nil) {
+			ui.Error(err.Error())
+		}
 		result, _ :=  vm.ToValue(true)
 		return result
 	})
