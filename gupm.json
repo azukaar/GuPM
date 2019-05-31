@@ -10,7 +10,8 @@
             "go://github.com/fatih/color": "",	
             "go://github.com/gosuri/uilive": "",	
             "go://github.com/mitchellh/go-homedir": "",
-            "go://gopkg.in/sourcemap.v1": ""
+            "go://gopkg.in/sourcemap.v1": "",
+            "go://github.com/mattn/go-isatty": ""
         }	
     },
     "cli": {	
