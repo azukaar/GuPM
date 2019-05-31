@@ -14,9 +14,15 @@ jobs:
           command: curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash
 
       - run:
+          name: Make
+          command: g make
+
+      - run:
           name: Build
           command: g publish mac
       
+      - run: git config user.email "nobody@circleci.com"
+      - run: git config user.name "Circle Ci"
       - run: git add docs
       - run: git commit -m "[skip-ci] Mac Release"
       - run: git push origin master
@@ -33,9 +39,15 @@ jobs:
           command: curl -fsSL  https://azukaar.github.io/GuPM/install.sh | bash
 
       - run:
+          name: Make
+          command: g make
+
+      - run:
           name: Build
           command: g publish
       
+      - run: git config user.email "nobody@circleci.com"
+      - run: git config user.name "Circle Ci"
       - run: git add docs
       - run: git commit -m "[skip-ci] Linux Release"
       - run: git push origin master
