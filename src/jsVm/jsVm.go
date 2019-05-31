@@ -7,6 +7,7 @@ import (
 	"sync"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"time"
 	"encoding/json"
 	"github.com/robertkrimen/otto"
@@ -197,6 +198,8 @@ func Setup(vm *otto.Otto) {
 		result, _ :=  vm.ToValue(true)
 		return result
 	})
+
+	vm.Set("_OSNAME", runtime.GOOS)
 
 	vm.Set("mkdir", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
