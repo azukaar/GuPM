@@ -5,7 +5,7 @@ jobs:
       xcode: "9.0"
 
     steps:
-    - add_ssh_keys:
+      - add_ssh_keys:
         fingerprints:
           - "3e:e5:ba:f2:fe:cf:0c:3a:86:c4:8e:ed:47:92:46:05"
       - checkout
