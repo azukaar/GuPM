@@ -63,10 +63,10 @@ func GetProviderConfig(providerName string) *GupmEntryPoint {
 }
 
 func GetPackageConfig() (utils.Json, error) {
-	var file = utils.FileExists(ProviderPath + "/GetPackageConfig.js")
+	var file = utils.FileExists(ProviderPath + "/getPackageConfig.gs")
 	if(file) {
 		input := make(map[string]interface {})		
-		res, err :=  jsVm.Run(ProviderPath + "/GetPackageConfig.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/getPackageConfig.gs", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -79,12 +79,12 @@ func GetPackageConfig() (utils.Json, error) {
 }
 
 func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
-	var file = utils.FileExists(ProviderPath + "/PostGetPackageConfig.js")
+	var file = utils.FileExists(ProviderPath + "/postGetPackageConfig.gs")
 	if(file) {
 		input := make(map[string]interface {})
 		input["PackageConfig"] = config
 		
-		res, err :=  jsVm.Run(ProviderPath + "/PostGetPackageConfig.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/postGetPackageConfig.gs", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -97,12 +97,12 @@ func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
 }
 
 func SaveDependencyList(depList []map[string]interface {}) error {
-	var file = utils.FileExists(ProviderPath + "/SaveDependencyList.js")
+	var file = utils.FileExists(ProviderPath + "/saveDependencyList.gs")
 	if(file) {
 		input := make(map[string]interface {})
 		input["Dependencies"] = depList
 		
-		_, err :=  jsVm.Run(ProviderPath + "/SaveDependencyList.js", input)
+		_, err :=  jsVm.Run(ProviderPath + "/saveDependencyList.gs", input)
 		if(err != nil) {
 			return err
 		}
@@ -114,12 +114,12 @@ func SaveDependencyList(depList []map[string]interface {}) error {
 }
 
 func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
-	var file = utils.FileExists(ProviderPath + "/GetDependencyList.js")
+	var file = utils.FileExists(ProviderPath + "/getDependencyList.gs")
 	if(file) {
 		input := make(map[string]interface {})
 		input["PackageConfig"] = config
 		
-		res, err :=  jsVm.Run(ProviderPath + "/GetDependencyList.js", input)
+		res, err :=  jsVm.Run(ProviderPath + "/getDependencyList.gs", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -139,12 +139,12 @@ func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 
 func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]interface {}, error) {
 	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + dependency["provider"].(string)
-	var file = utils.FileExists(depProviderPath + "/ResolveDependencyLocation.js")
+	var file = utils.FileExists(depProviderPath + "/resolveDependencyLocation.gs")
 	if(dependency["provider"].(string) != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
 
-		res, err :=  jsVm.Run(depProviderPath + "/ResolveDependencyLocation.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/resolveDependencyLocation.gs", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -163,12 +163,12 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 
 func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
 	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + dependency["provider"].(string)
-	var file = utils.FileExists(depProviderPath + "/ExpandDependency.js")
+	var file = utils.FileExists(depProviderPath + "/expandDependency.gs")
 	if(dependency["provider"].(string) != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
 
-		res, err :=  jsVm.Run(depProviderPath + "/ExpandDependency.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/expandDependency.gs", input)
 		if(err != nil) {
 			return nil, err
 		}
@@ -189,7 +189,7 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 
 func GetDependency(provider string, name string, version string, url string, path string) (string, error) {
 	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + provider
-	var file = utils.FileExists(depProviderPath + "/GetDependency.js")
+	var file = utils.FileExists(depProviderPath + "/getDependency.gs")
 	if(provider != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
@@ -198,7 +198,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 		input["Url"] = url
 		input["Path"] = path
 
-		res, err :=  jsVm.Run(depProviderPath + "/GetDependency.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/getDependency.gs", input)
 		if(err != nil) {
 			return "", err
 		}
@@ -212,7 +212,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	depProviderPath := utils.DIRNAME() + "/plugins/provider-" + provider
-	var file = utils.FileExists(depProviderPath + "/PostGetDependency.js")
+	var file = utils.FileExists(depProviderPath + "/postGetDependency.gs")
 	if(provider != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Provider"] = provider
@@ -222,7 +222,7 @@ func PostGetDependency(provider string, name string, version string, url string,
 		input["Path"] = path
 		input["Result"] = result
 
-		res, err :=  jsVm.Run(depProviderPath + "/PostGetDependency.js", input)
+		res, err :=  jsVm.Run(depProviderPath + "/postGetDependency.gs", input)
 		if(err != nil) {
 			return "", err
 		}

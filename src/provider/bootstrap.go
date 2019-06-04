@@ -10,10 +10,10 @@ import (
 
 func Bootstrap(path string) error {
 	if(Provider != "gupm") {
-		var file = utils.FileExists(ProviderPath + "/Bootstrap.js")
+		var file = utils.FileExists(ProviderPath + "/bootstrap.gs")
 		if(file) {
 			input := make(map[string]interface {})		
-			_, err :=  jsVm.Run(ProviderPath + "/Bootstrap.js", input)
+			_, err :=  jsVm.Run(ProviderPath + "/bootstrap.gs", input)
 			if(err != nil) {
 				return err
 			}
