@@ -68,6 +68,10 @@ g install -p npm react@1 #will save in package.json
 
 ### remove
 
+```
+g remove myPackage
+```
+
 ## GuPM management
 
 GuPM can be managed using :

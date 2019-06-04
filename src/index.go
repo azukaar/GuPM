@@ -81,6 +81,32 @@ var sCmd = &cobra.Command{
 	},
 }
 
+var removeCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "remove package",
+	Long:  `remove package from module config`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := RemoveDependency(".", args)
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
+
+var rCmd = &cobra.Command{
+	Use:   "r",
+	Short: "remove package",
+	Long:  `remove package from module config`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := RemoveDependency(".", args)
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
+
 var cacheCmd = &cobra.Command{
 	Use:   "cache",
 	Short: "cache a new project",
@@ -260,6 +286,11 @@ func main() {
 	installCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	rootCmd.AddCommand(iCmd)
 	iCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+
+	rootCmd.AddCommand(removeCmd)
+	removeCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	rootCmd.AddCommand(rCmd)
+	rCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	
 	rootCmd.AddCommand(bootstrapCmd)
 	bootstrapCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
