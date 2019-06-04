@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"github.com/spf13/cobra"
-	"github.com/mitchellh/go-homedir"
+	// "github.com/mitchellh/go-homedir"
 	"./utils"
 	"./ui"
 	"./provider"
@@ -27,7 +27,7 @@ func setProvider(cmd *cobra.Command, args []string) {
 	}
 }
 
-var cacheCmd = &cobra.Command{
+var bootstrapCmd = &cobra.Command{
 	Use:   "bootstrap [--provider=]",
 	Short: "bootstrap a new project",
 	Long:  `bootstrap a new project based on the model of your specific provider`,
@@ -40,7 +40,7 @@ var cacheCmd = &cobra.Command{
 	},
 }
 
-var cCmd = &cobra.Command{
+var bCmd = &cobra.Command{
 	Use:   "b [--provider=]",
 	Short: "bootstrap a new project",
 	Long:  `bootstrap a new project based on the model of your specific provider`,
@@ -53,7 +53,35 @@ var cCmd = &cobra.Command{
 	},
 }
 
-var bootstrapCmd = &cobra.Command{
+var selfCmd = &cobra.Command{
+	Use:   "self",
+	Short: "self manage gupm",
+	Long:  `self manage gupm. Try g self upgrade" or "g self uninstall""`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		if(args[0] == "upgrade") {
+			SelfUpgrade()
+		} else if (args[0] == "uninstall") {
+			SelfUninstall()
+		}
+	},
+}
+
+var sCmd = &cobra.Command{
+	Use:   "s",
+	Short: "self manage gupm",
+	Long:  `self manage gupm. Try g self upgrade" or "g self uninstall""`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		if(args[0] == "upgrade") {
+			SelfUpgrade()
+		} else if (args[0] == "uninstall") {
+			SelfUninstall()
+		}
+	},
+}
+
+var cacheCmd = &cobra.Command{
 	Use:   "cache",
 	Short: "cache a new project",
 	Long:  `cache a new project based on the model of your specific provider`,
@@ -67,7 +95,7 @@ var bootstrapCmd = &cobra.Command{
 	},
 }
 
-var bCmd = &cobra.Command{
+var cCmd = &cobra.Command{
 	Use:   "c",
 	Short: "cache management",
 	Long:  `clear or check the cache with "cache clear" or "cache check"`,
@@ -200,13 +228,15 @@ func binFile(name string, args []string) {
 func main() {
 	start := time.Now()
 
-	hdir, errH := homedir.Dir()
-	if(errH != nil) {
-		fmt.Println(errH)
-		hdir = "."
-	}
-	flog, _ := os.OpenFile(hdir + "/.gupm/error.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	os.Stderr = flog
+	// hdir, errH := homedir.Dir()
+	// if(errH != nil) {
+	// 	fmt.Println(errH)
+	// 	hdir = "."
+	// }
+
+	// flog, _ := os.OpenFile(hdir + "/.gupm/error.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	// multiWriter := io.MultiWriter(flog, os.Stderr)
+	// os.Stderr = flog
 
 	if runtime.GOOS == "darwin" {
 		utils.ExecCommand("ulimit", []string{"-n", "2048"})
@@ -245,6 +275,9 @@ func main() {
 	bootstrapCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	rootCmd.AddCommand(bCmd)
 	bCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	
+	rootCmd.AddCommand(selfCmd)
+	rootCmd.AddCommand(sCmd)
 
 	rootCmd.AddCommand(cacheCmd)
 	rootCmd.AddCommand(cCmd)
@@ -255,8 +288,8 @@ func main() {
 	}
 
 	script := ScriptExists(c)
-	if( c == "install" || c == "bootstrap" || c == "make" || c == "uninstall" || c == "cache" ||
-		c == "i" || c == "b" || c == "m" || c == "u" || c == "c") {
+	if( c == "install" || c == "bootstrap" || c == "make" || c == "update" || c == "cache" || c == "remove" || c == "self" ||
+		c == "i" || c == "b" || c == "m" || c == "u" || c == "c" || c == "r"|| c == "s") {
 			Execute();
 			if (script != "") {
 				executeFile(script, os.Args)
