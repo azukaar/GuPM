@@ -1,16 +1,23 @@
 ![dog](./banner.png)
 
-Global Universal Project Manager -- Package manager, cli tool, scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are amoung friends.
+Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.
+
+ * ⏱**Fast**. Written in native code, with real multi-threading
+ * 👓**Smart**. Memory efficient solution using hard-link, which do not duplicate dependencies across project
+ * 🌍**Global**. Windows, Mac and Linux compatibility
+ * 🌈 **Universal**. Usable in any kind of project (Ruby, JS, Go, C, Python, etc...)
+ * 👗**Customizable**. Flexible plugin system: make GuPM your own
+ * 👝**Future Proof**. Let's make this the last PM you will ever need.
 
 ---
 
-GuPM is born from the fustration of having to give up my habbits whenever I would switch off Javascript and loose NPM (Whether it would be in Ruby, Go, or even non dev situation). GuPM is claiming to take inspiration from the best things from Brew, NPM, Gem, etc... And compile them in a single tool, usable in any situation.
+GuPM is born from the frustration of having to give up my habits whenever I would switch off Javascript and lose NPM (Whether it would be in Ruby, Go, or even situations outside of coding). GuPM is claiming to take inspiration from the best things from Brew, NPM, Gem, etc... And compile them in a single tool, usable in any situation.
 
 Example commands :
 
 ```
 g make -- run make.gs
-g install mysql -- locally install MysQL in your project
+g install mysql -- locally install MySQL in your project
 g mysql -u <user> -p -e "select * from schema.table" -- run the local mysql CLI
 mysql -u <user> -p -e "select * from schema.table" -- Does NOT work, MySQL has only been installed in your project, not globally (no version clash)
 ```
@@ -24,14 +31,14 @@ curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash
 
 ```
 -- Windows
-Simply execute : https://azukaar.github.io/GuPM/windows_install.exe
+Simply execute: https://azukaar.github.io/GuPM/windows_install.exe
 ```
 
 ## Dependency Manager
 
 ### Make
 
-This command will setup your project by getting dependencies. Adding a -p or --provider argument allow you to specify what provider to use initially.
+This command will set up your project by getting dependencies. Adding a -p or --provider argument allows you to specify what provider to use initially.
 Please note you do NOT need to install npm / gem / whatever to use their corresponding provider, GuPM implement everything itself.
 
 ```
@@ -78,11 +85,11 @@ Put at the root of your folder, will be executed every time you execute `g ...` 
 
 ## Script Manager
 
-GuPM also allow you to manage your CLI application.
+GuPM also allows you to manage your CLI application.
 
 ### Install / use CLI
 
-You can install a CLI application locally to a folder / project, and invoke it in the `g` command
+You can install a CLI application locally to a folder/project, and invoke it in the `g` command
 
 ```
 g i brew://mysql
@@ -102,7 +109,7 @@ In order to simply bootstrap a new project you can run `g bootstrap` you can als
 
 ### Write GuPM scripts
 
-You can use GuScript to write bash-like files, used for setting up your project, or use it, or anything really.
+You can use GuScript to write bash-like files, used for setting up your project, use it, or anything literally.
 Think of GuScript as a replacement for your bash scripts.
 
 ```
@@ -123,7 +130,7 @@ List of function : [./functions.md](Functions)
 
 ### Provider
 
-Allow you to install / add from a repo
+Allow you to install/add from a repo
 
 List of hooks : [./hooklist.md](Hooklist)
 
@@ -137,6 +144,6 @@ Add this to your `settings.json` to treat .gs file as javascript (temporary fix 
 }
 ```
 
-### Thanks you!
+### Thanks!
 Package Icon made by [smashicons](https://www.smashicons.com/)
 Dog Icon made by [Freepik](https://www.freepik.com/)
