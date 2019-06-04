@@ -131,7 +131,7 @@ func installDep(path string, depList []map[string]interface {}) map[string]strin
 			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 
 			if(ok) {
-				installDep(path + "/" + depList[index]["name"].(string), nextDepList)
+				installDep(path + "/" + depProviderConfig.Config.Default.InstallPath + "/" + depList[index]["name"].(string), nextDepList)
 			}
 			channel <- 1
 		})(channel, index, dep)
