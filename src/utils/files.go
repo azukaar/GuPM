@@ -68,7 +68,7 @@ func (g *FileStructure) getOrCreate(path string, options FileStructure) FileStru
 
 func (g *FileStructure) SaveSelfAt(path string) error {
 	if(g.Filetype == 0) {
-		newPath := path+"/"+g.Name
+		newPath := Path(path+"/"+g.Name)
 		os.MkdirAll(newPath, os.ModePerm);
 		for _, child := range g.Children {
 			child.SaveSelfAt(newPath)
@@ -76,7 +76,7 @@ func (g *FileStructure) SaveSelfAt(path string) error {
 	} else {
 		filePath := path
 		if(g.Name != "") {
-			filePath = filePath + "/" +g.Name
+			filePath = Path(filePath + "/" +g.Name)
 		}
 		f, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR, os.FileMode(0777))
 
@@ -95,13 +95,13 @@ func (g *FileStructure) SaveSelfAt(path string) error {
 
 func (g *FileStructure) SaveAt(path string) error {
 	if(g.Filetype == 0) {
-		os.MkdirAll(path, os.ModePerm);
+		os.MkdirAll(Path(path), os.ModePerm);
 		for _, child := range g.Children {
-			child.SaveSelfAt(path)
+			child.SaveSelfAt(Path(path))
 		} 
 	}
 	if(g.Filetype == 1) {
-		g.SaveSelfAt(path)
+		g.SaveSelfAt(Path(path))
 	}
 	return nil
 }

@@ -14,7 +14,7 @@ func CacheClear() {
 		hdir = "."
 	}
 
-	folder := hdir + "/.gupm/cache/"
+	folder := utils.Path(hdir + "/.gupm/cache/")
 
 	utils.RemoveFiles([]string{folder})
 }

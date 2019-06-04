@@ -11,6 +11,7 @@ import (
 
 var cacheExpanded = make(map[string]map[string]interface {})
 var lock = sync.RWMutex{}
+var lockList = sync.RWMutex{}
 
 func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}) {
 	channel := make(chan int)
@@ -86,15 +87,19 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 					}
 				}
 				lock.Unlock()
-
-				depList[index] = newDep
-
+				
 				ui.Log("Get dependency " + newDep["name"].(string))
 				
+				lockList.Lock()
+				depList[index] = newDep
 				nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
+				lockList.Unlock()
 
 				if(ok) {
-					depList[index]["dependencies"] = expandDepList(nextDepList)
+					res := expandDepList(nextDepList)
+					lockList.Lock()
+					depList[index]["dependencies"] = res
+					lockList.Unlock()
 				}
 			}
 			channel <- 1
@@ -120,7 +125,7 @@ func installDep(path string, depList []map[string]interface {}) map[string]strin
 		go (func(channel chan int, index int, dep map[string]interface {}){
 			depProviderConfig := provider.GetProviderConfig(dep["provider"].(string))
 			ui.Log("Installing " + path + "/" + depProviderConfig.Config.Default.InstallPath)
-			provider.InstallDependency(path + "/" + depProviderConfig.Config.Default.InstallPath, dep)
+			provider.InstallDependency(utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath), dep)
 
 			if(path == ".") {
 				installPathsLock.Lock()
@@ -131,7 +136,7 @@ func installDep(path string, depList []map[string]interface {}) map[string]strin
 			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 
 			if(ok) {
-				installDep(path + "/" + depProviderConfig.Config.Default.InstallPath + "/" + depList[index]["name"].(string), nextDepList)
+				installDep(utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath + "/" + depList[index]["name"].(string)), nextDepList)
 			}
 			channel <- 1
 		})(channel, index, dep)

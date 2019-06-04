@@ -220,23 +220,13 @@ func executeFile(path string, args []string) {
 }
 
 func binFile(name string, args []string) {
-	path := "./.bin/"+name
+	path := utils.Path("./.bin/"+name)
 	realPath, _ := filepath.EvalSymlinks(path)
 	utils.ExecCommand(realPath, args)
 }
 
 func main() {
 	start := time.Now()
-
-	// hdir, errH := homedir.Dir()
-	// if(errH != nil) {
-	// 	fmt.Println(errH)
-	// 	hdir = "."
-	// }
-
-	// flog, _ := os.OpenFile(hdir + "/.gupm/error.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	// multiWriter := io.MultiWriter(flog, os.Stderr)
-	// os.Stderr = flog
 
 	if runtime.GOOS == "darwin" {
 		utils.ExecCommand("ulimit", []string{"-n", "2048"})

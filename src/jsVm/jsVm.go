@@ -81,6 +81,7 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("readJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		b, err := ioutil.ReadFile(path)
 		if(err != nil) {
 			ui.Error(err.Error())
@@ -91,6 +92,7 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("readFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		b, err := ioutil.ReadFile(path)
 		if(err != nil) {
 			ui.Error(err.Error())
@@ -117,6 +119,7 @@ func Setup(vm *otto.Otto) {
 			files = []string{files.(string)}
 		}
 		path, _ := call.Argument(1).ToString()
+		path = utils.Path(path)
 		utils.CopyFiles(files.([]string), path)
 		result, _ :=  vm.ToValue(true)
 		return result
@@ -177,6 +180,7 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("writeJsonFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		toExport, _ := call.Argument(1).Export()
 		file := JsonExport(toExport).(map[string] interface {})
 		bytes, _ := json.Marshal(file)
@@ -190,6 +194,7 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("writeFile", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		toExport, _ := call.Argument(1).ToString()
 		err := ioutil.WriteFile(path, []byte(toExport), os.ModePerm)
 		if(err != nil) {
@@ -203,6 +208,7 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("mkdir", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		os.MkdirAll(path, os.ModePerm)
 		result, _ :=  vm.ToValue(true)
 		return result
@@ -210,6 +216,7 @@ func Setup(vm *otto.Otto) {
 	
 	vm.Set("saveLockDep", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		utils.SaveLockDep(path)
 		result, _ :=  vm.ToValue(true)
 		return result
@@ -217,6 +224,7 @@ func Setup(vm *otto.Otto) {
 	
 	vm.Set("fileExists", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		res := utils.FileExists(path)
 		result, _ :=  vm.ToValue(res)
 		return result
@@ -259,6 +267,7 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("readDir", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
+		path = utils.Path(path)
 		var filenames = make([]string, 0)
 		files := utils.ReadDir(path)
 		for _, file := range files {
@@ -270,7 +279,9 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("createSymLink", func(call otto.FunctionCall) otto.Value {
 		from, _ := call.Argument(0).ToString()
+		from = utils.Path(from)
 		to, _ := call.Argument(1).ToString()
+		to = utils.Path(to)
 		err := os.Symlink(from, to)
 		if(err != nil) {
 			ui.Error(err.Error())
@@ -301,6 +312,7 @@ func Setup(vm *otto.Otto) {
 		var fs utils.FileStructure
 		file, _ := call.Argument(0).Export()
 		path, _ := call.Argument(1).ToString()
+		path = utils.Path(path)
 		bytes, _ := json.Marshal(file)
 		json.Unmarshal(bytes, &fs)
 		fs.SaveAt(path)

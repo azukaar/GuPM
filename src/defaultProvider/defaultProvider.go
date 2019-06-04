@@ -16,7 +16,7 @@ func SaveDependencyList(depList []map[string]interface{}) error {
 }
 
 func Bootstrap(path string) {
-	if(utils.FileExists(path + "/gupm.json")) {
+	if(utils.FileExists(utils.Path(path + "/gupm.json"))) {
 		ui.Error("A project already exists in this folder. Aborting bootstrap.")
 		return
 	}
@@ -41,7 +41,7 @@ func Bootstrap(path string) {
 	"author": "` + author + `",
 	"licence": "` + licence + `"
 }`
-		ioutil.WriteFile(path + "/gupm.json", []byte(fileContent), os.ModePerm)
+		ioutil.WriteFile(utils.Path(path + "/gupm.json"), []byte(fileContent), os.ModePerm)
 	}
 }
 

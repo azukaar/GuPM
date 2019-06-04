@@ -8,6 +8,7 @@ import (
 	"time"
 	"../ui"
 	"os/exec"
+	"runtime"
 	"io/ioutil"
     "path/filepath"
 )
@@ -203,4 +204,12 @@ func DIRNAME() string {
 
 func SaveLockDep(path string) {
 	ioutil.WriteFile(path+"/.gupm_locked", []byte("1"), os.ModePerm)
+}
+
+func Path(path string) string {
+	if runtime.GOOS == "windows" {
+		return filepath.FromSlash(path)
+	} else {
+		return filepath.ToSlash(path)
+	}
 }
