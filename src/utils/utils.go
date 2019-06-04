@@ -197,3 +197,10 @@ func DIRNAME() string {
     dir := filepath.Dir(exr)
 	return dir
 }
+
+// TODO: https://blog.golang.org/pipelines
+// add proper checksum check 
+
+func SaveLockDep(path string) {
+	ioutil.WriteFile(path+"/.gupm_locked", []byte("1"), os.ModePerm)
+}

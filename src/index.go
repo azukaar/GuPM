@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"github.com/spf13/cobra"
+	"github.com/mitchellh/go-homedir"
 	"./utils"
 	"./ui"
 	"./provider"
@@ -26,7 +27,7 @@ func setProvider(cmd *cobra.Command, args []string) {
 	}
 }
 
-var bootstrapCmd = &cobra.Command{
+var cacheCmd = &cobra.Command{
 	Use:   "bootstrap [--provider=]",
 	Short: "bootstrap a new project",
 	Long:  `bootstrap a new project based on the model of your specific provider`,
@@ -39,7 +40,7 @@ var bootstrapCmd = &cobra.Command{
 	},
 }
 
-var bCmd = &cobra.Command{
+var cCmd = &cobra.Command{
 	Use:   "b [--provider=]",
 	Short: "bootstrap a new project",
 	Long:  `bootstrap a new project based on the model of your specific provider`,
@@ -49,6 +50,34 @@ var bCmd = &cobra.Command{
 		if(err != nil) {
 			ui.Error(err.Error())
 		} 
+	},
+}
+
+var bootstrapCmd = &cobra.Command{
+	Use:   "cache",
+	Short: "cache a new project",
+	Long:  `cache a new project based on the model of your specific provider`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		if(args[0] == "clear") {
+			CacheClear()
+		} else if (args[0] == "clear") {
+			ui.Error("Not implemented yet.")
+		}
+	},
+}
+
+var bCmd = &cobra.Command{
+	Use:   "c",
+	Short: "cache management",
+	Long:  `clear or check the cache with "cache clear" or "cache check"`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		if(args[0] == "clear") {
+			CacheClear()
+		} else if (args[0] == "clear") {
+			ui.Error("Not implemented yet.")
+		}
 	},
 }
 
@@ -171,6 +200,14 @@ func binFile(name string, args []string) {
 func main() {
 	start := time.Now()
 
+	hdir, errH := homedir.Dir()
+	if(errH != nil) {
+		fmt.Println(errH)
+		hdir = "."
+	}
+	flog, _ := os.OpenFile(hdir + "/.gupm/error.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	os.Stderr = flog
+
 	if runtime.GOOS == "darwin" {
 		utils.ExecCommand("ulimit", []string{"-n", "2048"})
 	}
@@ -209,14 +246,17 @@ func main() {
 	rootCmd.AddCommand(bCmd)
 	bCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 
+	rootCmd.AddCommand(cacheCmd)
+	rootCmd.AddCommand(cCmd)
+
 	c := ""
 	if(len(os.Args) > 1) {
 		c = os.Args[1]
 	}
 
 	script := ScriptExists(c)
-	if( c == "install" || c == "bootstrap" || c == "make" || c == "uninstall" ||
-		c == "i" || c == "b" || c == "m" || c == "u") {
+	if( c == "install" || c == "bootstrap" || c == "make" || c == "uninstall" || c == "cache" ||
+		c == "i" || c == "b" || c == "m" || c == "u" || c == "c") {
 			Execute();
 			if (script != "") {
 				executeFile(script, os.Args)

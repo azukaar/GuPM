@@ -208,6 +208,13 @@ func Setup(vm *otto.Otto) {
 		return result
 	})
 	
+	vm.Set("saveLockDep", func(call otto.FunctionCall) otto.Value {
+		path, _ := call.Argument(0).ToString()
+		utils.SaveLockDep(path)
+		result, _ :=  vm.ToValue(true)
+		return result
+	})
+	
 	vm.Set("fileExists", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		res := utils.FileExists(path)

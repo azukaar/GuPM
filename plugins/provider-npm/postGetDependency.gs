@@ -11,5 +11,6 @@ var firstChildrenName = Object.keys(folder.Children)[0];
 var firstChildren = folder.Children[firstChildrenName];
 
 saveFileAt(firstChildren, Path);
+saveLockDep(Path);
 
 Path;

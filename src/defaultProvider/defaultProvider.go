@@ -76,6 +76,8 @@ func PostGetDependency(provider string, name string, version string, url string,
 		resultFiles.SaveAt(path)
 	} 
 
+	utils.SaveLockDep(path)
+
 	return path, nil
 }
 

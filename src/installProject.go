@@ -44,7 +44,7 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 
 				newDep["path"] = hdir + "/.gupm/cache/" + newDep["provider"].(string) + "/" + newDep["name"].(string) + "/" + newDep["version"].(string)
 
-				if(!utils.FileExists(newDep["path"].(string))) {
+				if(!utils.FileExists(newDep["path"].(string)) || !utils.FileExists(newDep["path"].(string) + "/.gupm_locked")) {
 					getRes, errorGD := provider.GetDependency(
 						newDep["provider"].(string),
 						newDep["name"].(string),
