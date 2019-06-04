@@ -68,7 +68,17 @@ g install -p npm react@1 #will save in package.json
 
 ### remove
 
-## Config Manager
+## GuPM management
+
+GuPM can be managed using :
+
+```
+g self upgrade
+g self uninstall
+g cache check
+g cache clear
+```
+
 
 ## Env Manager
 
