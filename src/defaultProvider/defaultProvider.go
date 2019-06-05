@@ -106,18 +106,44 @@ func GetDependencyList(config map[string]interface {}) []map[string]interface {}
 	return result
 }
 
-// TODO : ...
-
-
 func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
-	return nil, nil
+	config := GetPackageConfig(utils.Path(dependency["path"].(string) + "/gupm.json"))
+	dependency["dependencies"] = make(map[string]interface {})
+
+	for _, depRaw := range (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {}) {
+		dep := depRaw.(map[string]interface {})
+		depBlock := utils.BuildDependencyFromString(dep["provider"].(string), dep["name"].(string))
+		depBlock["version"] = dep["version"]
+		dependency["dependencies"] = append(dependency["dependencies"].([]map[string]interface {}), depBlock)
+	}
+
+	return dependency, nil
 }
 
 func BinaryInstall(path string, packagePath string) error {
+	packages := utils.ReadDir(packagePath)
+
+	for _, dep := range packages {
+		config := GetPackageConfig(utils.Path(packagePath + "/" + dep.Name() + "/gupm.json"))
+		bins := config["binaries"].(map[string]string)
+		for name, relPath := range bins {
+			os.Symlink(utils.Path("../gupm_modules/" + "/" + dep.Name()  + relPath), ".bin/" + name)
+		} 
+	}
+
 	return nil
 }
 
 func SaveDependencyList(depList []map[string]interface{}) error {
-	_ = depList
+	config := GetPackageConfig("gupm.json")
+	config["dependencies"] = make(map[string]interface{})
+	config["dependencies"].(map[string]interface{})["default"] = make(map[string]interface {})
+
+	for _, dep := range depList {
+		config["dependencies"].(map[string]interface{})["default"].(map[string]interface{})[dep["provider"].(string) + "://" + dep["name"].(string)] = dep["version"].(string)
+	}
+
+	utils.WriteJsonFile("gupm.json", config)
+
 	return nil
 }

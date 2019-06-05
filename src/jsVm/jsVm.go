@@ -183,11 +183,9 @@ func Setup(vm *otto.Otto) {
 		path = utils.Path(path)
 		toExport, _ := call.Argument(1).Export()
 		file := JsonExport(toExport).(map[string] interface {})
-		bytes, _ := json.MarshalIndent(file, "", "    ")
-		err := ioutil.WriteFile(path, bytes, os.ModePerm)
-		if(err != nil) {
-			ui.Error(err.Error())
-		}
+		
+		utils.WriteJsonFile(path, file)
+
 		result, _ :=  vm.ToValue(true)
 		return result
 	})

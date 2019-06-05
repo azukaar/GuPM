@@ -199,6 +199,14 @@ func DIRNAME() string {
 	return dir
 }
 
+func WriteJsonFile(path string, file map[string]interface {}) {
+	bytes, _ := json.MarshalIndent(file, "", "    ")
+	err := ioutil.WriteFile(path, bytes, os.ModePerm)
+	if(err != nil) {
+		ui.Error(err.Error())
+	}
+}
+
 // TODO: https://blog.golang.org/pipelines
 // add proper checksum check 
 

@@ -1,5 +1,8 @@
 ![dog](./banner.png)
+
 ---
+
+<br />
 <p align="center">
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20MacOS-pink.svg?style=for-the-badge">
 <img src="https://img.shields.io/badge/CircleCI-Passing-green.svg?style=for-the-badge">
@@ -13,7 +16,8 @@
 <img src="https://img.shields.io/badge/MacOS-Brew-f9d094.svg?style=for-the-badge&logo=apple">
 <img src="https://img.shields.io/badge/GoLang-Go Get-E0EBF5.svg?style=for-the-badge&logo=go">
 </p>
-
+<br />
+<br />
 Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.
 
  * ⏱**Fast**. Written in native code, with real multi-threading

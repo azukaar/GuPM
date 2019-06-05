@@ -157,7 +157,8 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 		}
 		return resObj.(map[string]interface {}), err1
 	} else {
-		return nil, nil
+		dependency["url"] = dependency["name"].(string)
+		return dependency, nil
 	}
 }
 
