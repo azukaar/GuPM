@@ -1,4 +1,4 @@
-![dog](./banner.png)
+![dog](./docs/banner.png)
 
 ---
 
@@ -45,7 +45,7 @@ This idea is born from the frustration of having to give up my habits whenever I
 Here's an example of a workflow using GuPM:
 
 <p align="center">
-<img width="824px" src="./intro.png">
+<img width="824px" src="./docs/intro.png">
 </p>
 
 # Install GuPM : 
