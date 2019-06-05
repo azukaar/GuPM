@@ -183,7 +183,7 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 
 		return resObj, nil
 	} else {
-		return dependency, nil
+		return defaultProvider.ExpandDependency(dependency)
 	}
 }
 

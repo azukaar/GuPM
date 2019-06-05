@@ -5,6 +5,7 @@ import (
 	"../jsVm"
 	"../ui"
 	"os"
+	"../defaultProvider"
 	"regexp"
 	"io/ioutil"
 )
@@ -28,7 +29,7 @@ func BinaryInstall(path map[string]string) (error) {
 			_, err1 := res.ToString()
 			return err1
 		} else {
-			return nil
+			return defaultProvider.BinaryInstall(".bin", prdir)
 		}
 	}
 	return nil

@@ -5,24 +5,30 @@ Global Universal Project Manager -- Package manager, CLI tool, and scripts for a
  * ⏱**Fast**. Written in native code, with real multi-threading
  * 👓**Smart**. Memory efficient solution using hard-link, which do not duplicate dependencies across project
  * 🌍**Global**. Windows, Mac and Linux compatibility
- * 🌈 **Universal**. Usable in any kind of project (Ruby, JS, Go, C, Python, etc...)
+ * 🌈**Universal**. Usable in any kind of project (Ruby, JS, Go, C, Python, etc...)
  * 👗**Customizable**. Flexible plugin system: make GuPM your own
  * 👝**Future Proof**. Let's make this the last PM you will ever need.
 
+This idea is born from the frustration of having to give up my habits whenever I would switch off Javascript and lose NPM (Whether it would be in Ruby, Go, or even situations outside of coding). GuPM is claiming to take inspiration from the best things in Brew, NPM, Gem, etc... And compile them in a single tool, usable in any project.
+
+ * 📦**Packages Manager**. Install packages from any repository and manage your project's dependency in a seamless way
+ * 🖥**CLI Manager**. Install and use CLI tools in a flexible way without conflicts
+ * 🚏**Scripting language**. Bye bye Bash, GuPM is bundled with GuScript, allowing you to build cross platform scripts for your project
+ * 🐙**Packed with features**. Manage configs, environment variables, CI, and more!
+ * 🔥**Even more to come!** See : XXX for the roadmap of feature. You are welcomed to contribute!
+
 ---
 
-GuPM is born from the frustration of having to give up my habits whenever I would switch off Javascript and lose NPM (Whether it would be in Ruby, Go, or even situations outside of coding). GuPM is claiming to take inspiration from the best things from Brew, NPM, Gem, etc... And compile them in a single tool, usable in any situation.
-
-Example commands :
+Here's an example of a workflow using GuPM:
 
 ```
-g make -- run make.gs
+g make -- This command will install any dependency your project has
 g install mysql -- locally install MySQL in your project
 g mysql -u <user> -p -e "select * from schema.table" -- run the local mysql CLI
-mysql -u <user> -p -e "select * from schema.table" -- Does NOT work, MySQL has only been installed in your project, not globally (no version clash)
+mysql -u <user> -p -e "select * from schema.table" -- Does NOT work, MySQL has only been installed in your project, not globally (=> no version clash between projects)
 ```
 
-How to install : 
+How to install GuPM : 
 
 ```
 -- LINUX or Mac OS
@@ -62,8 +68,8 @@ g install -p brew mysql
 
 -- use NPM
 
-g install npm://react@1 #will save in gupm.json
-g install -p npm react@1 #will save in package.json
+g install npm://react@1 -- will save in gupm.json
+g install -p npm react@1 -- will save in package.json
 ```
 
 ### remove
@@ -72,7 +78,7 @@ g install -p npm react@1 #will save in package.json
 g remove myPackage
 ```
 
-## GuPM management
+### GuPM management
 
 GuPM can be managed using :
 
@@ -84,7 +90,7 @@ g cache clear
 ```
 
 
-## Env Manager
+### Env Manager
 
 ```
 g env A=B env
@@ -92,17 +98,19 @@ g env A=B env
 A=B
 ```
 
-## .gupm_rc.gs
+### .gupm_rc.gs
 
 equivalent of .bash_rc but written in .gs.
 Put at the root of your folder, will be executed every time you execute `g ...` in your folder
+An example of usage is to setup basic env:
 
-## Script Manager
-
-GuPM also allows you to manage your CLI application.
+```
+env("PATH", pwd())
+```
 
 ### Install / use CLI
 
+GuPM also allows you to manage your CLI application.
 You can install a CLI application locally to a folder/project, and invoke it in the `g` command
 
 ```
@@ -135,20 +143,19 @@ saveName(name)
 ```
 
 GuScript is based on javascript, and therefore allow advanced object/arrays manipulations, function definitions, etc...
-Find more details about the available APIs here:
+Find more details about the available APIs here: [./functions.md](Functions)
 
-## CI Manager
+### CI Manager
 
 ## Write plugins
-List of function : [./functions.md](Functions)
 
-### Provider
+Please find here the documentation to get you started on writing plugins for GuPM
 
-Allow you to install/add from a repo
+Here's a list of hooks for you to override GuPM's behaviour in your plugin : [./hooklist.md](Hooklist)
 
-List of hooks : [./hooklist.md](Hooklist)
+List of function available in GS : [./functions.md](Functions)
 
-### VS Code 
+## VS Code 
 
 Add this to your `settings.json` to treat .gs file as javascript (temporary fix to plain text)
 

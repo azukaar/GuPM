@@ -10,11 +10,6 @@ import (
 	"reflect"
 )
 
-func SaveDependencyList(depList []map[string]interface{}) error {
-	_ = depList
-	return nil
-}
-
 func Bootstrap(path string) {
 	if(utils.FileExists(utils.Path(path + "/gupm.json"))) {
 		ui.Error("A project already exists in this folder. Aborting bootstrap.")
@@ -109,4 +104,20 @@ func GetDependencyList(config map[string]interface {}) []map[string]interface {}
 		result = append(result, dep)
 	}
 	return result
+}
+
+// TODO : ...
+
+
+func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
+	return nil, nil
+}
+
+func BinaryInstall(path string, packagePath string) error {
+	return nil
+}
+
+func SaveDependencyList(depList []map[string]interface{}) error {
+	_ = depList
+	return nil
 }
