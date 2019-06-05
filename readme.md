@@ -72,7 +72,7 @@ g make -p npm
 ## Install
 
 ```
--- use default repo
+-- use default repo [Not yet available!]
 
 g install mysql
 g i mysql
