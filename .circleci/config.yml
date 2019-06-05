@@ -17,13 +17,13 @@ jobs:
 
       - run:
           name: Build Linux
-          command: g publish
+          command: g ci/publish
       - run:
           name: Build Mac
-          command: g publish mac
+          command: g ci/publish mac
       - run:
           name: Build Windows
-          command: g publish windows
+          command: g ci/publish windows
       
       - run: git config user.email "nobody@circleci.com"
       - run: git config user.name "Circle Ci"
