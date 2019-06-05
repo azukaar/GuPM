@@ -20,21 +20,22 @@
 <br />
 Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.
 
- * ⏱**Fast**. Written in native code, with real multi-threading
- * 👓**Smart**. Memory efficient solution using hard-link, which do not duplicate dependencies across project
- * 🌍**Global**. Windows, Mac and Linux compatibility
- * 🌈**Universal**. Usable in any kind of project (Ruby, JS, Go, C, Python, etc...)
- * 👗**Customizable**. Flexible plugin system: make GuPM your own
- * 👝**Future Proof**. Let's make this the last PM you will ever need.
- * 🐳**No dependencies**. You don't need anythind else (you don't need NPM to use NPM's repository with GuPM)
+ * ⏱ **Fast**. Written in native code, with real multi-threading
+ * 👓 **Smart**. Memory efficient solution using hard-link, which do not duplicate dependencies across project
+ * 🌍 **Global**. Windows, Mac and Linux compatibility
+ * 🌈 **Universal**. Usable in any kind of project (Ruby, JS, Go, C, Python, etc...)
+ * 👗 **Customizable**. Flexible plugin system: make GuPM your own
+ * 👝 **Future Proof**. Let's make this the last PM you will ever need.
+ * 🐳 **No dependencies**. You don't need anythind else (you don't need NPM to use NPM's repository with GuPM)
 
 This idea is born from the frustration of having to give up my habits whenever I would switch off Javascript and lose NPM (Whether it would be in Ruby, Go, or even situations outside of coding). GuPM is claiming to take inspiration from the best things in Brew, NPM, Gem, etc... And compile them in a single tool, usable in any project.
 
- * 📦**Packages Manager**. Install packages from any repository and manage dependencies in a seamless way
- * 🖥**CLI Manager**. Install and use CLI tools in a flexible way without conflicts
- * 🚏**Scripting**. GuPM is bundled with GuScript, allowing you to build cross platform scripts for your project
- * 🐙**Packed with features**. Manage configs, environment variables, CI, and more!
- * 🔥**Even more to come!** See : XXX for the roadmap of feature. You are welcomed to contribute!
+ * 📦 **Packages Manager**. Install packages from any repository and manage dependencies in a seamless way
+ * 🖥 **CLI Manager**. Install and use CLI tools in a flexible way without conflicts
+ * 🚏 **Scripting**. GuPM is bundled with GuScript, allowing you to build cross platform scripts for your project
+ * 🐙 **Packed with features**. Manage configs, environment variables, CI, and more!
+ * 🔥 **Even more to come!** See : XXX for the roadmap of feature. You are welcomed to contribute!
+<br />
 
 ---
 
