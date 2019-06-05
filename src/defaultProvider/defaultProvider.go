@@ -58,16 +58,30 @@ func GetDependency(provider string, name string, version string, url string, pat
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	os.MkdirAll(path, os.ModePerm)
-	tarCheck := regexp.MustCompile(`\.t?gz$`)
+	tarCheck := regexp.MustCompile(`\.tgz$`)
 	tryTar := tarCheck.FindString(url)
+	gzCheck := regexp.MustCompile(`\.gz$`)
+	trygz := gzCheck.FindString(url)
 	zipCheck := regexp.MustCompile(`\.zip$`)
 	tryZip := zipCheck.FindString(url)
 
 	if(tryTar != "") {
-		resultFiles, _ := utils.Untar(result)
+		resultFiles, err := utils.Untar(result)
+		if(err != nil) {
+			return path, err
+		}
+		resultFiles.SaveAt(path)
+	} else if (trygz != "") {
+		resultFiles, err := utils.Ungz(result)
+		if(err != nil) {
+			return path, err
+		}
 		resultFiles.SaveAt(path)
 	} else if(tryZip != "") {
-		resultFiles, _ := utils.Unzip(result)
+		resultFiles, err := utils.Unzip(result)
+		if(err != nil) {
+			return path, err
+		}
 		resultFiles.SaveAt(path)
 	} 
 
@@ -107,15 +121,19 @@ func GetDependencyList(config map[string]interface {}) []map[string]interface {}
 }
 
 func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
-	config := GetPackageConfig(utils.Path(dependency["path"].(string) + "/gupm.json"))
-	dependency["dependencies"] = make(map[string]interface {})
+	configFilePath := utils.Path(dependency["path"].(string) + "/gupm.json")
 
-	if(config["dependencies"] != nil) {
-		for _, depRaw := range (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {}) {
-			dep := depRaw.(map[string]interface {})
-			depBlock := utils.BuildDependencyFromString(dep["provider"].(string), dep["name"].(string))
-			depBlock["version"] = dep["version"]
-			dependency["dependencies"] = append(dependency["dependencies"].([]map[string]interface {}), depBlock)
+	if (utils.FileExists(configFilePath)) {
+		config := GetPackageConfig(configFilePath)
+		dependency["dependencies"] = make(map[string]interface {})
+
+		if(config["dependencies"] != nil) {
+			for _, depRaw := range (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {}) {
+				dep := depRaw.(map[string]interface {})
+				depBlock := utils.BuildDependencyFromString(dep["provider"].(string), dep["name"].(string))
+				depBlock["version"] = dep["version"]
+				dependency["dependencies"] = append(dependency["dependencies"].([]map[string]interface {}), depBlock)
+			}
 		}
 	}
 

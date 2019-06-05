@@ -20,7 +20,7 @@ func BinaryInstall(path map[string]string) (error) {
 			input := make(map[string]interface {})
 			input["Destination"] = ".bin"
 			input["Source"] = prdir
-	
+
 			res, err :=  jsVm.Run(depProviderPath + utils.Path("/binaryInstall.gs"), input)
 			if(err != nil) {
 				return err

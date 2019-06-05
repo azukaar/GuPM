@@ -11,6 +11,29 @@ import (
 	"bytes"
 )
 
+
+func Ungz(r string) (FileStructure, error) {
+	tr, err := gzip.NewReader(strings.NewReader(r))
+
+	if err != nil {
+		return EmptyFileStructure, err
+	}
+
+	defer tr.Close()
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(tr)
+
+	root := FileStructure{
+		Children: make(map[string]FileStructure),
+		Name : tr.Header.Name,
+		Content: buf.Bytes(),
+		Filetype: 1,
+	}
+	
+	return root, nil
+}
+
 func Tar(files []string) (FileStructure, error) {
 	var buf bytes.Buffer
 	gzw := gzip.NewWriter(&buf)
