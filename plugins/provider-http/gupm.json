@@ -1,0 +1,10 @@
+{
+    "name": "gupm:provider-http",
+    "version": "0.0.1",
+    "config": {
+        "default": {
+            "entrypoint": "gupm.json",
+            "installPath": "gupm_modules"
+        }
+    }
+}
