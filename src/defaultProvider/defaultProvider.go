@@ -58,7 +58,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	os.MkdirAll(path, os.ModePerm)
-	tarCheck := regexp.MustCompile(`\.tgz$`)
+	tarCheck := regexp.MustCompile(`\.t?gz$`)
 	tryTar := tarCheck.FindString(url)
 	zipCheck := regexp.MustCompile(`\.zip$`)
 	tryZip := zipCheck.FindString(url)
