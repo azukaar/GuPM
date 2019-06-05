@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./src/utils"
-	"./src/ui"
+	"../utils"
+	"../ui"
 	"fmt"
 )
 
