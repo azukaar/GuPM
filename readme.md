@@ -18,7 +18,7 @@
 </p>
 <br />
 <br />
-Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.<br />
+Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends. [Check the Wiki for documentation.](https://github.com/azukaar/GuPM/wiki) <br />
 <br />
 
  * ⏱ **Fast**. Written in native code, with real multi-threading.
@@ -37,7 +37,7 @@ This idea is born from the frustration of having to give up my habits whenever I
  * 🖥 **CLI Manager**. Install and use CLI tools in a flexible way without conflicts.
  * 🚏 **Scripting**. GuPM is bundled with GuScript, allowing you to build cross platform scripts for your project.
  * 🐙 **Packed with features**. Manage configs, environment variables, CI, and more.
- * 🔥 **Even more to come!** See : XXX for the roadmap of feature. You are welcomed to contribute!
+ * 🔥 **Even more to come!** See : [Next](https://github.com/azukaar/GuPM/projects/1#column-5571474) for the roadmap of feature. You are welcomed to contribute!
 <br />
 
 ---
