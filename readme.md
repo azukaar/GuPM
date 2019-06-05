@@ -1,5 +1,10 @@
 ![dog](./banner.png)
-
+---
+<p style="text-align: center;">
+<img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20MacOS-green.svg">
+<img src="https://circleci.com/gh/azukaar/GuPM.svg?style=shield">
+<img src="https://img.shields.io/badge/GoLang-1.12.5-blue.svg">
+</p>
 Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.
 
  * ⏱**Fast**. Written in native code, with real multi-threading
