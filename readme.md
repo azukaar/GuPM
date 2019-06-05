@@ -1,6 +1,6 @@
 ![dog](./banner.png)
 ---
-<p style="text-align: center;">
+<p align="center">
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20MacOS-pink.svg?style=for-the-badge">
 <img src="https://img.shields.io/badge/CircleCI-Passing-green.svg?style=for-the-badge">
 <img src="https://img.shields.io/badge/GoLang-1.12.5-blue.svg?style=for-the-badge">
