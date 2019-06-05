@@ -110,11 +110,13 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 	config := GetPackageConfig(utils.Path(dependency["path"].(string) + "/gupm.json"))
 	dependency["dependencies"] = make(map[string]interface {})
 
-	for _, depRaw := range (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {}) {
-		dep := depRaw.(map[string]interface {})
-		depBlock := utils.BuildDependencyFromString(dep["provider"].(string), dep["name"].(string))
-		depBlock["version"] = dep["version"]
-		dependency["dependencies"] = append(dependency["dependencies"].([]map[string]interface {}), depBlock)
+	if(config["dependencies"] != nil) {
+		for _, depRaw := range (config["dependencies"].(map[string]interface {}))["default"].(map[string]interface {}) {
+			dep := depRaw.(map[string]interface {})
+			depBlock := utils.BuildDependencyFromString(dep["provider"].(string), dep["name"].(string))
+			depBlock["version"] = dep["version"]
+			dependency["dependencies"] = append(dependency["dependencies"].([]map[string]interface {}), depBlock)
+		}
 	}
 
 	return dependency, nil
