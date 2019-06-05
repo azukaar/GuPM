@@ -4,6 +4,14 @@
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20MacOS-pink.svg?style=for-the-badge">
 <img src="https://img.shields.io/badge/CircleCI-Passing-green.svg?style=for-the-badge">
 <img src="https://img.shields.io/badge/GoLang-1.12.5-blue.svg?style=for-the-badge">
+<br/>
+<img src="https://img.shields.io/badge/Ruby-Gem-e9573f.svg?style=for-the-badge&logo=ruby">
+<img src="https://img.shields.io/badge/Javascript-NPM | Entropic-25799f.svg?style=for-the-badge&logo=javascript">
+<img src="https://img.shields.io/badge/Python-PIP-yellow.svg?style=for-the-badge&logo=python">
+<img src="https://img.shields.io/badge/PHP-Composer-black.svg?style=for-the-badge&logo=php">
+<img src="https://img.shields.io/badge/Windows-Chocolatey-2f6492.svg?style=for-the-badge&logo=windows">
+<img src="https://img.shields.io/badge/MacOS-Brew-f9d094.svg?style=for-the-badge&logo=apple">
+<img src="https://img.shields.io/badge/GoLang-Go Get-E0EBF5.svg?style=for-the-badge&logo=go">
 </p>
 
 Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.
@@ -14,6 +22,7 @@ Global Universal Project Manager -- Package manager, CLI tool, and scripts for a
  * 🌈**Universal**. Usable in any kind of project (Ruby, JS, Go, C, Python, etc...)
  * 👗**Customizable**. Flexible plugin system: make GuPM your own
  * 👝**Future Proof**. Let's make this the last PM you will ever need.
+ * 🐳**No dependencies**. You don't need anythind else (you don't need NPM to use NPM's repository with GuPM)
 
 This idea is born from the frustration of having to give up my habits whenever I would switch off Javascript and lose NPM (Whether it would be in Ruby, Go, or even situations outside of coding). GuPM is claiming to take inspiration from the best things in Brew, NPM, Gem, etc... And compile them in a single tool, usable in any project.
 
