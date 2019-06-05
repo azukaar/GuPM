@@ -18,7 +18,7 @@
 </p>
 <br />
 <br />
-Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.
+Global Universal Project Manager -- Package manager, CLI tool, and scripts for all your projects and your system. Whether you are a developer managing dependencies, or a sysadmin looking for your new toolbelt (bye bash!) you are among friends.<br />
 <br />
 
  * ⏱ **Fast**. Written in native code, with real multi-threading
@@ -29,7 +29,7 @@ Global Universal Project Manager -- Package manager, CLI tool, and scripts for a
  * 👝 **Future Proof**. Let's make this the last PM you will ever need.
  * 🐳 **No dependencies**. You don't need anythind else (you don't need NPM to use NPM's repository with GuPM)
 
-This idea is born from the frustration of having to give up my habits whenever I would switch off Javascript and lose NPM (Whether it would be in Ruby, Go, or even situations outside of coding). GuPM is claiming to take inspiration from the best things in Brew, NPM, Gem, etc... And compile them in a single tool, usable in any project.
+This idea is born from the frustration of having to give up my habits whenever I would switch off Javascript and lose NPM (Whether it would be in Ruby, Go, or even situations outside of coding). GuPM is claiming to take inspiration from the best things in Brew, NPM, Gem, etc... And compile them in a single tool, usable in any project.<br />
 <br />
 
  * 📦 **Packages Manager**. Install packages from any repository and manage dependencies in a seamless way
