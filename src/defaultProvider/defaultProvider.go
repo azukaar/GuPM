@@ -124,11 +124,16 @@ func BinaryInstall(path string, packagePath string) error {
 	packages := utils.ReadDir(packagePath)
 
 	for _, dep := range packages {
-		config := GetPackageConfig(utils.Path(packagePath + "/" + dep.Name() + "/gupm.json"))
-		bins := config["binaries"].(map[string]string)
-		for name, relPath := range bins {
-			os.Symlink(utils.Path("../gupm_modules/" + "/" + dep.Name()  + relPath), ".bin/" + name)
-		} 
+		configFilePath := utils.Path(packagePath + "/" + dep.Name() + "/gupm.json")
+		if (utils.FileExists(configFilePath)) {
+			config := GetPackageConfig(configFilePath)
+			if(config["binaries"] != nil) {
+				bins := config["binaries"].(map[string]string)
+				for name, relPath := range bins {
+					os.Symlink(utils.Path("../gupm_modules/" + "/" + dep.Name()  + relPath), ".bin/" + name)
+				}
+			} 
+		}
 	}
 
 	return nil

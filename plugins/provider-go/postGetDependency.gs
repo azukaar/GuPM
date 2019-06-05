@@ -17,7 +17,7 @@ if (Result == "Not Found") {
     var firstChildren = folder.Children[firstChildrenName];
     
     saveFileAt(firstChildren, Path);   
-    saveLockDep(path); 
+    saveLockDep(Path); 
 }
 
 Path;
