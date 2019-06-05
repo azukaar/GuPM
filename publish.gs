@@ -1,5 +1,4 @@
 removeFiles("gupm")
-removeFiles("docs/install.sh")
 
 var goArgs = ["build", "-o"]
 
@@ -13,7 +12,6 @@ goArgs = goArgs.concat(dir("src/*.go"))
 
 copyFiles("plugins", "gupm/plugins")
 copyFiles("gupm.json", "gupm/gupm.json")
-copyFiles("install.sh", "docs/install.sh")
 
 if(typeof $1 != "undefined" && $1 == "mac") {
     env("GOOS", "darwin")
