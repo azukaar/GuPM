@@ -27,12 +27,9 @@ This idea is born from the frustration of having to give up my habits whenever I
 
 Here's an example of a workflow using GuPM:
 
-```
-g make -- This command will install any dependency your project has
-g install mysql -- locally install MySQL in your project
-g mysql -u <user> -p -e "select * from schema.table" -- run the local mysql CLI
-mysql -u <user> -p -e "select * from schema.table" -- Does NOT work, MySQL has only been installed in your project, not globally (=> no version clash between projects)
-```
+<p align="center">
+<img width="824px" src="./intro.png">
+</p>
 
 How to install GuPM : 
 
