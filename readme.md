@@ -31,21 +31,19 @@ Here's an example of a workflow using GuPM:
 <img width="824px" src="./intro.png">
 </p>
 
-How to install GuPM : 
+# Install GuPM : 
 
-```
--- LINUX or Mac OS
-curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash 
-```
+## Linux and Mac OS : 
 
-```
--- Windows
-Simply execute: https://azukaar.github.io/GuPM/windows_install.exe
-```
+⌨️ `$ curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash`
 
-## Dependency Manager
+## Windows 
 
-### Make
+💾 [Windows_install.exe](https://azukaar.github.io/GuPM/windows_install.exe)
+
+# Dependency Manager
+
+## Make
 
 This command will set up your project by getting dependencies. Adding a -p or --provider argument allows you to specify what provider to use initially.
 Please note you do NOT need to install npm / gem / whatever to use their corresponding provider, GuPM implement everything itself.
@@ -55,7 +53,7 @@ g make
 g make -p npm
 ```
 
-### Install
+## Install
 
 ```
 -- use default repo
@@ -75,13 +73,13 @@ g install npm://react@1 -- will save in gupm.json
 g install -p npm react@1 -- will save in package.json
 ```
 
-### remove
+## remove
 
 ```
 g remove myPackage
 ```
 
-### GuPM management
+## GuPM management
 
 GuPM can be managed using :
 
@@ -111,7 +109,7 @@ An example of usage is to setup basic env:
 env("PATH", pwd())
 ```
 
-### Install / use CLI
+## Install / use CLI
 
 GuPM also allows you to manage your CLI application.
 You can install a CLI application locally to a folder/project, and invoke it in the `g` command
@@ -128,11 +126,11 @@ g i -g brew://mysql
 mysql ....
 ```
 
-### New projects
+## New projects
 
 In order to simply bootstrap a new project you can run `g bootstrap` you can also use `b` and add a provider `g b -p npm`
 
-### Write GuPM scripts
+## Write GuPM scripts
 
 You can use GuScript to write bash-like files, used for setting up your project, use it, or anything literally.
 Think of GuScript as a replacement for your bash scripts.
@@ -148,7 +146,7 @@ saveName(name)
 GuScript is based on javascript, and therefore allow advanced object/arrays manipulations, function definitions, etc...
 Find more details about the available APIs here: [./functions.md](Functions)
 
-### CI Manager
+## CI Manager
 
 ## Write plugins
 
@@ -168,6 +166,6 @@ Add this to your `settings.json` to treat .gs file as javascript (temporary fix 
 }
 ```
 
-### Thanks!
+## Thanks!
 Package Icon made by [smashicons](https://www.smashicons.com/)
 Dog Icon made by [Freepik](https://www.freepik.com/)
