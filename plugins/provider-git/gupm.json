@@ -1,5 +1,5 @@
 {
-    "name": "gupm:provider-git",
+    "name": "provider-git",
     "version": "0.0.1",
     "config": {
         "default": {

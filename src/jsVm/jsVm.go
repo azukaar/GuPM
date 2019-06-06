@@ -335,7 +335,8 @@ func Setup(vm *otto.Otto) {
 		var versionSem *semver.Version
 		rangeVer, _ := semver.NewConstraint(rangeStr)
 
-		for _, verCand := range versionList.([]string) {
+		for _, verCandUnk := range versionList.([]interface{}) {
+			verCand := verCandUnk.(string)
 			sver, err := semver.NewVersion(verCand)
 			if err != nil {
 				ui.Error(err.Error())
@@ -346,6 +347,8 @@ func Setup(vm *otto.Otto) {
 				versionSem = sver
 			}
 		}
+		
+
 		if(version != "") {
 			result, _ :=  vm.ToValue(version)
 			return result

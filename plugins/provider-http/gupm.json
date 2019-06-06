@@ -1,5 +1,5 @@
 {
-    "name": "gupm:provider-http",
+    "name": "provider-http",
     "version": "0.0.1",
     "config": {
         "default": {

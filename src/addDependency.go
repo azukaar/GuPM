@@ -46,7 +46,5 @@ func AddDependency(path string, rls []string) error {
 		return err
 	}
 
-	InstallProject(".")
-
 	return nil
 }

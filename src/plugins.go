@@ -30,8 +30,41 @@ func PluginLink(path string) {
 	}
 }
 
-func PluginInstall(path string, plugins []string) {
+func PluginInstall(path string, plugins []string) error {
+	ui.Title("Install plugin...")
+	pluginFolder := utils.HOMEDIR(".") + utils.Path("/.gupm/plugins/")
 
+	for _, rls := range plugins {
+		ui.Log(rls)
+		newDep, err := provider.ResolveDependencyLocation(utils.BuildDependencyFromString("https", rls))
+		if(err != nil) {
+			return err
+		}
+	
+		newDep["path"] = pluginFolder + utils.Path("/" + newDep["name"].(string))
+		getRes, errorGD := provider.GetDependency(
+			newDep["provider"].(string),
+			newDep["name"].(string),
+			newDep["version"].(string),
+			newDep["url"].(string),
+			newDep["path"].(string),
+		)
+		if(errorGD != nil) {
+			return errorGD
+		}
+		_, errorPGD := provider.PostGetDependency(
+			newDep["provider"].(string),
+			newDep["name"].(string),
+			newDep["version"].(string),
+			newDep["url"].(string),
+			newDep["path"].(string),
+			getRes,
+		)
+		if(errorPGD != nil) {
+			return errorPGD
+		}
+	}
+	return nil
 }
 
 func PluginDelete(path string, plugins []string) {

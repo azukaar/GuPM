@@ -89,7 +89,10 @@ var pluginCmd = &cobra.Command{
 		} else if (args[0] == "link") {
 			PluginLink(".")
 		} else if (args[0] == "install") {
-			PluginInstall(".", args[1:])
+			err := PluginInstall(".", args[1:])
+			if (err != nil) {
+				ui.Error(err.Error())
+			}
 		} else if (args[0] == "delete") {
 			PluginDelete(".", args[1:])
 		} else {
@@ -109,7 +112,10 @@ var plCmd = &cobra.Command{
 		} else if (args[0] == "link") {
 			PluginLink(".")
 		} else if (args[0] == "install") {
-			PluginInstall(".", args[1:])
+			err := PluginInstall(".", args[1:])
+			if (err != nil) {
+				ui.Error(err.Error())
+			}
 		} else if (args[0] == "delete") {
 			PluginDelete(".", args[1:])
 		} else {
@@ -211,6 +217,7 @@ var installCmd = &cobra.Command{
 	PreRun: setProvider,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := AddDependency(".", args)
+		InstallProject(".")
 		if(err != nil) {
 			ui.Error(err.Error())
 		} 
@@ -224,6 +231,7 @@ var iCmd = &cobra.Command{
 	PreRun: setProvider,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := AddDependency(".", args)
+		InstallProject(".")
 		if(err != nil) {
 			ui.Error(err.Error())
 		} 
