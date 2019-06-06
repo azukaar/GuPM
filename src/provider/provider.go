@@ -5,7 +5,10 @@ import (
 	"../utils"
 	"../jsVm"
 	"../ui"
+	"os"
 	"sync"
+	"fmt"
+	"path/filepath"
 )
 
 var Provider string
@@ -14,14 +17,33 @@ var providerConfigCache = make(map[string]*GupmEntryPoint)
 var linkHasErrored = false
 var pConfigLock = sync.RWMutex{}
 
+func GetProviderPath(name string) string {
+	if(name == "gupm" || name == "") {
+		return utils.DIRNAME()
+	} else {
+		homePlugin := utils.HOMEDIR(".") + utils.Path("/.gupm/plugins/provider-" + name)
+		localPlugin := utils.DIRNAME() + utils.Path("/plugins/provider-" + name)
+
+		if(utils.FileExists(homePlugin)) {
+			pluginPath, err := filepath.EvalSymlinks(homePlugin)
+			if (err != nil) {
+				ui.Error(err.Error())
+				return ""
+			}
+			return pluginPath
+		} else if(utils.FileExists(localPlugin)) {
+			return localPlugin
+		} else {
+			fmt.Println("Provider cannot be found: " + name + ". Please install it before using it.")
+			os.Exit(1)
+			return ""
+		}
+	}
+}
+
 func InitProvider(provider string) error {
 	Provider = provider
-	
-	if(provider == "gupm") {
-		ProviderPath = utils.DIRNAME()
-	} else {
-		ProviderPath = utils.DIRNAME() + utils.Path("/plugins/provider-" + Provider)
-	}
+	ProviderPath = GetProviderPath(provider)
 
 	if(Provider != "") {
 		providerConfig := GetProviderConfig(Provider) 
@@ -34,13 +56,7 @@ func InitProvider(provider string) error {
 }
 
 func GetProviderConfig(providerName string) *GupmEntryPoint {
-	var providerConfigPath string
-
-	if(providerName == "gupm") {
-		providerConfigPath = utils.DIRNAME() + utils.Path("/gupm.json")
-	} else {
-		providerConfigPath = utils.DIRNAME() + utils.Path("/plugins/provider-" + providerName + "/gupm.json")
-	}
+	providerConfigPath := GetProviderPath(providerName) + utils.Path("/gupm.json")
 
 	pConfigLock.Lock()
 	if(providerConfigCache[providerName] == nil) {
@@ -138,7 +154,7 @@ func GetDependencyList(config utils.Json) ([]map[string]interface {}, error) {
 }
 
 func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]interface {}, error) {
-	depProviderPath := utils.DIRNAME() + utils.Path("/plugins/provider-" + dependency["provider"].(string))
+	depProviderPath := GetProviderPath(dependency["provider"].(string))
 	var file = utils.FileExists(depProviderPath + utils.Path("/resolveDependencyLocation.gs"))
 	if(dependency["provider"].(string) != "gupm" && file) {
 		input := make(map[string]interface {})
@@ -163,7 +179,7 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 }
 
 func ExpandDependency(dependency map[string]interface {}) (map[string]interface {}, error) {
-	depProviderPath := utils.DIRNAME() + utils.Path("/plugins/provider-" + dependency["provider"].(string))
+	depProviderPath := GetProviderPath(dependency["provider"].(string))
 	var file = utils.FileExists(depProviderPath + utils.Path("/expandDependency.gs"))
 	if(dependency["provider"].(string) != "gupm" && file) {
 		input := make(map[string]interface {})
@@ -189,7 +205,7 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 }
 
 func GetDependency(provider string, name string, version string, url string, path string) (string, error) {
-	depProviderPath := utils.DIRNAME() + utils.Path("/plugins/provider-" + provider)
+	depProviderPath := GetProviderPath(provider)
 	var file = utils.FileExists(depProviderPath + utils.Path("/getDependency.gs"))
 	if(provider != "gupm" && file) {
 		input := make(map[string]interface {})
@@ -212,7 +228,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 }
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
-	depProviderPath := utils.DIRNAME() + utils.Path("/plugins/provider-" + provider)
+	depProviderPath := GetProviderPath(provider)
 	var file = utils.FileExists(depProviderPath + utils.Path("/postGetDependency.gs"))
 	if(provider != "gupm" && file) {
 		input := make(map[string]interface {})

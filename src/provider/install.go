@@ -14,7 +14,7 @@ func BinaryInstall(path map[string]string) (error) {
 	os.RemoveAll(".bin")
 
 	for pr, prdir := range path {
-		depProviderPath := utils.Path(utils.DIRNAME() + utils.Path("/plugins/provider-" + pr))
+		depProviderPath := GetProviderPath(pr)
 		var file = utils.FileExists(depProviderPath + utils.Path("/binaryInstall.gs"))
 		if(pr != "gupm" && file) {
 			input := make(map[string]interface {})

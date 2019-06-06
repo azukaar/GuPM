@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"github.com/spf13/cobra"
-	// "github.com/mitchellh/go-homedir"
 	"./utils"
 	"./ui"
 	"./provider"
@@ -53,6 +52,72 @@ var bCmd = &cobra.Command{
 	},
 }
 
+var publishCmd = &cobra.Command{
+	Use:   "publish [--provider=]",
+	Short: "publish a project",
+	Long:  `publish a project based on the model of your specific provider`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := Publish(".")
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
+
+var pCmd = &cobra.Command{
+	Use:   "p [--provider=]",
+	Short: "publish a project",
+	Long:  `publish a project based on the model of your specific provider`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := Publish(".")
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
+
+var pluginCmd = &cobra.Command{
+	Use:   "plugin",
+	Short: "CLI to help you build plugins",
+	Long:  `To install a plugin "g plugin install". Then use "g plugin create" to create a new one and "g plugin link" to test your plugin.`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		if(args[0] == "create") {
+			PluginCreate(".")
+		} else if (args[0] == "link") {
+			PluginLink(".")
+		} else if (args[0] == "install") {
+			PluginInstall(".", args[1:])
+		} else if (args[0] == "delete") {
+			PluginDelete(".", args[1:])
+		} else {
+			fmt.Println("Unknown command: ", args[0])
+		}
+	},
+}
+
+var plCmd = &cobra.Command{
+	Use:   "pl",
+	Short: "CLI to help you build plugins",
+	Long:  `To install a plugin "g pl install". Then use "g pl create" to create a new one and "g pl link" to test your plugin.`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		if(args[0] == "create") {
+			PluginCreate(".")
+		} else if (args[0] == "link") {
+			PluginLink(".")
+		} else if (args[0] == "install") {
+			PluginInstall(".", args[1:])
+		} else if (args[0] == "delete") {
+			PluginDelete(".", args[1:])
+		} else {
+			fmt.Println("Unknown command: ", args[0])
+		}
+	},
+}
+
 var selfCmd = &cobra.Command{
 	Use:   "self",
 	Short: "self manage gupm",
@@ -63,6 +128,8 @@ var selfCmd = &cobra.Command{
 			SelfUpgrade()
 		} else if (args[0] == "uninstall") {
 			SelfUninstall()
+		} else {
+			fmt.Println("Unknown command: ", args[0])
 		}
 	},
 }
@@ -77,6 +144,8 @@ var sCmd = &cobra.Command{
 			SelfUpgrade()
 		} else if (args[0] == "uninstall") {
 			SelfUninstall()
+		} else {
+			fmt.Println("Unknown command: ", args[0])
 		}
 	},
 }
@@ -297,11 +366,19 @@ func main() {
 	rootCmd.AddCommand(bCmd)
 	bCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	
+	rootCmd.AddCommand(publishCmd)
+	publishCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	rootCmd.AddCommand(pCmd)
+	pCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	
 	rootCmd.AddCommand(selfCmd)
 	rootCmd.AddCommand(sCmd)
 
 	rootCmd.AddCommand(cacheCmd)
 	rootCmd.AddCommand(cCmd)
+
+	rootCmd.AddCommand(pluginCmd)
+	rootCmd.AddCommand(plCmd)
 
 	c := ""
 	if(len(os.Args) > 1) {
@@ -309,8 +386,8 @@ func main() {
 	}
 
 	script := ScriptExists(c)
-	if( c == "install" || c == "bootstrap" || c == "make" || c == "update" || c == "cache" || c == "remove" || c == "self" ||
-		c == "i" || c == "b" || c == "m" || c == "u" || c == "c" || c == "r"|| c == "s") {
+	if( c == "install" || c == "bootstrap" || c == "make" || c == "update" || c == "cache" || c == "remove" || c == "self" || c == "plugin" || c == "publish" ||
+		c == "i" || c == "b" || c == "m" || c == "u" || c == "c" || c == "r"|| c == "s" || c == "pl" || c == "p") {
 			Execute();
 			if (script != "") {
 				executeFile(script, os.Args)

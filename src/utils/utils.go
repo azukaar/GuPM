@@ -9,6 +9,8 @@ import (
 	"../ui"
 	"os/exec"
 	"runtime"
+	"reflect"
+	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
     "path/filepath"
 )
@@ -188,6 +190,14 @@ func IsDirectory(path string) (bool) {
     return fileInfo.IsDir()
 }
 
+func HOMEDIR(fallback string) string {
+	hdir, errH := homedir.Dir()
+	if(errH != nil) {
+		ui.Error(errH.Error())
+		hdir = fallback
+	}
+	return hdir
+}
 
 func DIRNAME() string {
 	ex, err := os.Executable()
@@ -197,6 +207,10 @@ func DIRNAME() string {
     }
     dir := filepath.Dir(exr)
 	return dir
+}
+
+func WriteFile(path string, file string) error {
+	return ioutil.WriteFile(Path(path), []byte(file), os.ModePerm)
 }
 
 func WriteJsonFile(path string, file map[string]interface {}) {
@@ -214,10 +228,32 @@ func SaveLockDep(path string) {
 	ioutil.WriteFile(path+"/.gupm_locked", []byte("1"), os.ModePerm)
 }
 
+func AbsPath(rel string) string {
+	abs, _ := filepath.Abs(rel)
+	return abs
+}
+
 func Path(path string) string {
 	if runtime.GOOS == "windows" {
 		return filepath.FromSlash(path)
 	} else {
 		return filepath.ToSlash(path)
 	}
+}
+
+func Contains(s interface{}, elem interface{}) bool {
+    arrV := reflect.ValueOf(s)
+
+    if arrV.Kind() == reflect.Slice {
+        for i := 0; i < arrV.Len(); i++ {
+
+            // XXX - panics if slice element points to an unexported struct field
+            // see https://golang.org/pkg/reflect/#Value.Interface
+            if arrV.Index(i).Interface() == elem {
+                return true
+            }
+        }
+    }
+
+    return false
 }

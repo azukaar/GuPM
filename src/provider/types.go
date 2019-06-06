@@ -3,6 +3,7 @@ package provider
 type GupmEntryPoint struct {
 	Name string
 	Version string
+	Publish gupmEntryPointPublish
 	Cli gupmEntryPointCliList
 	Config gupmEntryPointConfigList
 }
@@ -18,4 +19,9 @@ type gupmEntryPointConfigList  struct {
 type gupmEntryPointConfig struct {
 	Entrypoint string
 	InstallPath string
+}
+
+type gupmEntryPointPublish struct {
+	Source string
+	Dest string
 }

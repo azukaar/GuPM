@@ -31,7 +31,7 @@ func Bootstrap(path string) {
 
 		fileContent := `{
 	"name": "` + name + `",
-	"name": "0.0.1",
+	"version": "0.0.1",
 	"description": "` + description + `",
 	"author": "` + author + `",
 	"licence": "` + licence + `"
