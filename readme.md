@@ -48,13 +48,24 @@ Here's an example of a workflow using GuPM:
 <img width="824px" src="./docs/intro.png">
 </p>
 
-# Install GuPM : 
+# Getting started : 
 
-## Linux and Mac OS : 
+## Quick links
+
+ * [Wiki](https://github.com/azukaar/GuPM/wiki)
+ * Quick Start
+ * Getting started with Node
+ * Getting started with Go
+ * Create your own repository
+ * [Official GuPM repository](https://github.com/azukaar/GuPM-official)
+
+## Installation
+
+### Linux and Mac OS : 
 
 ⌨️ `$ curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash`
 
-## Windows 
+### Windows 
 
 💾 [Windows_install.exe](https://azukaar.github.io/GuPM/windows_install.exe)
 
@@ -161,7 +172,7 @@ saveName(name)
 ```
 
 GuScript is based on javascript, and therefore allow advanced object/arrays manipulations, function definitions, etc...
-Find more details about the available APIs here: [./functions.md](Functions)
+Find more details about the available APIs in the [wiki](https://github.com/azukaar/GuPM/wiki) 1
 
 ## CI Manager
 
@@ -171,7 +182,7 @@ Please find here the documentation to get you started on writing plugins for GuP
 
 Here's a list of hooks for you to override GuPM's behaviour in your plugin : [./hooklist.md](Hooklist)
 
-List of function available in GS : [./functions.md](Functions)
+List of function available in GS in the [wiki](https://github.com/azukaar/GuPM/wiki)
 
 ## VS Code 
 
