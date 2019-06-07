@@ -53,10 +53,10 @@ Here's an example of a workflow using GuPM:
 ## Quick links
 
  * [Wiki](https://github.com/azukaar/GuPM/wiki)
- * Quick Start
+ * [Quick Start](https://github.com/azukaar/GuPM/wiki/quick-start)
  * Getting started with Node
  * Getting started with Go
- * Create your own repository
+ * [Create your own repository](https://github.com/azukaar/GuPM/wiki/repositories)
  * [Official GuPM repository](https://github.com/azukaar/GuPM-official)
 
 ## Installation
