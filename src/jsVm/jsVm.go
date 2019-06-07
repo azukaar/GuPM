@@ -330,13 +330,24 @@ func Setup(vm *otto.Otto) {
 
 	vm.Set("semverLatestInRange", func(call otto.FunctionCall) otto.Value {
 		rangeStr, _ := call.Argument(0).ToString()
-		versionList, _ := call.Argument(1).Export()
+		versionListUntyped, _ := call.Argument(1).Export()
+		versionList := make([]string, 0)
 		var version string
 		var versionSem *semver.Version
 		rangeVer, _ := semver.NewConstraint(rangeStr)
 
-		for _, verCandUnk := range versionList.([]interface{}) {
-			verCand := verCandUnk.(string)
+		_, ok := versionListUntyped.([]string) 
+		if(!ok) {		
+			for _, v := range versionListUntyped.([]interface{}) {
+				versionList = append(versionList, v.(string))
+			}
+		} else {
+			versionList = versionListUntyped.([]string)
+		}
+
+
+		for _, verCandUnk := range versionList {
+			verCand := verCandUnk
 			sver, err := semver.NewVersion(verCand)
 			if err != nil {
 				ui.Error(err.Error())

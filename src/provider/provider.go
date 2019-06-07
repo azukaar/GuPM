@@ -159,7 +159,6 @@ func ResolveDependencyLocation(dependency map[string]interface {}) (map[string]i
 	if(dependency["provider"].(string) != "gupm" && file) {
 		input := make(map[string]interface {})
 		input["Dependency"] = dependency
-
 		res, err :=  jsVm.Run(depProviderPath + utils.Path("/resolveDependencyLocation.gs"), input)
 		if(err != nil) {
 			return nil, err

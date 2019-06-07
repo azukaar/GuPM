@@ -1,28 +1,28 @@
-{	
-    "name": "gupm:gupm",
-    "version": "1.0.0",
-    "dependencies": {
-        "default" : {
-            "go://github.com/spf13/cobra": "",
-            "go://github.com/robertkrimen/otto": "",
-            "go://github.com/otiai10/copy": "",	
-            "go://github.com/Masterminds/semver": "",	
-            "go://github.com/fatih/color": "",	
-            "go://github.com/gosuri/uilive": "",	
-            "go://github.com/mitchellh/go-homedir": "",
-            "go://gopkg.in/sourcemap.v1": "",
-            "go://github.com/mattn/go-isatty": ""
-        }	
-    },
-    "cli": {	
+{
+    "cli": {
         "aliases": {
-            "start" : "./build/dg"
-        }	
-    },	
-    "config": {	
-        "default": {	
-            "entrypoint": "gupm.json",	
-            "installPath": "gupm_modules"	
-        }	
-    }	
+            "start": "./build/dg"
+        }
+    },
+    "config": {
+        "default": {
+            "entrypoint": "gupm.json",
+            "installPath": "gupm_modules"
+        }
+    },
+    "dependencies": {
+        "default": {
+            "go://github.com/Masterminds/semver": "",
+            "go://github.com/fatih/color": "",
+            "go://github.com/gosuri/uilive": "",
+            "go://github.com/mattn/go-isatty": "",
+            "go://github.com/mitchellh/go-homedir": "",
+            "go://github.com/otiai10/copy": "",
+            "go://github.com/robertkrimen/otto": "",
+            "go://github.com/spf13/cobra": "",
+            "go://gopkg.in/sourcemap.v1": ""
+        }
+    },
+    "name": "gupm:gupm",
+    "version": "1.0.0"
 }
