@@ -22,6 +22,6 @@ type gupmEntryPointConfig struct {
 }
 
 type gupmEntryPointPublish struct {
-	Source string
+	Source []string
 	Dest string
 }

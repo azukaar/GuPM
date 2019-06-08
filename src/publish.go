@@ -35,7 +35,12 @@ func Publish(path string) error {
 
 		installPath := ppath + utils.Path("/" + packageConfig.Name + "/" + packageConfig.Version)
 		os.MkdirAll(installPath, os.ModePerm)
-		arch, _ := utils.Tar([]string{utils.Path(path + "/" + packageConfig.Publish.Source)})
+
+		sourcePaths := make([]string, 0)
+		for _, src := range packageConfig.Publish.Source {
+			sourcePaths = append(sourcePaths, utils.Path(path + "/" + src));
+		}
+		arch, _ := utils.Tar(sourcePaths)
 		arch.SaveAt(installPath + utils.Path("/" + packageConfig.Name + "-" + packageConfig.Version + ".tgz"))
 
 		repoConfig["packages"] = packageList
