@@ -413,7 +413,11 @@ func main() {
 		}
 		utils.ExecCommand(toProcess[0], toProcess[1:])
 	} else if (aliases[c] != nil) {
-		utils.ExecCommand(aliases[c].(string), os.Args[2:])	
+		commands := strings.Split(aliases[c].(string), ";")
+		for _, command := range commands {
+			commandList := strings.Split(command, " ")
+			utils.ExecCommand(commandList[0], append(commandList[1:], os.Args[2:]...))
+		}
 	} else if (binFolder[c] == true) {
 		binFile(c, os.Args[2:])	
 	} else if (script != "") {
