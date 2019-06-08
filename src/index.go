@@ -281,7 +281,7 @@ func Execute() {
 func ScriptExists(path string) string {
 	if (utils.FileExists(path + ".gs")) {
 		return path + ".gs"
-	} else if(utils.FileExists(path)) {
+	} else if(utils.FileExists(path) && !utils.IsDirectory(path)) {
 		return path
 	} else {
 		return ""

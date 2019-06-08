@@ -167,7 +167,14 @@ func Setup(vm *otto.Otto) {
 			args = make([]string, 0)
 		}
 
-		res, _ := utils.RunCommand(exec, args.([]string))
+		res, err := utils.RunCommand(exec, args.([]string))
+
+		if(err != nil) {
+			ui.Error(err.Error())
+			result, _ :=  vm.ToValue(false)
+			return result
+		}
+
 		res = res[:len(res)-1]
 
 		result, _ :=  vm.ToValue(res)

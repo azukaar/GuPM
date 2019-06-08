@@ -187,10 +187,10 @@ func Draw() {
 	for _, v := range errorList {
 		_ = v
 		if(limit == 10) {
-			result += errorColor.Sprintln("❌❌❌ Too many errors to display...")
+			result += errorColor.Sprintln("❌❌❌   Too many errors to display...")
 			limit++
 			} else if(limit < 10) {
-			result += errorColor.Sprintln("❌ " + v)
+			result += errorColor.Sprintln("❌   " + v)
 			limit++
 		}
 	}
