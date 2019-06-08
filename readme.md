@@ -71,92 +71,68 @@ Here's an example of a workflow using GuPM:
 
 # Dependency Manager
 
+## New projects
+
+In order to simply bootstrap a new project you can run `g bootstrap` you can also use `b` and add a provider `g b -p npm`
+
 ## Make
 
 This command will set up your project by getting dependencies. Adding a -p or --provider argument allows you to specify what provider to use initially.
 Please note you do NOT need to install npm / gem / whatever to use their corresponding provider, GuPM implement everything itself.
 
-```
+```bash
+# reads gupm.json
 g make
+
+# reads package.json
 g make -p npm
 ```
 
 ## Install
 
-```
--- use default repo [Not yet available!]
+```bash
+# use default repo [Not yet available!]
 
 g install mysql
 g i mysql
 g i node:react
 
--- use brew
+# use brew
 
 g install brew://mysql
 g install -p brew mysql
 
--- use NPM
+# use NPM
 
-g install npm://react@1 -- will save in gupm.json
-g install -p npm react@1 -- will save in package.json
+g install npm://react@1 # will save in gupm.json
+g install -p npm react@1 # will save in package.json
 ```
 
-## remove
-
-```
-g remove myPackage
-```
+More commands [in the wiki](https://github.com/azukaar/GuPM/wiki/cli-references)
 
 ## GuPM management
 
+### Plugins
+
+GuPM needs plugins to work with various repos :
+
+```bash
+# Install provider-go from the official repo
+g plugin install https://azukaar.github.io/GuPM-official/repo:provider-go
+```
+
+See https://github.com/azukaar/gupm-official for a list of officially suported plugins.
+See https://github.com/azukaar/GuPM/wiki/how-to-create-a-provider to create your own.
+
+### updates
+
 GuPM can be managed using :
 
-```
+```bash
 g self upgrade
-g self uninstall
-g cache check
-g cache clear
 ```
 
-
-### Env Manager
-
-```
-g env A=B env
-....
-A=B
-```
-
-### .gupm_rc.gs
-
-equivalent of .bash_rc but written in .gs.
-Put at the root of your folder, will be executed every time you execute `g ...` in your folder
-An example of usage is to setup basic env:
-
-```
-env("PATH", pwd())
-```
-
-## Install / use CLI
-
-GuPM also allows you to manage your CLI application.
-You can install a CLI application locally to a folder/project, and invoke it in the `g` command
-
-```
-g i brew://mysql
-g mysql ....
-```
-
-You can also install them globally with the -g --global flag
-
-```
-g i -g brew://mysql
-mysql ....
-```
-
-## New projects
-
-In order to simply bootstrap a new project you can run `g bootstrap` you can also use `b` and add a provider `g b -p npm`
+More commands [in the wiki](https://github.com/azukaar/GuPM/wiki/cli-references)
 
 ## Write GuPM scripts
 
@@ -174,16 +150,6 @@ saveName(name)
 GuScript is based on javascript, and therefore allow advanced object/arrays manipulations, function definitions, etc...
 Find more details about the available APIs in the [wiki](https://github.com/azukaar/GuPM/wiki) 1
 
-## CI Manager
-
-## Write plugins
-
-Please find here the documentation to get you started on writing plugins for GuPM
-
-Here's a list of hooks for you to override GuPM's behaviour in your plugin : [./hooklist.md](Hooklist)
-
-List of function available in GS in the [wiki](https://github.com/azukaar/GuPM/wiki)
-
 ## VS Code 
 
 Add this to your `settings.json` to treat .gs file as javascript (temporary fix to plain text)
@@ -194,6 +160,6 @@ Add this to your `settings.json` to treat .gs file as javascript (temporary fix 
 }
 ```
 
-## Thanks!
+# Thanks!
 Package Icon made by [smashicons](https://www.smashicons.com/)
 Dog Icon made by [Freepik](https://www.freepik.com/)
