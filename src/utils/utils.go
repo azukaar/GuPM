@@ -257,3 +257,17 @@ func Contains(s interface{}, elem interface{}) bool {
 
     return false
 }
+
+
+func ArrString(something interface{}) []string {
+	_, ok := something.([]string) 
+	if(!ok) {
+		res := make([]string, 0)
+		for _, v := range something.([]interface{}) {
+			res = append(res, v.(string))
+		}
+		return res
+	} else {
+		return something.([]string)
+	}
+}

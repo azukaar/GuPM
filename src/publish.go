@@ -26,11 +26,11 @@ func Publish(path string) error {
 				ui.Error("Package " + packageConfig.Name + "@" + packageConfig.Version + " already published. Please bump the version number.")
 				return nil
 			} else {
-				packageList[packageConfig.Name] = append(packageList[packageConfig.Name].([]string), packageConfig.Version)
+				packageList[packageConfig.Name] = append(utils.ArrString(packageList[packageConfig.Name]), packageConfig.Version)
 			}
 		} else {
 			packageList[packageConfig.Name] = make([]string, 0)
-			packageList[packageConfig.Name] = append(packageList[packageConfig.Name].([]string), packageConfig.Version)
+			packageList[packageConfig.Name] = append(utils.ArrString(packageList[packageConfig.Name]), packageConfig.Version)
 		}
 
 		installPath := ppath + utils.Path("/" + packageConfig.Name + "/" + packageConfig.Version)
