@@ -26,6 +26,32 @@ func setProvider(cmd *cobra.Command, args []string) {
 	}
 }
 
+var testCmd = &cobra.Command{
+	Use:   "test [--provider=]",
+	Short: "test a project",
+	Long:  `test a project`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := RunTest("tests", args)
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
+
+var tCmd = &cobra.Command{
+	Use:   "t [--provider=]",
+	Short: "test a new project",
+	Long:  `test a new project`,
+	PreRun: setProvider,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := RunTest("tests", args)
+		if(err != nil) {
+			ui.Error(err.Error())
+		} 
+	},
+}
+
 var bootstrapCmd = &cobra.Command{
 	Use:   "bootstrap [--provider=]",
 	Short: "bootstrap a new project",
@@ -379,6 +405,11 @@ func main() {
 	rootCmd.AddCommand(pCmd)
 	pCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
 	
+	rootCmd.AddCommand(testCmd)
+	testCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	rootCmd.AddCommand(tCmd)
+	tCmd.PersistentFlags().StringVarP(&Provider, "provider", "p", "", "Provider plugin")
+	
 	rootCmd.AddCommand(selfCmd)
 	rootCmd.AddCommand(sCmd)
 
@@ -394,8 +425,9 @@ func main() {
 	}
 
 	script := ScriptExists(c)
-	if( c == "install" || c == "bootstrap" || c == "make" || c == "update" || c == "cache" || c == "remove" || c == "self" || c == "plugin" || c == "publish" ||
-		c == "i" || c == "b" || c == "m" || c == "u" || c == "c" || c == "r"|| c == "s" || c == "pl" || c == "p") {
+	if( c == "install" || c == "bootstrap" || c == "make" || c == "update" || c == "cache" ||
+	    c == "remove" || c == "self" || c == "plugin" || c == "publish" ||  c == "test" || 
+		  c == "i" || c == "b" || c == "m" || c == "u" || c == "c" || c == "r"|| c == "s" || c == "pl" || c == "p" || c == "t") {
 			Execute();
 			if (script != "") {
 				executeFile(script, os.Args)

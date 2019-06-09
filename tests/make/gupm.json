@@ -1,0 +1,7 @@
+{
+  "depedencies": {
+    "default": {
+      "git://github.com/Masterminds/semver": "master"
+    }
+  }
+}
