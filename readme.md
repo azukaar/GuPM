@@ -42,12 +42,6 @@ This idea is born from the frustration of having to give up my habits whenever I
 
 ---
 
-Here's an example of a workflow using GuPM:
-
-<p align="center">
-<img width="824px" src="./docs/intro.png">
-</p>
-
 # Getting started : 
 
 ## Quick links
@@ -68,6 +62,24 @@ Here's an example of a workflow using GuPM:
 ### Windows 
 
 💾 [Windows_install.exe](https://azukaar.github.io/GuPM/windows_install.exe)
+
+## JS/NPM example
+
+This example is setting up a project using the [NPM plugin](https://github.com/azukaar/GuPM-official).
+More details on how to use GuPM with node [here]().
+
+<p align="center">
+<img width="824px" src="./docs/intro1.png">
+</p>
+
+## Go example
+
+This example is setting up a project using the [Go plugin](https://github.com/azukaar/GuPM-official).
+More details on how to use GuPM with Go [here]().
+
+<p align="center">
+<img width="824px" src="./docs/intro2.png">
+</p>
 
 # Dependency Manager
 
