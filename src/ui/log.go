@@ -7,6 +7,7 @@ import (
 	"time"
 	"sync"
 	"bufio"
+	"errors"
 	"strconv"
 	"os"
 )
@@ -40,13 +41,30 @@ func Log(log string) {
 	redrawNeeded = true
 }
 
-func Error(err string) {
-	errorLock.Lock()
-	errorList = append(errorList, err)
-	errorLock.Unlock()
-	if(len(errorList) <= 10) {
-		redrawNeeded = true
-		// Draw()
+func Error(errs... interface{}) error {
+	res := ""
+	
+	for _, err := range errs {
+		errErr, isErr := err.(error)
+		errStr, isStr := err.(string)
+		if (isErr && errErr != nil) {
+			res += " " + errErr.Error()
+		} else if (isStr) {
+			res += " " + errStr
+		}
+	}
+
+	if(res != "") {
+		errorLock.Lock()
+		errorList = append(errorList, res)
+		errorLock.Unlock()
+		if(len(errorList) <= 10) {
+			redrawNeeded = true
+		}
+	
+		return errors.New(res)
+	} else {
+		return nil
 	}
 }
 

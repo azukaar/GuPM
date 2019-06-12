@@ -17,7 +17,7 @@ import (
 var lock = sync.RWMutex{}
 var scriptCache = make(map[string]string)
 
-func Run(path string, input map[string]interface {}) (otto.Value, error) {
+func Run(path string, input utils.Json) (otto.Value, error) {
 	var err error
 	var ret otto.Value
 
@@ -36,14 +36,14 @@ func Run(path string, input map[string]interface {}) (otto.Value, error) {
 	vm.Interrupt = make(chan func(), 1) 
 	Setup(vm)
 
-	for varName, varValue := range input {
+	for varName, varValue := range input /*.AsObject()*/ {
 		vm.Set(varName, varValue)
 	}
 
 	ret, err = vm.Run(script)
 
 	if(err != nil) {
-		ui.Error(err.Error())
+		ui.Error(err)
 		return otto.UndefinedValue(),  errors.New("Error occured while executing the GS code")
 	}
 
@@ -84,7 +84,7 @@ func Setup(vm *otto.Otto) {
 		path = utils.Path(path)
 		b, err := ioutil.ReadFile(path)
 		if(err != nil) {
-			ui.Error(err.Error())
+			ui.Error(err)
 		}
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
 		return result
@@ -95,7 +95,7 @@ func Setup(vm *otto.Otto) {
 		path = utils.Path(path)
 		b, err := ioutil.ReadFile(path)
 		if(err != nil) {
-			ui.Error(err.Error())
+			ui.Error(err)
 		}
 		result, _ :=  vm.ToValue(string(b))
 		return result
@@ -170,7 +170,7 @@ func Setup(vm *otto.Otto) {
 		res, err := utils.RunCommand(exec, args.([]string))
 
 		if(err != nil) {
-			ui.Error(err.Error())
+			ui.Error(err)
 			result, _ :=  vm.ToValue(false)
 			return result
 		}
@@ -203,7 +203,7 @@ func Setup(vm *otto.Otto) {
 		toExport, _ := call.Argument(1).ToString()
 		err := ioutil.WriteFile(path, []byte(toExport), os.ModePerm)
 		if(err != nil) {
-			ui.Error(err.Error())
+			ui.Error(err)
 		}
 		result, _ :=  vm.ToValue(true)
 		return result
@@ -263,7 +263,7 @@ func Setup(vm *otto.Otto) {
 		}
 		res, err := utils.Tar(files.([]string))
 		if(err != nil) {
-			ui.Error(err.Error())
+			ui.Error(err)
 		}
 		b, _ := json.Marshal(res)
 		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
@@ -289,7 +289,7 @@ func Setup(vm *otto.Otto) {
 		to = utils.Path(to)
 		err := os.Symlink(from, to)
 		if(err != nil) {
-			ui.Error(err.Error())
+			ui.Error(err)
 		}
 		result, _ :=  vm.ToValue(true)
 		return result
@@ -347,7 +347,7 @@ func Setup(vm *otto.Otto) {
 			verCand := verCandUnk
 			sver, err := semver.NewVersion(verCand)
 			if err != nil {
-				ui.Error(err.Error())
+				ui.Error(err)
 			}
 			
 			if(rangeVer.Check(sver) && (versionSem == nil || sver.GreaterThan(versionSem))) {

@@ -19,7 +19,10 @@ func AddDependency(path string, rls []string) error {
 		return err
 	}
 
-	providerConfig = provider.GetProviderConfig(Provider)
+	providerConfig, err = provider.GetProviderConfig(Provider)
+	if(err != nil) {
+		return err
+	}
 	packageConfig, _ = provider.GetPackageConfig()
 	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
 
@@ -34,7 +37,7 @@ func AddDependency(path string, rls []string) error {
 		dep :=  utils.BuildDependencyFromString(Provider, str)
 		resolved, err := provider.ResolveDependencyLocation(dep)
 		if(err != nil) {
-			ui.Error("Error can't resolve : " + dep["Name"].(string) + "@" +  dep["version"].(string))
+			ui.Error("Can't resolve", str)
 			return err
 		}
 		dep["version"] = resolved["version"]

@@ -13,11 +13,8 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
     "path/filepath"
+	"gopkg.in/go-playground/validator.v9"
 )
-
-type Json map[string]interface {}
-type JsonMap []interface {}
-type PackageDependencyListType []map[string]interface {}
 
 type Dependency struct {
 	Name string
@@ -50,6 +47,23 @@ func ExecCommand(toRun string, args []string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Run()
 	return nil
+}
+
+func ReadGupmJson(path string) (*GupmEntryPoint, error) {
+	validate := validator.New()
+
+	config := new(GupmEntryPoint)
+	errRead := ReadJSON(path, config)
+	if(errRead != nil) {
+		ui.Error("Could not find", path)
+		return nil, errRead
+	}
+	errValidate := validate.Struct(config)
+	if(errValidate != nil) {
+		ui.Error("Error validating ", path)
+		return nil, errValidate
+	}
+	return config, nil
 }
 
 func RunCommand(toRun string, args []string) (string, error) {
@@ -116,7 +130,7 @@ func HttpGet(url string) []byte {
 		numberConnectionOpened--
 		isRateLimit, _ := regexp.MatchString(`unexpected EOF$`, httperr.Error())
 		if(!isRateLimit) {
-			ui.Error("Error accessing " + url + " trying again. " + httperr.Error())
+			ui.Error("Error accessing", url, "trying again.", httperr)
 		}
 		time.Sleep(1000 * time.Millisecond)
 		return HttpGet(url)
@@ -127,7 +141,7 @@ func HttpGet(url string) []byte {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		numberConnectionOpened--
-		ui.Error("Error reading HTTP response " + err.Error())
+		ui.Error("Error reading HTTP response ", err)
 		return HttpGet(url)
 	}
 	
@@ -168,7 +182,7 @@ func RecursiveFileWalkDir(source string) []string {
 			return nil
 		})
 	if err != nil {
-		ui.Error(err.Error())
+		ui.Error(err)
 	}
 	return result
 }
@@ -176,7 +190,7 @@ func RecursiveFileWalkDir(source string) []string {
 func ReadDir(path string) []os.FileInfo{
     files, err := ioutil.ReadDir(path)
     if err != nil {
-        ui.Error(err.Error())
+        ui.Error(err)
 	}
 
     return files
@@ -193,7 +207,7 @@ func IsDirectory(path string) (bool) {
 func HOMEDIR(fallback string) string {
 	hdir, errH := homedir.Dir()
 	if(errH != nil) {
-		ui.Error(errH.Error())
+		ui.Error(errH)
 		hdir = fallback
 	}
 	return hdir
@@ -217,7 +231,7 @@ func WriteJsonFile(path string, file map[string]interface {}) {
 	bytes, _ := json.MarshalIndent(file, "", "    ")
 	err := ioutil.WriteFile(path, bytes, os.ModePerm)
 	if(err != nil) {
-		ui.Error(err.Error())
+		ui.Error(err)
 	}
 }
 

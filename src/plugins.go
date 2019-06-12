@@ -11,11 +11,11 @@ import (
 func PluginLink(path string) {
 	configPath := utils.Path(path + "/gupm.json")
 	if(utils.FileExists(configPath)) {
-		packageConfig := new(provider.GupmEntryPoint)
+		packageConfig := new(utils.GupmEntryPoint)
 		errConfig := utils.ReadJSON(configPath, &packageConfig)
 		if(errConfig != nil) {
 			ui.Error("Can't read provider configuration")
-			ui.Error(errConfig.Error())
+			ui.Error(errConfig)
 			return 
 		}
 	
@@ -23,7 +23,7 @@ func PluginLink(path string) {
 		os.MkdirAll(pluginFolder, os.ModePerm);
 		err := os.Symlink(utils.AbsPath(path), pluginFolder + packageConfig.Name)
 		if(err != nil) {
-			ui.Error(err.Error())
+			ui.Error(err)
 		}
 	} else {
 		ui.Error("Can't find provider configuration")

@@ -7,7 +7,7 @@ import (
 	"./jsVm"
 )
 
-func RunTest(path string, args []string) error {
+func RunTest(path string) error {
 	files := utils.RecursiveFileWalkDir(path)
 	nbRunning := 0
 

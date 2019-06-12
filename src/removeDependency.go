@@ -23,7 +23,8 @@ func RemoveDependency(path string, rls []string) error {
 		return err
 	}
 
-	providerConfig = provider.GetProviderConfig(Provider)
+	providerConfig, err = provider.GetProviderConfig(Provider)
+	ui.Error(err)
 	packageConfig, _ = provider.GetPackageConfig()
 	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
 

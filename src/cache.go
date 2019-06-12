@@ -10,7 +10,7 @@ import (
 func CacheClear() {
 	hdir, errH := homedir.Dir()
 	if(errH != nil) {
-		ui.Error(errH.Error())
+		ui.Error(errH)
 		hdir = "."
 	}
 

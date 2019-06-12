@@ -1,6 +1,7 @@
 {
     "cli": {
         "aliases": {
+            "gotest": "go test ./src",
             "start": "./build/dg"
         }
     },
@@ -14,12 +15,16 @@
         "default": {
             "go://github.com/Masterminds/semver": "",
             "go://github.com/fatih/color": "",
+            "go://github.com/go-playground/locales": "master",
+            "go://github.com/go-playground/universal-translator": "master",
             "go://github.com/gosuri/uilive": "",
+            "go://github.com/leodido/go-urn": "master",
             "go://github.com/mattn/go-isatty": "",
             "go://github.com/mitchellh/go-homedir": "",
             "go://github.com/otiai10/copy": "",
             "go://github.com/robertkrimen/otto": "",
-            "go://github.com/spf13/cobra": "",
+            "go://github.com/stretchr/testify": "master",
+            "go://gopkg.in/go-playground/validator.v9": "v9.29.0",
             "go://gopkg.in/sourcemap.v1": ""
         }
     },

@@ -52,19 +52,19 @@ func installDependencySubFolders(path string, depPath string) {
 
 			if(err != nil && !isFileExists) {
 				if(!linkHasErrored) {
-					ui.Error(err.Error())
+					ui.Error(err)
 					ui.Error("Error, cannot use hard link on your system. Falling back to copying file (Will be slower!)")
 					linkHasErrored = true
 				}
 				input, err := ioutil.ReadFile(utils.Path(path + "/" + file.Name()))
         if err != nil {
-                ui.Error(err.Error())
+                ui.Error(err)
                 return
         }
 
         err = ioutil.WriteFile(utils.Path(depPath + "/" + file.Name()), input, 0644)
         if err != nil {
-                ui.Error(err.Error())
+                ui.Error(err)
                 return
         }
 			}

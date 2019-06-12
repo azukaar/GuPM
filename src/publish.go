@@ -2,7 +2,6 @@ package main
 
 import (
 	"./utils"
-	"./provider"
 	"./ui"
 	"os"
 )
@@ -10,7 +9,7 @@ import (
 func Publish(path string) error {
 	configPath := utils.Path(path + "/gupm.json")
 	if(utils.FileExists(configPath)) {
-		packageConfig := new(provider.GupmEntryPoint)
+		packageConfig := new(utils.GupmEntryPoint)
 		errConfig := utils.ReadJSON(configPath, &packageConfig)
 		if(errConfig != nil) {
 			ui.Error("Can't read provider configuration")

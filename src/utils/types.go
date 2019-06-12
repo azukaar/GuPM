@@ -1,4 +1,4 @@
-package provider
+package utils
 
 type GupmEntryPoint struct {
 	Name string

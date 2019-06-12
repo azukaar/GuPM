@@ -6,7 +6,7 @@ import (
 	// "fmt"
 )
 
-func Bootstrap(path string, args []string) error {	
+func Bootstrap(path string) error {	
 	err := provider.InitProvider(Provider)
 	if(err != nil) {
 		return err

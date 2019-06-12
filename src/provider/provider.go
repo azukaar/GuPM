@@ -13,7 +13,7 @@ import (
 
 var Provider string
 var ProviderPath string
-var providerConfigCache = make(map[string]*GupmEntryPoint)
+var providerConfigCache = make(map[string]*utils.GupmEntryPoint)
 var linkHasErrored = false
 var pConfigLock = sync.RWMutex{}
 
@@ -27,7 +27,7 @@ func GetProviderPath(name string) string {
 		if(utils.FileExists(homePlugin)) {
 			pluginPath, err := filepath.EvalSymlinks(homePlugin)
 			if (err != nil) {
-				ui.Error(err.Error())
+				ui.Error(err)
 				return ""
 			}
 			return pluginPath
@@ -46,35 +46,40 @@ func InitProvider(provider string) error {
 	ProviderPath = GetProviderPath(provider)
 
 	if(Provider != "") {
-		providerConfig := GetProviderConfig(Provider) 
+		providerConfig, err := GetProviderConfig(Provider) 
+		if(err != nil) {
+			return err
+		}
 		ui.Log("Initialisation OK for " + providerConfig.Name);
 	} else {
-		providerConfig := GetProviderConfig("gupm") 
+		providerConfig, err := GetProviderConfig("gupm")  
+		if(err != nil) {
+			return err
+		}
 		ui.Log("Initialisation OK for " + providerConfig.Name);
 	}
+
 	return nil
 }
 
-func GetProviderConfig(providerName string) *GupmEntryPoint {
+func GetProviderConfig(providerName string) (*utils.GupmEntryPoint, error){
 	providerConfigPath := GetProviderPath(providerName) + utils.Path("/gupm.json")
 
 	pConfigLock.Lock()
 	if(providerConfigCache[providerName] == nil) {
-		config := new(GupmEntryPoint)
-		err := utils.ReadJSON(providerConfigPath, config)
+		config, err := utils.ReadGupmJson(providerConfigPath)
 		if(err != nil) {
-			ui.Error(err.Error())
-			return nil
+			return nil, err
 		}
 
 		providerConfigCache[providerName] = config
 		
 		pConfigLock.Unlock()
-		return config
+		return config, nil
 	} else {
 		config := providerConfigCache[providerName]
 		pConfigLock.Unlock()
-		return config
+		return config, nil
 	}
 }
 
@@ -90,7 +95,11 @@ func GetPackageConfig() (utils.Json, error) {
 		resObj, err1 := res.Export()
 		return resObj.(utils.Json), err1
 	} else {
-		return defaultProvider.GetPackageConfig(GetProviderConfig(Provider).Config.Default.Entrypoint), nil
+		pc, err := GetProviderConfig(Provider)
+		if(err != nil) {
+			return nil, err
+		}
+		return defaultProvider.GetPackageConfig(pc.Config.Default.Entrypoint), nil
 	}
 }
 
