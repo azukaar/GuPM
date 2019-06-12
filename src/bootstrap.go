@@ -12,5 +12,11 @@ func Bootstrap(path string) error {
 		return err
 	}
 	ui.Title("Bootstrap project")
-	return provider.Bootstrap(path)
+	errBoot := provider.Bootstrap(path)
+	if(errBoot != nil) {
+		return errBoot
+	} else {
+		ui.Title("Bootstrap done! ❤️")
+	}
+	return nil
 }

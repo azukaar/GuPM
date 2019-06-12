@@ -100,7 +100,7 @@ func getProvider(args Arguments) string {
 	} else if(args["P"] != "") {
 		return args["P"] 
 	} else {
-		return ""
+		return "gupm"
 	}
 }
 

@@ -23,6 +23,5 @@ func Bootstrap(path string) error {
 	} else {
 		defaultProvider.Bootstrap(path)
 	}
-
 	return nil
 }
