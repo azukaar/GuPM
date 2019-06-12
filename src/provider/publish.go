@@ -13,6 +13,7 @@ func Publish(path string) error {
 		var file = utils.FileExists(utils.Path(ProviderPath + "/publish.gs"))
 		if(file) {
 			input := make(map[string]interface {})
+			input["Path"] = path
 			_, err :=  jsVm.Run(utils.Path(ProviderPath + "/publish.gs"), input)
 			return err
 		} else {
