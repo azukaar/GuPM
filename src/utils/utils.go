@@ -13,7 +13,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
     "path/filepath"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 type Dependency struct {
@@ -50,18 +49,11 @@ func ExecCommand(toRun string, args []string) error {
 }
 
 func ReadGupmJson(path string) (*GupmEntryPoint, error) {
-	validate := validator.New()
-
 	config := new(GupmEntryPoint)
 	errRead := ReadJSON(path, config)
 	if(errRead != nil) {
-		ui.Error("Could not find", path)
+		ui.Error("Can't read", path, "check your file")
 		return nil, errRead
-	}
-	errValidate := validate.Struct(config)
-	if(errValidate != nil) {
-		ui.Error("Error validating ", path)
-		return nil, errValidate
 	}
 	return config, nil
 }

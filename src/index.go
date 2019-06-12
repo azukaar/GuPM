@@ -62,9 +62,10 @@ func main() {
 	if(utils.FileExists("gupm.json")) {
 		packageConfig, errConfig := utils.ReadGupmJson("gupm.json")
 		if(errConfig != nil) {
-			ui.Error("Config file not found.")
+			ui.Error(errConfig)
+		} else {
+			aliases = packageConfig.Cli.Aliases
 		}
-		aliases = packageConfig.Cli.Aliases
 	}
 
 	script := ScriptExists(c)
