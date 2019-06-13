@@ -103,11 +103,10 @@ g make -p npm
 ## Install
 
 ```bash
-# use default repo [Not yet available!]
+# use default repo [Config in gupm.json]
 
 g install mysql
 g i mysql
-g i node:react
 
 # use brew
 
