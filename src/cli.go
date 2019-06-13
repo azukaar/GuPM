@@ -128,9 +128,9 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		"r": "remove",
 		"p": "publish",
 		"b": "bootstrap",
-		"cache": "c",
-		"self": "s",
-		"plugin": "pl",
+		"c": "cache",
+		"s": "self",
+		"pl": "plugin",
 	}
 
 	if(shorthands[c] != "") {
