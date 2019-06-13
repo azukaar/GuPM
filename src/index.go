@@ -6,6 +6,7 @@ import (
 	"./ui"
 	"./jsVm"
 	"strings"
+	"strconv"
 	"path/filepath"
 	"regexp"
 	"fmt"
@@ -40,8 +41,14 @@ func binFile(name string, args []string) {
 }
 
 func main() {
-	if runtime.GOOS == "darwin" {
-		utils.ExecCommand("ulimit", []string{"-n", "2048"})
+	if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
+		limit, _ := utils.RunCommand("ulimit", []string{"-n"})
+		ln, _ := strconv.Atoi(strings.TrimSpace(limit))
+		if runtime.GOOS == "darwin" && ln == 256 {
+			ui.Error("You seem to be using the default Mac terminal for your project. We highly recommend using your IDE terminal or an alternative like ITerm.")
+		} else if ln < 2048 {
+			ui.Error("Your ulimit -n is only", limit, "but in order to ensure proper operation, it should be set to at least 2048.")
+		}
 	}
 	
 	binFolder := make(map[string]bool)
