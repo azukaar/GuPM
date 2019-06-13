@@ -12,17 +12,17 @@
         }
     },
     "dependencies": {
-        "defaultProvider": "go",
         "default": {
-            "github.com/Masterminds/semver": "",
-            "github.com/fatih/color": "",
-            "github.com/gosuri/uilive": "",
-            "github.com/mattn/go-isatty": "",
-            "github.com/mitchellh/go-homedir": "",
-            "github.com/otiai10/copy": "",
-            "github.com/robertkrimen/otto": "",
-            "gopkg.in/sourcemap.v1": "v1.0.5"
-        }
+            "go://github.com/Masterminds/semver": "master",
+            "go://github.com/fatih/color": "master",
+            "go://github.com/gosuri/uilive": "master",
+            "go://github.com/mattn/go-isatty": "master",
+            "go://github.com/mitchellh/go-homedir": "master",
+            "go://github.com/otiai10/copy": "master",
+            "go://github.com/robertkrimen/otto": "master",
+            "go://gopkg.in/sourcemap.v1": "v1.0.5"
+        },
+        "defaultProvider": "go"
     },
     "name": "gupm:gupm",
     "version": "1.0.0"

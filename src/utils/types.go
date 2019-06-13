@@ -6,10 +6,17 @@ type GupmEntryPoint struct {
 	Publish gupmEntryPointPublish
 	Cli gupmEntryPointCliList
 	Config gupmEntryPointConfigList
+	Dependencies gupmEntryPointDependenciesList
 }
 
 type gupmEntryPointCliList  struct {
+	DefaultProviders map[string] string
 	Aliases map[string]interface {}
+}
+
+type gupmEntryPointDependenciesList  struct {
+	DefaultProvider string
+	Default map[string] string
 }
 
 type gupmEntryPointConfigList  struct {

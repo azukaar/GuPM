@@ -10,8 +10,16 @@ func AddDependency(path string, rls []string) error {
 	var err error
 	var packageConfig utils.Json
 	var depList []map[string]interface {}
+	var depProvider = Provider
 
 	ui.Title("Add dependency...")
+	
+	if(!ProviderWasForced && utils.FileExists(path + utils.Path("/gupm.json"))) {
+		config, _ := utils.ReadGupmJson(path + utils.Path("/gupm.json"))
+		if(config.Dependencies.DefaultProvider != "") {
+			depProvider = config.Dependencies.DefaultProvider
+		}
+	}
 
 	err = provider.InitProvider(Provider)
 
@@ -23,8 +31,16 @@ func AddDependency(path string, rls []string) error {
 	if(err != nil) {
 		return err
 	}
-	packageConfig, _ = provider.GetPackageConfig()
-	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
+
+	packageConfig, err = provider.GetPackageConfig()
+	if(err != nil) {
+		return err
+	}
+
+	packageConfig, err = provider.PostGetPackageConfig(packageConfig)
+	if(err != nil) {
+		return err
+	}
 
 	depList, err = provider.GetDependencyList(packageConfig)
 	if(err != nil) {
@@ -34,7 +50,7 @@ func AddDependency(path string, rls []string) error {
 	ui.Title("Adding to dependency list...")
 
 	for _, str := range rls {
-		dep :=  utils.BuildDependencyFromString(Provider, str)
+		dep :=  utils.BuildDependencyFromString(depProvider, str)
 		resolved, err := provider.ResolveDependencyLocation(dep)
 		if(err != nil) {
 			ui.Error("Can't resolve", str)
@@ -44,9 +60,11 @@ func AddDependency(path string, rls []string) error {
 		depList = append(depList, dep)
 	}
 
-	err = provider.SaveDependencyList(depList)
-	if(err != nil) {
-		return err
+	if(packageConfig != nil) {
+		err = provider.SaveDependencyList(depList)
+		if(err != nil) {
+			return err
+		}
 	}
 
 	return nil

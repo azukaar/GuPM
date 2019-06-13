@@ -11,6 +11,8 @@ import (
 
 type json = utils.Json
 
+var ProviderWasForced = false
+
 type Arguments map[string] string
 func (a *Arguments) AsJson() json {
 	res := utils.Json{}
@@ -94,13 +96,24 @@ func GetArgs(args []string) (string, Arguments) {
 	return command, arguments
 }
 
-func getProvider(args Arguments) string {
+func getProvider(c string, args Arguments) string {
+	defaultProvider := "gupm"
+
+	if(utils.FileExists("gupm.json")) {
+		config, _ := utils.ReadGupmJson("gupm.json")
+		if(config.Cli.DefaultProviders[c] != "") {
+			defaultProvider = config.Cli.DefaultProviders[c]
+		}
+	}
+
 	if args["Provider"] != "" {
+		ProviderWasForced = true
 		return args["Provider"]
 	} else if(args["P"] != "") {
+		ProviderWasForced = true
 		return args["P"] 
 	} else {
-		return "gupm"
+		return defaultProvider
 	}
 }
 
@@ -108,12 +121,27 @@ func getProvider(args Arguments) string {
 func ExecCli(c string, args Arguments) (bool, error) {
 	var err error
 	notFound := "Cannot find commmand"
+	shorthands := map[string] string {
+		"h": "help",
+		"m": "make",
+		"i": "install",
+		"r": "remove",
+		"p": "publish",
+		"b": "bootstrap",
+		"cache": "c",
+		"self": "s",
+		"plugin": "pl",
+	}
+
+	if(shorthands[c] != "") {
+		c = shorthands[c]
+	}
 	
-	if provider := getProvider(args); provider != ""  {
+	if provider := getProvider(c, args); provider != ""  {
 		Provider = provider
 	}
 
-	if c == "help" || c == "h" {
+	if c == "help" {
 		fmt.Println("make / m :", "[--provider=]", "Install projects depdencies based on info in the entry point (depends on provider)")
 		fmt.Println("install / i :", "[--provider=]", "Install package")
 		fmt.Println("remove / r :", "[--provider=]", "remove package from module config")
@@ -125,26 +153,26 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		fmt.Println("plugin / pl :", "To install a plugin \"g pl install\". Then use \"g pl create\" to create a new one and \"g pl link\" to test your plugin")
 	} else 
 
-	if c == "make" || c == "m" {
+	if c == "make" {
 		err = InstallProject(".")
 	} else
 	
-	if c == "install" || c == "i" {
+	if c == "install" {
 		err = AddDependency(".", args.AsList())
 		if(err == nil) {
 			err = InstallProject(".")
 		}
 	} else
 	
-	if c == "publish" || c == "p" {
+	if c == "publish" {
 		err = Publish(".")
 	} else
 
-	if c == "delete" || c == "d" {
+	if c == "delete" {
 		err = RemoveDependency(".", args.AsList())
 	} else
 	
-	if c == "plugin" || c == "pl" {
+	if c == "plugin" {
 		if(args["$1"] == "create") {
 			PluginCreate(".")
 		} else if (args["$1"] == "link") {
@@ -158,7 +186,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		}
 	} else
 	
-	if c == "cache" || c == "c" {
+	if c == "cache" {
 		if(args["$1"] == "clear") {
 			CacheClear()
 		} else if (args["$1"] == "check") {
@@ -168,7 +196,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		}
 	} else
 
-	if c == "self" || c == "s" {
+	if c == "self" {
 		if(args["$1"] == "upgrade") {
 			SelfUpgrade()
 		} else if (args["$1"] == "uninstall") {
@@ -178,11 +206,11 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		}
 	} else
 	
-	if c == "bootstrap" || c == "b" {
+	if c == "bootstrap" {
 		err = Bootstrap(".")
 	} else 
 	
-	if c == "test" || c == "t" {
+	if c == "test" {
 		err = RunTest("tests")
 	} else 
 	

@@ -161,7 +161,9 @@ func BinaryInstall(path string, packagePath string) error {
 
 func SaveDependencyList(depList []map[string]interface{}) error {
 	config := GetPackageConfig("gupm.json")
-	config["dependencies"] = make(map[string]interface{})
+	if(config["dependencies"] == nil) {
+		config["dependencies"] = make(map[string]interface{})
+	}
 	config["dependencies"].(map[string]interface{})["default"] = make(map[string]interface {})
 
 	for _, dep := range depList {
