@@ -67,6 +67,20 @@ func RunCommand(toRun string, args []string) (string, error) {
 	return string(res), nil
 }
 
+func BuildStringFromDependency(dep map[string]interface {}) string {
+	rep := dep["name"].(string)
+
+	if(dep["version"] != nil && dep["version"].(string) != "") {
+		rep += "@" + dep["version"].(string)
+	}
+
+	if(dep["provider"] != nil && dep["provider"].(string) != "") {
+		rep = dep["provider"].(string) +  "://" + rep
+	}
+
+	return rep
+}
+
 func BuildDependencyFromString(defaultProvider string, dep string) map[string]interface {} {
 	result := make(map[string]interface {})
 	step := dep

@@ -165,7 +165,12 @@ func SaveDependencyList(depList []map[string]interface{}) error {
 	config["dependencies"].(map[string]interface{})["default"] = make(map[string]interface {})
 
 	for _, dep := range depList {
-		config["dependencies"].(map[string]interface{})["default"].(map[string]interface{})[dep["provider"].(string) + "://" + dep["name"].(string)] = dep["version"].(string)
+		key := utils.BuildStringFromDependency(map[string]interface{}{
+			"provider": dep["provider"].(string),
+			"name": dep["name"].(string),
+		})
+		
+		config["dependencies"].(map[string]interface{})["default"].(map[string]interface{})[key] = dep["version"].(string)
 	}
 
 	utils.WriteJsonFile("gupm.json", config)

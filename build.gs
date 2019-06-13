@@ -6,3 +6,5 @@ exec("go", goArgs)
 
 copyFiles("plugins", "build/plugins")
 copyFiles("gupm.json", "build/gupm.json")
+
+console.log("\nBuild done! 💖")
