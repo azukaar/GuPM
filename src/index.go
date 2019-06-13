@@ -42,6 +42,7 @@ func binFile(name string, args []string) {
 
 func main() {
 	if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
+		utils.RunCommand("ulimit", []string{"-n", "2048"})
 		limit, _ := utils.RunCommand("ulimit", []string{"-n"})
 		ln, _ := strconv.Atoi(strings.TrimSpace(limit))
 		if runtime.GOOS == "darwin" && ln == 256 {
