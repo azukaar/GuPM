@@ -141,7 +141,7 @@ func ExpandDependency(dependency map[string]interface {}) (map[string]interface 
 }
 
 func BinaryInstall(path string, packagePath string) error {
-	packages := utils.ReadDir(packagePath)
+	packages, _ := utils.ReadDir(packagePath)
 
 	for _, dep := range packages {
 		configFilePath := utils.Path(packagePath + "/" + dep.Name() + "/gupm.json")

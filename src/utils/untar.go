@@ -164,6 +164,7 @@ func Unzip(r string) (FileStructure, error) {
 				Filetype: 1,
 				Content: buf.Bytes(),
 			})
+
 		}	
 	}
 	return root, nil

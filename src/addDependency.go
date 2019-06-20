@@ -52,7 +52,7 @@ func AddDependency(path string, rls []string) error {
 	for _, str := range rls {
 		dep :=  utils.BuildDependencyFromString(depProvider, str)
 		resolved, err := provider.ResolveDependencyLocation(dep)
-		if(err != nil) {
+		if(err != nil || resolved["url"].(string) == "") {
 			ui.Error("Can't resolve", str)
 			return err
 		}

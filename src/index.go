@@ -6,11 +6,9 @@ import (
 	"./ui"
 	"./jsVm"
 	"strings"
-	"strconv"
 	"path/filepath"
 	"regexp"
 	"fmt"
-	"runtime"
 )
 
 var Provider string
@@ -40,22 +38,17 @@ func binFile(name string, args []string) {
 	utils.ExecCommand(realPath, args)
 }
 
+func Exit(code int) {
+	ui.Stop()
+	os.Exit(code)
+}
+
 func main() {
-	if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
-		utils.RunCommand("ulimit", []string{"-n", "2048"})
-		limit, _ := utils.RunCommand("ulimit", []string{"-n"})
-		ln, _ := strconv.Atoi(strings.TrimSpace(limit))
-		if runtime.GOOS == "darwin" && ln == 256 {
-			ui.Error("You seem to be using the default Mac terminal for your project. We highly recommend using your IDE terminal or an alternative like ITerm.")
-		} else if ln < 2048 {
-			ui.Error("Your ulimit -n is only", limit, "but in order to ensure proper operation, it should be set to at least 2048.")
-		}
-	}
-	
 	binFolder := make(map[string]bool)
 
 	if(utils.FileExists(".bin")) {
-		for _, file := range utils.ReadDir(".bin") {
+		files, _ := utils.ReadDir(".bin")
+		for _, file := range files {
 			binFolder[file.Name()] = true
 		}
 	}
@@ -80,6 +73,7 @@ func main() {
 	if didExec, err := ExecCli(c, args); didExec {
 		if(err != nil) {
 			ui.Error(err);
+			Exit(1)
 		}
 		if (script != "") {
 			executeFile(script, args)
@@ -110,6 +104,7 @@ func main() {
 		fmt.Println("Welcome to GuPM version 1.0.0 \ntry 'g help' for a list of commands. Try 'g filename' to execute a file.")
 	} else {
 		fmt.Println("Command not found. Try 'g help' or check filename.")
+		Exit(1)
 	}
 
 	ui.Stop()

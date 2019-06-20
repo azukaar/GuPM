@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"runtime"
 	"reflect"
+	"sync"
 	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
     "path/filepath"
@@ -44,8 +45,8 @@ func ExecCommand(toRun string, args []string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
-	cmd.Run()
-	return nil
+	err := cmd.Run()
+	return err
 }
 
 func ReadGupmJson(path string) (*GupmEntryPoint, error) {
@@ -115,10 +116,13 @@ func StringToJSON(b string) map[string]interface {} {
 
 func ReadJSON(path string, target interface{}) error  {
 	b, err := os.Open(path) // just pass the file name
+
 	if err != nil {
+		b.Close()
 		return err
 	}
 
+	defer b.Close()
 	return json.NewDecoder(b).Decode(target)
 }
 
@@ -193,13 +197,18 @@ func RecursiveFileWalkDir(source string) []string {
 	return result
 }
 
-func ReadDir(path string) []os.FileInfo{
+var lock = sync.RWMutex{}
+
+func ReadDir(path string) ([]os.FileInfo, error) {
+	lock.Lock()
     files, err := ioutil.ReadDir(path)
+	lock.Unlock()
     if err != nil {
-        ui.Error(err)
+		ui.Error(err)
+		return files, err
 	}
 
-    return files
+    return files, nil
 }
 
 func IsDirectory(path string) (bool) {

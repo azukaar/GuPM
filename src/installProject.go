@@ -88,11 +88,11 @@ func expandDepList(depList []map[string]interface {}) ([]map[string]interface {}
 						newDep = cacheExpanded[newDep["url"].(string)]
 					}
 				}
+				ui.Log("Get dependency " + newDep["name"].(string))
 				lock.Unlock()
 				
-				ui.Log("Get dependency " + newDep["name"].(string))
-				
 				lockList.Lock()
+
 				depList[index] = newDep
 				nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 				lockList.Unlock()
@@ -126,8 +126,10 @@ func installDep(path string, depList []map[string]interface {}) map[string]strin
 	for index, dep := range depList {
 		go (func(channel chan int, index int, dep map[string]interface {}){
 			depProviderConfig, err := provider.GetProviderConfig(dep["provider"].(string))
+
 			ui.Error(err)
 			ui.Log("Installing " + path + "/" + depProviderConfig.Config.Default.InstallPath)
+
 			provider.InstallDependency(utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath), dep)
 
 			if(path == ".") {

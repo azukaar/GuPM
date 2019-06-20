@@ -36,7 +36,7 @@ func BinaryInstall(path map[string]string) (error) {
 }
 
 func installDependencySubFolders(path string, depPath string) {
-	files := utils.ReadDir(path)
+	files, _ := utils.ReadDir(path)
 
 	for _, file := range files {
 		if(file.IsDir()) {

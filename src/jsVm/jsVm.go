@@ -153,9 +153,9 @@ func Setup(vm *otto.Otto) {
 			args = make([]string, 0)
 		}
 
-		utils.ExecCommand(exec, args.([]string))
+		err := utils.ExecCommand(exec, args.([]string))
 
-		result, _ :=  vm.ToValue(true)
+		result, _ :=  vm.ToValue(err)
 		return result
 	})
 
@@ -181,8 +181,11 @@ func Setup(vm *otto.Otto) {
 		return result
 	})
 	
-	vm.Set("exit", func() {
-		os.Exit(1)
+	vm.Set("exit", func(call otto.FunctionCall) otto.Value {
+		code, _ := call.Argument(0).ToInteger()
+		os.Exit(int(code))
+		result, _ :=  vm.ToValue(true)
+		return result
 	})
 
 	vm.Set("writeJsonFile", func(call otto.FunctionCall) otto.Value {
@@ -274,7 +277,7 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		path = utils.Path(path)
 		var filenames = make([]string, 0)
-		files := utils.ReadDir(path)
+		files, _ := utils.ReadDir(path)
 		for _, file := range files {
 			filenames = append(filenames, file.Name())
 		}

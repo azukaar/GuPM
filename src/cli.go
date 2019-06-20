@@ -125,11 +125,12 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		"h": "help",
 		"m": "make",
 		"i": "install",
-		"r": "remove",
+		"d": "delete",
 		"p": "publish",
 		"b": "bootstrap",
 		"c": "cache",
 		"s": "self",
+		"t": "test",
 		"pl": "plugin",
 	}
 
@@ -147,6 +148,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		fmt.Println("remove / r :", "[--provider=]", "remove package from module config")
 		fmt.Println("publish / p :", "[--provider=]", "publish a project based on the model of your specific provider")
 		fmt.Println("bootstrap / b :", "[--provider=]", "bootstrap a new project based on the model of your specific provider")
+		fmt.Println("test / t :", "[--provider=] Run project's tests in tests folder.")
 
 		fmt.Println("cache / c :", "clear or check the cache with \"cache clear\" or \"cache check\"")
 		fmt.Println("self / s :", "self manage gupm. Try g \"self upgrade\" or \"g self uninstall\"")
@@ -211,7 +213,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 	} else 
 	
 	if c == "test" {
-		err = RunTest("tests")
+		RunTest("tests")
 	} else 
 	
 	{

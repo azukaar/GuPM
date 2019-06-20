@@ -1,7 +1,7 @@
 {
     "cli": {
         "aliases": {
-            "gotest": "go test ./src",
+            "gotest": "go test ./src ./src/utils",
             "start": "./build/dg"
         }
     },
@@ -20,6 +20,7 @@
             "go://github.com/mitchellh/go-homedir": "master",
             "go://github.com/otiai10/copy": "master",
             "go://github.com/robertkrimen/otto": "master",
+            "go://github.com/stretchr/testify": "master",
             "go://gopkg.in/sourcemap.v1": "v1.0.5"
         },
         "defaultProvider": "go"

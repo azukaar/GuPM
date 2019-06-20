@@ -81,10 +81,12 @@ func (g *FileStructure) SaveSelfAt(path string) error {
 		f, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR, os.FileMode(0777))
 
 		if err != nil {
+			f.Close()
 			return  err
 		}
 		
 		if _, err := f.Write(g.Content); err != nil {
+			f.Close()
 			return  err
 		}
 		
