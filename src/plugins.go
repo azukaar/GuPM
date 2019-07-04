@@ -97,7 +97,7 @@ func PluginCreate(path string) {
 	"author": "` + author + `",
 	"licence": "` + licence + `",
     "publish": {
-        "source": ".",
+        "source": ["."],
         "dest": "../docs/repo"
     },
     "config": {

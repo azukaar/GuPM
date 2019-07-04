@@ -100,9 +100,13 @@ func getProvider(c string, args Arguments) string {
 	defaultProvider := "gupm"
 
 	if(utils.FileExists("gupm.json")) {
-		config, _ := utils.ReadGupmJson("gupm.json")
-		if(config.Cli.DefaultProviders[c] != "") {
-			defaultProvider = config.Cli.DefaultProviders[c]
+		config, err := utils.ReadGupmJson("gupm.json")
+		if(err != nil) {
+			ui.Error(err)
+		} else {
+			if(config.Cli.DefaultProviders[c] != "") {
+				defaultProvider = config.Cli.DefaultProviders[c]
+			}
 		}
 	}
 
