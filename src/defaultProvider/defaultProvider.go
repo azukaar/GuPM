@@ -100,7 +100,11 @@ func GetDependencyList(config map[string]interface {}) []map[string]interface {}
 		ui.Log("no dependencies")
 		return nil
 	}
-	depList := depEnv["default"].(map[string]interface {})
+	depList, hasDefault := depEnv["default"].(map[string]interface {})
+	if(!hasDefault) {
+		ui.Log("no dependencies")
+		return nil
+	}
 	result := make([]map[string]interface {}, 0)
 	for name, value := range depList {
 		dep := utils.BuildDependencyFromString("gupm", name)
