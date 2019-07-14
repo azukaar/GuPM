@@ -127,10 +127,13 @@ func installDep(path string, depList []map[string]interface {}) map[string]strin
 		go (func(channel chan int, index int, dep map[string]interface {}){
 			depProviderConfig, err := provider.GetProviderConfig(dep["provider"].(string))
 			destination := utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath)
-			packageConfig, errC := utils.ReadGupmJson(utils.Path(dep["path"].(string) + "/gupm.json"))
-			
-			if errC == nil && packageConfig != nil && packageConfig.WrapInstallFolder != "" {
-				destination += utils.Path("/" + packageConfig.WrapInstallFolder)
+
+			if dep["path"] != nil {
+				packageConfig, errC := utils.ReadGupmJson(utils.Path(dep["path"].(string) + "/gupm.json"))
+				
+				if errC == nil && packageConfig != nil && packageConfig.WrapInstallFolder != "" {
+					destination += utils.Path("/" + packageConfig.WrapInstallFolder)
+				}
 			}
 
 			ui.Error(err)
