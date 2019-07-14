@@ -50,6 +50,9 @@ func ExecCommand(toRun string, args []string) error {
 }
 
 func ReadGupmJson(path string) (*GupmEntryPoint, error) {
+	if !FileExists(path) {
+		return nil, nil
+	}
 	config := new(GupmEntryPoint)
 	errRead := ReadJSON(path, config)
 	if(errRead != nil) {

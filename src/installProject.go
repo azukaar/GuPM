@@ -126,11 +126,16 @@ func installDep(path string, depList []map[string]interface {}) map[string]strin
 	for index, dep := range depList {
 		go (func(channel chan int, index int, dep map[string]interface {}){
 			depProviderConfig, err := provider.GetProviderConfig(dep["provider"].(string))
+			destination := utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath)
+			packageConfig, errC := utils.ReadGupmJson(utils.Path(dep["path"].(string) + "/gupm.json"))
+			
+			if errC == nil && packageConfig != nil && packageConfig.WrapInstallFolder != "" {
+				destination += utils.Path("/" + packageConfig.WrapInstallFolder)
+			}
 
 			ui.Error(err)
-			ui.Log("Installing " + path + "/" + depProviderConfig.Config.Default.InstallPath)
-
-			provider.InstallDependency(utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath), dep)
+			ui.Log("Installing " + path)
+			provider.InstallDependency(destination, dep)
 
 			if(path == ".") {
 				installPathsLock.Lock()
@@ -141,7 +146,7 @@ func installDep(path string, depList []map[string]interface {}) map[string]strin
 			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface {})
 
 			if(ok) {
-				installDep(utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath + "/" + depList[index]["name"].(string)), nextDepList)
+				installDep(utils.Path(destination + "/" + depList[index]["name"].(string)), nextDepList)
 			}
 			channel <- 1
 		})(channel, index, dep)

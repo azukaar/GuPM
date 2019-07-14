@@ -3,6 +3,7 @@ package utils
 type GupmEntryPoint struct {
 	Name string
 	Version string
+	WrapInstallFolder string
 	Publish gupmEntryPointPublish
 	Cli gupmEntryPointCliList
 	Config gupmEntryPointConfigList
