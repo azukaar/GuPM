@@ -49,7 +49,7 @@ This idea is born from the frustration of having to give up my habits whenever I
  * [Wiki](https://github.com/azukaar/GuPM/wiki)
  * [Quick Start](https://github.com/azukaar/GuPM/wiki/quick-start)
  * [Getting started with Node](https://medium.com/@azukaar/gupm-to-manage-your-node-js-project-b7664503f3de?sk=f901b86d888b44dcdb78c644bd5df002)
- * Getting started with Go
+ * [Getting started with Go](https://medium.com/@azukaar/gupm-to-manage-your-go-project-5d19c341403c)
  * [Create your own repository](https://github.com/azukaar/GuPM/wiki/repositories)
  * [Official GuPM repository](https://github.com/azukaar/GuPM-official)
 
