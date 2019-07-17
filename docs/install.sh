@@ -6,16 +6,16 @@ elif [ "$(uname)" = "Linux" ]; then
     curl --output gupm.tar.gz https://azukaar.github.io/GuPM/gupm.tar.gz
 fi
 
-mkdir /usr/local
-tar -C /usr/local -zxvf gupm.tar.gz
-chmod -R 755 /usr/local/gupm/
+mkdir ~/.gupm
+tar -C ~/.gupm -zxvf gupm.tar.gz
+chmod -R 755 ~/.gupm/gupm/
 rm gupm.tar.gz
 
 if [ -d "/usr/local/bin" ] 
 then
-    ln -s /usr/local/gupm/g /usr/local/bin/g
+    ln -s ~/.gupm/gupm/g /usr/local/bin/g
 else
-    ln -s /usr/local/gupm/g /bin/g
+    ln -s ~/.gupm/gupm/g /bin/g
 fi
 
 echo "------"

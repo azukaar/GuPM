@@ -57,7 +57,7 @@ This idea is born from the frustration of having to give up my habits whenever I
 
 ### Linux and Mac OS : 
 
-⌨️ `$ curl -fsSL  https://azukaar.github.io/GuPM/install.sh | sudo bash`
+⌨️ `$ curl -fsSL  https://azukaar.github.io/GuPM/install.sh | bash`
 
 ### Windows 
 
