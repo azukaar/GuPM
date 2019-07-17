@@ -5,12 +5,11 @@ import "archive/zip"
 import "compress/gzip"
 
 import (
+	"bytes"
 	"io"
 	"io/ioutil"
 	"strings"
-	"bytes"
 )
-
 
 func Ungz(r string) (FileStructure, error) {
 	tr, err := gzip.NewReader(strings.NewReader(r))
@@ -26,11 +25,11 @@ func Ungz(r string) (FileStructure, error) {
 
 	root := FileStructure{
 		Children: make(map[string]FileStructure),
-		Name : tr.Header.Name,
-		Content: buf.Bytes(),
+		Name:     tr.Header.Name,
+		Content:  buf.Bytes(),
 		Filetype: 1,
 	}
-	
+
 	return root, nil
 }
 
@@ -41,19 +40,19 @@ func Tar(files []string) (FileStructure, error) {
 	finalList := make([]string, 0)
 
 	for _, file := range files {
-		if(IsDirectory(file)) {
+		if IsDirectory(file) {
 			finalList = append(finalList, RecursiveFileWalkDir(file)...)
 		} else {
 			finalList = append(finalList, file)
 		}
 	}
-	
+
 	for _, file := range finalList {
 		content, err := ioutil.ReadFile(file)
-		if(err != nil) {
+		if err != nil {
 			return EmptyFileStructure, err
 		}
-	
+
 		hdr := &tar.Header{
 			Name: file,
 			Mode: 0740,
@@ -78,7 +77,7 @@ func Tar(files []string) (FileStructure, error) {
 	}
 
 	root := FileStructure{
-		Content: buf.Bytes(),
+		Content:  buf.Bytes(),
 		Filetype: 1,
 	}
 
@@ -89,7 +88,7 @@ func Untar(r string) (FileStructure, error) {
 	gzr, err := gzip.NewReader(strings.NewReader(r))
 	root := FileStructure{
 		Children: make(map[string]FileStructure),
-		Name : "/",
+		Name:     "/",
 		Filetype: 0,
 	}
 
@@ -119,12 +118,13 @@ func Untar(r string) (FileStructure, error) {
 		switch header.Typeflag {
 
 		// if its a dir and it doesn't exist create it
-		case tar.TypeDir: {
-			root.getOrCreate(header.Name, FileStructure{
-				Filetype: 0,
-			})
-		}
-		
+		case tar.TypeDir:
+			{
+				root.getOrCreate(header.Name, FileStructure{
+					Filetype: 0,
+				})
+			}
+
 		// if it's a file create it
 		case tar.TypeReg:
 			buf := new(bytes.Buffer)
@@ -132,9 +132,9 @@ func Untar(r string) (FileStructure, error) {
 
 			root.getOrCreate(header.Name, FileStructure{
 				Filetype: 1,
-				Content: buf.Bytes(),
+				Content:  buf.Bytes(),
 			})
-		}	
+		}
 	}
 
 	return root, nil
@@ -143,7 +143,7 @@ func Untar(r string) (FileStructure, error) {
 func Unzip(r string) (FileStructure, error) {
 	root := FileStructure{
 		Children: make(map[string]FileStructure),
-		Name : "/",
+		Name:     "/",
 		Filetype: 0,
 	}
 
@@ -151,7 +151,7 @@ func Unzip(r string) (FileStructure, error) {
 
 	for _, f := range tr.File {
 		// if its a dir and it doesn't exist create it
-		if(f.FileInfo().IsDir()) {
+		if f.FileInfo().IsDir() {
 			root.getOrCreate(f.Name, FileStructure{
 				Filetype: 0,
 			})
@@ -162,10 +162,10 @@ func Unzip(r string) (FileStructure, error) {
 
 			root.getOrCreate(f.Name, FileStructure{
 				Filetype: 1,
-				Content: buf.Bytes(),
+				Content:  buf.Bytes(),
 			})
 
-		}	
+		}
 	}
 	return root, nil
 }

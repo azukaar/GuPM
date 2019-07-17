@@ -1,40 +1,40 @@
 package utils
 
 import (
-	"encoding/json"
-	"os"
-	"net/http"
-	"regexp"
-	"time"
 	"../ui"
-	"os/exec"
-	"runtime"
-	"reflect"
-	"sync"
+	"encoding/json"
 	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
-    "path/filepath"
+	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"reflect"
+	"regexp"
+	"runtime"
+	"sync"
+	"time"
 )
 
 type Dependency struct {
-	Name string
+	Name     string
 	Provider string
-	Version string
+	Version  string
 }
 
-func buildCmd(toRun string, args []string) *exec.Cmd{
+func buildCmd(toRun string, args []string) *exec.Cmd {
 	isNode := regexp.MustCompile(`.js$`)
 	var cmd *exec.Cmd
 	bashargs := []string{}
 
 	// temporary hack to make windows execute js file with node
-	if(isNode.FindString(toRun) != "") {
+	if isNode.FindString(toRun) != "" {
 		bashargs = append(bashargs, toRun)
 		bashargs = append(bashargs, args...)
-		cmd = exec.Command("node", bashargs...)	
+		cmd = exec.Command("node", bashargs...)
 	} else {
 		bashargs = append(bashargs, args...)
-		cmd = exec.Command(toRun, bashargs...)	
+		cmd = exec.Command(toRun, bashargs...)
 	}
 
 	return cmd
@@ -55,7 +55,7 @@ func ReadGupmJson(path string) (*GupmEntryPoint, error) {
 	}
 	config := new(GupmEntryPoint)
 	errRead := ReadJSON(path, config)
-	if(errRead != nil) {
+	if errRead != nil {
 		ui.Error("Can't read", path, "check your file")
 		return nil, errRead
 	}
@@ -65,33 +65,33 @@ func ReadGupmJson(path string) (*GupmEntryPoint, error) {
 func RunCommand(toRun string, args []string) (string, error) {
 	cmd := buildCmd(toRun, args)
 	res, err := cmd.Output()
-	if(err != nil) {
+	if err != nil {
 		return "", err
 	}
 	return string(res), nil
 }
 
-func BuildStringFromDependency(dep map[string]interface {}) string {
+func BuildStringFromDependency(dep map[string]interface{}) string {
 	rep := dep["name"].(string)
 
-	if(dep["version"] != nil && dep["version"].(string) != "") {
+	if dep["version"] != nil && dep["version"].(string) != "" {
 		rep += "@" + dep["version"].(string)
 	}
 
-	if(dep["provider"] != nil && dep["provider"].(string) != "") {
-		rep = dep["provider"].(string) +  "://" + rep
+	if dep["provider"] != nil && dep["provider"].(string) != "" {
+		rep = dep["provider"].(string) + "://" + rep
 	}
 
 	return rep
 }
 
-func BuildDependencyFromString(defaultProvider string, dep string) map[string]interface {} {
-	result := make(map[string]interface {})
+func BuildDependencyFromString(defaultProvider string, dep string) map[string]interface{} {
+	result := make(map[string]interface{})
 	step := dep
 
 	versionCheck := regexp.MustCompile(`@[\w\.\-\_\^\~]+$`)
 	tryversion := versionCheck.FindString(step)
-	if(tryversion != "") {
+	if tryversion != "" {
 		result["version"] = tryversion[1:]
 		step = versionCheck.ReplaceAllString(step, "")
 	} else {
@@ -100,7 +100,7 @@ func BuildDependencyFromString(defaultProvider string, dep string) map[string]in
 
 	providerCheck := regexp.MustCompile(`^[\w\-\_]+\:\/\/`)
 	tryprovider := providerCheck.FindString(step)
-	if(tryprovider != "") {
+	if tryprovider != "" {
 		result["provider"] = tryprovider[:len(tryprovider)-3]
 		step = providerCheck.ReplaceAllString(step, "")
 	} else {
@@ -111,13 +111,13 @@ func BuildDependencyFromString(defaultProvider string, dep string) map[string]in
 	return result
 }
 
-func StringToJSON(b string) map[string]interface {} {
+func StringToJSON(b string) map[string]interface{} {
 	var jsonString map[string]interface{}
 	json.Unmarshal([]byte(string(b)), &jsonString)
 	return jsonString
 }
 
-func ReadJSON(path string, target interface{}) error  {
+func ReadJSON(path string, target interface{}) error {
 	b, err := os.Open(path) // just pass the file name
 
 	if err != nil {
@@ -132,7 +132,7 @@ func ReadJSON(path string, target interface{}) error  {
 var numberConnectionOpened = 0
 
 func HttpGet(url string) []byte {
-	if(numberConnectionOpened > 50) {
+	if numberConnectionOpened > 50 {
 		time.Sleep(1000 * time.Millisecond)
 		return HttpGet(url)
 	}
@@ -142,7 +142,7 @@ func HttpGet(url string) []byte {
 	if httperr != nil {
 		numberConnectionOpened--
 		isRateLimit, _ := regexp.MatchString(`unexpected EOF$`, httperr.Error())
-		if(!isRateLimit) {
+		if !isRateLimit {
 			ui.Error("Error accessing", url, "trying again.", httperr)
 		}
 		time.Sleep(1000 * time.Millisecond)
@@ -157,29 +157,33 @@ func HttpGet(url string) []byte {
 		ui.Error("Error reading HTTP response ", err)
 		return HttpGet(url)
 	}
-	
+
 	numberConnectionOpened--
 	return body
 }
 
-func FileExists(path string) (bool) {
-    _, err := os.Stat(path)
-    if err == nil { return true }
-    if os.IsNotExist(err) { return false }
-    return true
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
 
 func StringInSlice(a string, list []string) bool {
-    for _, b := range list {
-        if b == a {
-            return true
-        }
-    }
-    return false
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }
 
-func RemoveIndex(s []map[string]interface {}, index int) []map[string]interface {} {
-    return append(s[:index], s[index+1:]...)
+func RemoveIndex(s []map[string]interface{}, index int) []map[string]interface{} {
+	return append(s[:index], s[index+1:]...)
 }
 
 func RecursiveFileWalkDir(source string) []string {
@@ -189,7 +193,7 @@ func RecursiveFileWalkDir(source string) []string {
 			if err != nil {
 				return err
 			}
-			if(!info.IsDir()){
+			if !info.IsDir() {
 				result = append(result, path)
 			}
 			return nil
@@ -204,27 +208,27 @@ var lock = sync.RWMutex{}
 
 func ReadDir(path string) ([]os.FileInfo, error) {
 	lock.Lock()
-    files, err := ioutil.ReadDir(path)
+	files, err := ioutil.ReadDir(path)
 	lock.Unlock()
-    if err != nil {
+	if err != nil {
 		ui.Error(err)
 		return files, err
 	}
 
-    return files, nil
+	return files, nil
 }
 
-func IsDirectory(path string) (bool) {
-    fileInfo, err := os.Stat(path)
-    if err != nil {
-      return false
-    }
-    return fileInfo.IsDir()
+func IsDirectory(path string) bool {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return fileInfo.IsDir()
 }
 
 func HOMEDIR(fallback string) string {
 	hdir, errH := homedir.Dir()
-	if(errH != nil) {
+	if errH != nil {
 		ui.Error(errH)
 		hdir = fallback
 	}
@@ -234,10 +238,10 @@ func HOMEDIR(fallback string) string {
 func DIRNAME() string {
 	ex, err := os.Executable()
 	exr, err := filepath.EvalSymlinks(ex)
-    if err != nil {
-        panic(err)
-    }
-    dir := filepath.Dir(exr)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Dir(exr)
 	return dir
 }
 
@@ -245,16 +249,16 @@ func WriteFile(path string, file string) error {
 	return ioutil.WriteFile(Path(path), []byte(file), os.ModePerm)
 }
 
-func WriteJsonFile(path string, file map[string]interface {}) {
+func WriteJsonFile(path string, file map[string]interface{}) {
 	bytes, _ := json.MarshalIndent(file, "", "    ")
 	err := ioutil.WriteFile(path, bytes, os.ModePerm)
-	if(err != nil) {
+	if err != nil {
 		ui.Error(err)
 	}
 }
 
 // TODO: https://blog.golang.org/pipelines
-// add proper checksum check 
+// add proper checksum check
 
 func SaveLockDep(path string) {
 	ioutil.WriteFile(path+"/.gupm_locked", []byte("1"), os.ModePerm)
@@ -274,26 +278,25 @@ func Path(path string) string {
 }
 
 func Contains(s interface{}, elem interface{}) bool {
-    arrV := reflect.ValueOf(s)
+	arrV := reflect.ValueOf(s)
 
-    if arrV.Kind() == reflect.Slice {
-        for i := 0; i < arrV.Len(); i++ {
+	if arrV.Kind() == reflect.Slice {
+		for i := 0; i < arrV.Len(); i++ {
 
-            // XXX - panics if slice element points to an unexported struct field
-            // see https://golang.org/pkg/reflect/#Value.Interface
-            if arrV.Index(i).Interface() == elem {
-                return true
-            }
-        }
-    }
+			// XXX - panics if slice element points to an unexported struct field
+			// see https://golang.org/pkg/reflect/#Value.Interface
+			if arrV.Index(i).Interface() == elem {
+				return true
+			}
+		}
+	}
 
-    return false
+	return false
 }
 
-
 func ArrString(something interface{}) []string {
-	_, ok := something.([]string) 
-	if(!ok) {
+	_, ok := something.([]string)
+	if !ok {
 		res := make([]string, 0)
 		for _, v := range something.([]interface{}) {
 			res = append(res, v.(string))

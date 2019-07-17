@@ -1,15 +1,14 @@
 package main
 
 import (
-	"github.com/mitchellh/go-homedir"
 	"./ui"
 	"./utils"
+	"github.com/mitchellh/go-homedir"
 )
-
 
 func CacheClear() {
 	hdir, errH := homedir.Dir()
-	if(errH != nil) {
+	if errH != nil {
 		ui.Error(errH)
 		hdir = "."
 	}

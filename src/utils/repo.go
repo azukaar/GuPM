@@ -6,7 +6,7 @@ import (
 
 func GetOrCreateRepo(path string) map[string]interface{} {
 	configPath := path + "/gupm_repo.json"
-	if(!FileExists(configPath)) {
+	if !FileExists(configPath) {
 		baseConfig := `{
 	"packages": {}
 }`
@@ -19,5 +19,5 @@ func GetOrCreateRepo(path string) map[string]interface{} {
 }
 
 func SaveRepo(path string, file map[string]interface{}) {
-	WriteJsonFile(path + "/gupm_repo.json", file)
+	WriteJsonFile(path+"/gupm_repo.json", file)
 }

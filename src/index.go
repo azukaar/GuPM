@@ -1,22 +1,22 @@
 package main
 
 import (
-	"os"
-	"./utils"
-	"./ui"
 	"./jsVm"
-	"strings"
+	"./ui"
+	"./utils"
+	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
-	"fmt"
+	"strings"
 )
 
 var Provider string
 
 func ScriptExists(path string) string {
-	if (utils.FileExists(path + ".gs")) {
+	if utils.FileExists(path + ".gs") {
 		return path + ".gs"
-	} else if(utils.FileExists(path) && !utils.IsDirectory(path)) {
+	} else if utils.FileExists(path) && !utils.IsDirectory(path) {
 		return path
 	} else {
 		return ""
@@ -25,15 +25,15 @@ func ScriptExists(path string) string {
 
 func executeFile(path string, args Arguments) {
 	_, err := jsVm.Run(path, args.AsJson())
-	if(err != nil) {
-	  ui.Error("File execution failed")
+	if err != nil {
+		ui.Error("File execution failed")
 		ui.Error(err)
 		os.Exit(1)
 	}
 }
 
 func binFile(name string, args []string) {
-	path := utils.Path("./.bin/"+name)
+	path := utils.Path("./.bin/" + name)
 	realPath, _ := filepath.EvalSymlinks(path)
 	utils.ExecCommand(realPath, args)
 }
@@ -46,23 +46,23 @@ func Exit(code int) {
 func main() {
 	binFolder := make(map[string]bool)
 
-	if(utils.FileExists(".bin")) {
+	if utils.FileExists(".bin") {
 		files, _ := utils.ReadDir(".bin")
 		for _, file := range files {
 			binFolder[file.Name()] = true
 		}
 	}
-	
+
 	c, args := GetArgs(os.Args[1:])
 
-	if(utils.FileExists(".gupm_rc.gs")) {
+	if utils.FileExists(".gupm_rc.gs") {
 		executeFile(".gupm_rc.gs", args)
 	}
-	
-	aliases := map[string] interface{}{}
-	if(utils.FileExists("gupm.json")) {
+
+	aliases := map[string]interface{}{}
+	if utils.FileExists("gupm.json") {
 		packageConfig, errConfig := utils.ReadGupmJson("gupm.json")
-		if(errConfig != nil) {
+		if errConfig != nil {
 			ui.Error(errConfig)
 		} else {
 			aliases = packageConfig.Cli.Aliases
@@ -71,18 +71,18 @@ func main() {
 
 	script := ScriptExists(c)
 	if didExec, err := ExecCli(c, args); didExec {
-		if(err != nil) {
-			ui.Error(err);
+		if err != nil {
+			ui.Error(err)
 			Exit(1)
 		}
-		if (script != "") {
+		if script != "" {
 			executeFile(script, args)
 		}
-	} else if (c == "env" || c == "e") {
+	} else if c == "env" || c == "e" {
 		toProcess := os.Args[2:]
 		re := regexp.MustCompile(`([\w\-\_]+)=([\w\-\_]+)`)
 		isEnv := re.FindAllStringSubmatch(toProcess[0], -1)
-		for(isEnv != nil) {
+		for isEnv != nil {
 			name := isEnv[0][1]
 			value := isEnv[0][2]
 			os.Setenv(name, value)
@@ -90,17 +90,17 @@ func main() {
 			isEnv = re.FindAllStringSubmatch(toProcess[0], -1)
 		}
 		utils.ExecCommand(toProcess[0], toProcess[1:])
-	} else if (aliases[c] != nil) {
+	} else if aliases[c] != nil {
 		commands := strings.Split(aliases[c].(string), ";")
 		for _, command := range commands {
 			commandList := strings.Split(command, " ")
 			utils.ExecCommand(commandList[0], append(commandList[1:], os.Args[2:]...))
 		}
-	} else if (binFolder[c] == true) {
-		binFile(c, os.Args[2:])	
-	} else if (script != "") {
+	} else if binFolder[c] == true {
+		binFile(c, os.Args[2:])
+	} else if script != "" {
 		executeFile(script, args)
-	} else if (c == "") {
+	} else if c == "" {
 		fmt.Println("Welcome to GuPM version 1.0.0 \ntry 'g help' for a list of commands. Try 'g filename' to execute a file.")
 	} else {
 		fmt.Println("Command not found. Try 'g help' or check filename.")

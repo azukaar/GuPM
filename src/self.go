@@ -1,12 +1,12 @@
 package main
 
 import (
-	"./utils"
 	"./ui"
-	"runtime"
-	"os/exec"
+	"./utils"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"runtime"
 )
 
 // TODO: implemement script-free upgrade for all OSes
@@ -30,7 +30,7 @@ func SelfUpgrade() {
 
 func SelfUninstall() {
 	utils.RemoveFiles([]string{utils.DIRNAME()})
-	
+
 	if runtime.GOOS != "windows" {
 		utils.RemoveFiles([]string{"/usr/local/bin/g", "/bin/g"})
 	}

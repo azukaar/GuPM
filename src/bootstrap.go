@@ -6,14 +6,14 @@ import (
 	// "fmt"
 )
 
-func Bootstrap(path string) error {	
+func Bootstrap(path string) error {
 	err := provider.InitProvider(Provider)
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 	ui.Title("Bootstrap project")
 	errBoot := provider.Bootstrap(path)
-	if(errBoot != nil) {
+	if errBoot != nil {
 		return errBoot
 	} else {
 		ui.Title("Bootstrap done! ❤️")
