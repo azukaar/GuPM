@@ -5,12 +5,6 @@
             "start": "./build/dg"
         }
     },
-    "config": {
-        "default": {
-            "entrypoint": "gupm.json",
-            "installPath": "gupm_modules"
-        }
-    },
     "dependencies": {
         "default": {
             "go://github.com/Masterminds/semver": "master",
@@ -21,10 +15,11 @@
             "go://github.com/otiai10/copy": "master",
             "go://github.com/robertkrimen/otto": "master",
             "go://github.com/stretchr/testify": "master",
-            "go://gopkg.in/sourcemap.v1": "v1.0.5"
+            "go://gopkg.in/sourcemap.v1": "v1.0.5",
+            "os://npm": "*.*.*"
         },
         "defaultProvider": "go"
     },
-    "name": "gupm:gupm",
+    "name": "gupm",
     "version": "1.0.2"
 }
