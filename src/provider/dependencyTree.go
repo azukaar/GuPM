@@ -1,22 +1,22 @@
 package provider
 
-func eliminateRedundancy(tree []map[string]interface {}, path map[string]bool) []map[string]interface {} {
-	var cleanTree = make([]map[string]interface {}, 0)
+func eliminateRedundancy(tree []map[string]interface{}, path map[string]bool) []map[string]interface{} {
+	var cleanTree = make([]map[string]interface{}, 0)
 	for index, dep := range tree {
-		if(dep["name"] != nil) {
+		if dep["name"] != nil {
 			_ = index
 			depKey := dep["name"].(string) + "@" + dep["version"].(string)
-			if(path[depKey] != true) {
+			if path[depKey] != true {
 				cleanTree = append(cleanTree, dep)
 			}
 		}
 	}
-	
-	for index, dep := range cleanTree {
-		if(dep["name"] != nil) {
-			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
 
-			if(ok) {
+	for index, dep := range cleanTree {
+		if dep["name"] != nil {
+			nextDepList, ok := dep["dependencies"].([]map[string]interface{})
+
+			if ok {
 				depKey := dep["name"].(string) + "@" + dep["version"].(string)
 				newPath := make(map[string]bool)
 				for key, value := range path {
@@ -31,8 +31,8 @@ func eliminateRedundancy(tree []map[string]interface {}, path map[string]bool) [
 	return cleanTree
 }
 
-func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]interface {}) ([]map[string]interface {}, []map[string]interface {}) {
-	var cleanTree = make([]map[string]interface {}, 0)
+func flattenDependencyTree(tree []map[string]interface{}, subTree []map[string]interface{}) ([]map[string]interface{}, []map[string]interface{}) {
+	var cleanTree = make([]map[string]interface{}, 0)
 
 	for index, dep := range subTree {
 		var rootDeps = make(map[string]string)
@@ -41,20 +41,20 @@ func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]
 			rootDeps[dep["name"].(string)] = dep["version"].(string)
 		}
 
-		if(rootDeps[dep["name"].(string)] == "") {
+		if rootDeps[dep["name"].(string)] == "" {
 			tree = append(tree, dep)
 
-			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
-	
-			if(ok) {
+			nextDepList, ok := dep["dependencies"].([]map[string]interface{})
+
+			if ok {
 				newTree, newSubTree := flattenDependencyTree(tree, nextDepList)
 				tree = newTree
 				subTree[index]["dependencies"] = newSubTree
 			}
-		} else if(rootDeps[dep["name"].(string)] != dep["version"].(string)) {
-			nextDepList, ok := dep["dependencies"].([]map[string]interface {})
-	
-			if(ok) {
+		} else if rootDeps[dep["name"].(string)] != dep["version"].(string) {
+			nextDepList, ok := dep["dependencies"].([]map[string]interface{})
+
+			if ok {
 				newTree, newSubTree := flattenDependencyTree(tree, nextDepList)
 				tree = newTree
 				subTree[index]["dependencies"] = newSubTree
@@ -67,13 +67,13 @@ func flattenDependencyTree(tree []map[string]interface {}, subTree []map[string]
 	return tree, cleanTree
 }
 
-func BuildDependencyTree(tree []map[string]interface {}) []map[string]interface {} {
+func BuildDependencyTree(tree []map[string]interface{}) []map[string]interface{} {
 	cleanTree := eliminateRedundancy(tree, make(map[string]bool))
 
 	for index, dep := range cleanTree {
-		nextDepList, ok := dep["dependencies"].([]map[string]interface {})
+		nextDepList, ok := dep["dependencies"].([]map[string]interface{})
 
-		if(ok) {
+		if ok {
 			newCleanTree, newDepList := flattenDependencyTree(cleanTree, nextDepList)
 			cleanTree = newCleanTree
 			cleanTree[index]["dependencies"] = newDepList

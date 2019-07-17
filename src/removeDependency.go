@@ -2,24 +2,24 @@ package main
 
 import (
 	"./provider"
-	"./utils"
 	"./ui"
+	"./utils"
 )
 
-func remove(slice []map[string]interface {}, s int) []map[string]interface {} {
-    return append(slice[:s], slice[s+1:]...)
+func remove(slice []map[string]interface{}, s int) []map[string]interface{} {
+	return append(slice[:s], slice[s+1:]...)
 }
 
-func RemoveDependency(path string, rls []string) error {	
+func RemoveDependency(path string, rls []string) error {
 	var err error
 	var packageConfig utils.Json
-	var depList []map[string]interface {}
+	var depList []map[string]interface{}
 
 	ui.Title("Add dependency...")
 
 	err = provider.InitProvider(Provider)
 
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 
@@ -29,7 +29,7 @@ func RemoveDependency(path string, rls []string) error {
 	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
 
 	depList, err = provider.GetDependencyList(packageConfig)
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 
@@ -37,14 +37,14 @@ func RemoveDependency(path string, rls []string) error {
 
 	for _, str := range rls {
 		for index, dep := range depList {
-			if(dep["name"].(string) == str) {
+			if dep["name"].(string) == str {
 				depList = remove(depList, index)
 			}
 		}
 	}
 
 	err = provider.SaveDependencyList(depList)
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 

@@ -1,28 +1,28 @@
 package main
 
 import (
-	"./utils"
-	"./ui"
 	"./provider"
-	"os"
+	"./ui"
+	"./utils"
 	"fmt"
+	"os"
 )
 
 func PluginLink(path string) {
 	configPath := utils.Path(path + "/gupm.json")
-	if(utils.FileExists(configPath)) {
+	if utils.FileExists(configPath) {
 		packageConfig := new(utils.GupmEntryPoint)
 		errConfig := utils.ReadJSON(configPath, &packageConfig)
-		if(errConfig != nil) {
+		if errConfig != nil {
 			ui.Error("Can't read provider configuration")
 			ui.Error(errConfig)
-			return 
+			return
 		}
-	
+
 		pluginFolder := utils.HOMEDIR(".") + utils.Path("/.gupm/plugins/")
-		os.MkdirAll(pluginFolder, os.ModePerm);
-		err := os.Symlink(utils.AbsPath(path), pluginFolder + packageConfig.Name)
-		if(err != nil) {
+		os.MkdirAll(pluginFolder, os.ModePerm)
+		err := os.Symlink(utils.AbsPath(path), pluginFolder+packageConfig.Name)
+		if err != nil {
 			ui.Error(err)
 		}
 	} else {
@@ -37,11 +37,11 @@ func PluginInstall(path string, plugins []string) error {
 	for _, rls := range plugins {
 		ui.Log(rls)
 		newDep, err := provider.ResolveDependencyLocation(utils.BuildDependencyFromString("https", rls))
-		if(err != nil) {
+		if err != nil {
 			return err
 		}
-	
-		newDep["path"] = pluginFolder + utils.Path("/" + newDep["name"].(string))
+
+		newDep["path"] = pluginFolder + utils.Path("/"+newDep["name"].(string))
 		getRes, errorGD := provider.GetDependency(
 			newDep["provider"].(string),
 			newDep["name"].(string),
@@ -49,7 +49,7 @@ func PluginInstall(path string, plugins []string) error {
 			newDep["url"].(string),
 			newDep["path"].(string),
 		)
-		if(errorGD != nil) {
+		if errorGD != nil {
 			return errorGD
 		}
 		_, errorPGD := provider.PostGetDependency(
@@ -60,7 +60,7 @@ func PluginInstall(path string, plugins []string) error {
 			newDep["path"].(string),
 			getRes,
 		)
-		if(errorPGD != nil) {
+		if errorPGD != nil {
 			return errorPGD
 		}
 	}
@@ -72,7 +72,7 @@ func PluginDelete(path string, plugins []string) {
 	pluginFolder := utils.HOMEDIR(".") + utils.Path("/.gupm/plugins/")
 
 	for _, str := range plugins {
-		folders = append(folders, pluginFolder + str)
+		folders = append(folders, pluginFolder+str)
 	}
 
 	utils.RemoveFiles(folders)
@@ -87,15 +87,15 @@ func PluginCreate(path string) {
 	licence := ui.WaitForInput("Enter the licence (ISC): ")
 	ppath := utils.Path(path + "/" + name)
 
-	os.MkdirAll(ppath, os.ModePerm);
-	os.MkdirAll(ppath + utils.Path("/docs/repo"), os.ModePerm);
+	os.MkdirAll(ppath, os.ModePerm)
+	os.MkdirAll(ppath+utils.Path("/docs/repo"), os.ModePerm)
 
-	utils.WriteFile(ppath + utils.Path("/gupm.json"), `{
-	"name": "` + name + `",
+	utils.WriteFile(ppath+utils.Path("/gupm.json"), `{
+	"name": "`+name+`",
 	"version": "0.0.1",
-	"description": "` + description + `",
-	"author": "` + author + `",
-	"licence": "` + licence + `",
+	"description": "`+description+`",
+	"author": "`+author+`",
+	"licence": "`+licence+`",
     "publish": {
         "source": ["."],
         "dest": "../docs/repo"

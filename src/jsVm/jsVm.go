@@ -1,17 +1,17 @@
 package jsVm
 
 import (
-	"../utils"
 	"../ui"
+	"../utils"
+	"encoding/json"
 	"errors"
-	"sync"
+	"github.com/Masterminds/semver"
+	"github.com/robertkrimen/otto"
 	"io/ioutil"
 	"os"
 	"runtime"
+	"sync"
 	"time"
-	"encoding/json"
-	"github.com/robertkrimen/otto"
-	"github.com/Masterminds/semver"
 )
 
 var lock = sync.RWMutex{}
@@ -22,10 +22,10 @@ func Run(path string, input utils.Json) (otto.Value, error) {
 	var ret otto.Value
 
 	lock.Lock()
-	if(scriptCache[path] == "") {
+	if scriptCache[path] == "" {
 		file, err := ioutil.ReadFile(path)
-		if(err != nil) {
-			return otto.UndefinedValue(),  err
+		if err != nil {
+			return otto.UndefinedValue(), err
 		}
 		scriptCache[path] = string(file)
 	}
@@ -33,7 +33,7 @@ func Run(path string, input utils.Json) (otto.Value, error) {
 	lock.Unlock()
 
 	vm := otto.New()
-	vm.Interrupt = make(chan func(), 1) 
+	vm.Interrupt = make(chan func(), 1)
 	Setup(vm)
 
 	for varName, varValue := range input /*.AsObject()*/ {
@@ -42,40 +42,40 @@ func Run(path string, input utils.Json) (otto.Value, error) {
 
 	ret, err = vm.Run(script)
 
-	if(err != nil) {
+	if err != nil {
 		ui.Error(err)
-		return otto.UndefinedValue(),  errors.New("Error occured while executing the GS code")
+		return otto.UndefinedValue(), errors.New("Error occured while executing the GS code")
 	}
 
 	return ret, nil
 }
 
-func Setup(vm *otto.Otto) {	
+func Setup(vm *otto.Otto) {
 	vm.Set("httpGetJson", func(call otto.FunctionCall) otto.Value {
 		url, _ := call.Argument(0).ToString()
 		res := utils.HttpGet(url)
-		result, _ :=  vm.ToValue(utils.StringToJSON(string(res)))
+		result, _ := vm.ToValue(utils.StringToJSON(string(res)))
 		return result
 	})
 
 	vm.Set("httpGet", func(call otto.FunctionCall) otto.Value {
 		url, _ := call.Argument(0).ToString()
 		res := utils.HttpGet(url)
-		result, _ :=  vm.ToValue(string(res))
+		result, _ := vm.ToValue(string(res))
 		return result
 	})
 
 	vm.Set("dir", func(call otto.FunctionCall) otto.Value {
 		glob, _ := call.Argument(0).ToString()
 		res, _ := utils.Dir(glob)
-		result, _ :=  vm.ToValue(res)
+		result, _ := vm.ToValue(res)
 		return result
 	})
-	
+
 	vm.Set("osSleep", func(call otto.FunctionCall) otto.Value {
 		timeMs, _ := call.Argument(0).ToInteger()
 		time.Sleep(time.Duration(timeMs) * time.Millisecond)
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
@@ -83,10 +83,10 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		path = utils.Path(path)
 		b, err := ioutil.ReadFile(path)
-		if(err != nil) {
+		if err != nil {
 			ui.Error(err)
 		}
-		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		result, _ := vm.ToValue(utils.StringToJSON(string(b)))
 		return result
 	})
 
@@ -94,40 +94,40 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		path = utils.Path(path)
 		b, err := ioutil.ReadFile(path)
-		if(err != nil) {
+		if err != nil {
 			ui.Error(err)
 		}
-		result, _ :=  vm.ToValue(string(b))
+		result, _ := vm.ToValue(string(b))
 		return result
 	})
 
 	vm.Set("removeFiles", func(call otto.FunctionCall) otto.Value {
 		files, _ := call.Argument(0).Export()
 		_, isString := files.(string)
-		if(isString) {
+		if isString {
 			files = []string{files.(string)}
 		}
 		utils.RemoveFiles(files.([]string))
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
 	vm.Set("copyFiles", func(call otto.FunctionCall) otto.Value {
 		files, _ := call.Argument(0).Export()
 		_, isString := files.(string)
-		if(isString) {
+		if isString {
 			files = []string{files.(string)}
 		}
 		path, _ := call.Argument(1).ToString()
 		path = utils.Path(path)
 		utils.CopyFiles(files.([]string), path)
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
 	vm.Set("pwd", func(call otto.FunctionCall) otto.Value {
 		dir, _ := os.Getwd()
-		result, _ :=  vm.ToValue(dir)
+		result, _ := vm.ToValue(dir)
 		return result
 	})
 
@@ -135,8 +135,8 @@ func Setup(vm *otto.Otto) {
 		name, _ := call.Argument(0).ToString()
 		value, _ := call.Argument(1).ToString()
 
-		if(value == "undefined") {
-			result, _ :=  vm.ToValue(os.Getenv(name))
+		if value == "undefined" {
+			result, _ := vm.ToValue(os.Getenv(name))
 			return result
 		} else {
 			os.Setenv(name, value)
@@ -149,13 +149,13 @@ func Setup(vm *otto.Otto) {
 		exec, _ := call.Argument(0).ToString()
 		args, _ := call.Argument(1).Export()
 		_, ok := args.([]string)
-		if(!ok) {
+		if !ok {
 			args = make([]string, 0)
 		}
 
 		err := utils.ExecCommand(exec, args.([]string))
 
-		result, _ :=  vm.ToValue(err)
+		result, _ := vm.ToValue(err)
 		return result
 	})
 
@@ -163,28 +163,28 @@ func Setup(vm *otto.Otto) {
 		exec, _ := call.Argument(0).ToString()
 		args, _ := call.Argument(1).Export()
 		_, ok := args.([]string)
-		if(!ok) {
+		if !ok {
 			args = make([]string, 0)
 		}
 
 		res, err := utils.RunCommand(exec, args.([]string))
 
-		if(err != nil) {
+		if err != nil {
 			ui.Error(err)
-			result, _ :=  vm.ToValue(false)
+			result, _ := vm.ToValue(false)
 			return result
 		}
 
 		res = res[:len(res)-1]
 
-		result, _ :=  vm.ToValue(res)
+		result, _ := vm.ToValue(res)
 		return result
 	})
-	
+
 	vm.Set("exit", func(call otto.FunctionCall) otto.Value {
 		code, _ := call.Argument(0).ToInteger()
 		os.Exit(int(code))
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
@@ -192,11 +192,11 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		path = utils.Path(path)
 		toExport, _ := call.Argument(1).Export()
-		file := JsonExport(toExport).(map[string] interface {})
-		
+		file := JsonExport(toExport).(map[string]interface{})
+
 		utils.WriteJsonFile(path, file)
 
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
@@ -205,10 +205,10 @@ func Setup(vm *otto.Otto) {
 		path = utils.Path(path)
 		toExport, _ := call.Argument(1).ToString()
 		err := ioutil.WriteFile(path, []byte(toExport), os.ModePerm)
-		if(err != nil) {
+		if err != nil {
 			ui.Error(err)
 		}
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
@@ -218,58 +218,58 @@ func Setup(vm *otto.Otto) {
 		path, _ := call.Argument(0).ToString()
 		path = utils.Path(path)
 		os.MkdirAll(path, os.ModePerm)
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
-	
+
 	vm.Set("saveLockDep", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		path = utils.Path(path)
 		utils.SaveLockDep(path)
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
-	
+
 	vm.Set("fileExists", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
 		path = utils.Path(path)
 		res := utils.FileExists(path)
-		result, _ :=  vm.ToValue(res)
+		result, _ := vm.ToValue(res)
 		return result
 	})
 
 	vm.Set("waitForInput", func(call otto.FunctionCall) otto.Value {
 		msg, _ := call.Argument(0).ToString()
 		res := ui.WaitForInput(msg)
-		result, _ :=  vm.ToValue(res)
+		result, _ := vm.ToValue(res)
 		return result
 	})
 
 	vm.Set("waitForMenu", func(call otto.FunctionCall) otto.Value {
 		msg, _ := call.Argument(0).Export()
 		res := ui.WaitForMenu(msg.([]string))
-		result, _ :=  vm.ToValue(res)
+		result, _ := vm.ToValue(res)
 		return result
 	})
 
 	vm.Set("waitForKey", func(call otto.FunctionCall) otto.Value {
 		ui.WaitForKey()
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
 	vm.Set("tar", func(call otto.FunctionCall) otto.Value {
 		files, _ := call.Argument(0).Export()
 		_, isString := files.(string)
-		if(isString) {
+		if isString {
 			files = []string{files.(string)}
 		}
 		res, err := utils.Tar(files.([]string))
-		if(err != nil) {
+		if err != nil {
 			ui.Error(err)
 		}
 		b, _ := json.Marshal(res)
-		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		result, _ := vm.ToValue(utils.StringToJSON(string(b)))
 		return result
 	})
 
@@ -281,7 +281,7 @@ func Setup(vm *otto.Otto) {
 		for _, file := range files {
 			filenames = append(filenames, file.Name())
 		}
-		result, _ :=  vm.ToValue(filenames)
+		result, _ := vm.ToValue(filenames)
 		return result
 	})
 
@@ -291,10 +291,10 @@ func Setup(vm *otto.Otto) {
 		to, _ := call.Argument(1).ToString()
 		to = utils.Path(to)
 		err := os.Symlink(from, to)
-		if(err != nil) {
+		if err != nil {
 			ui.Error(err)
 		}
-		result, _ :=  vm.ToValue(true)
+		result, _ := vm.ToValue(true)
 		return result
 	})
 
@@ -303,7 +303,7 @@ func Setup(vm *otto.Otto) {
 		file, _ := call.Argument(0).ToString()
 		res, _ = utils.Untar(file)
 		b, _ := json.Marshal(res)
-		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		result, _ := vm.ToValue(utils.StringToJSON(string(b)))
 		return result
 	})
 
@@ -312,7 +312,7 @@ func Setup(vm *otto.Otto) {
 		file, _ := call.Argument(0).ToString()
 		res, _ = utils.Unzip(file)
 		b, _ := json.Marshal(res)
-		result, _ :=  vm.ToValue(utils.StringToJSON(string(b)))
+		result, _ := vm.ToValue(utils.StringToJSON(string(b)))
 		return result
 	})
 
@@ -334,7 +334,7 @@ func Setup(vm *otto.Otto) {
 		rangeVer, _ := semver.NewConstraint(rangeStr)
 		sver, _ := semver.NewVersion(version)
 		value := rangeVer.Check(sver)
-		result, _ :=  vm.ToValue(value)
+		result, _ := vm.ToValue(value)
 		return result
 	})
 
@@ -352,39 +352,38 @@ func Setup(vm *otto.Otto) {
 			if err != nil {
 				ui.Error(err)
 			}
-			
-			if(rangeVer.Check(sver) && (versionSem == nil || sver.GreaterThan(versionSem))) {
+
+			if rangeVer.Check(sver) && (versionSem == nil || sver.GreaterThan(versionSem)) {
 				version = verCand
 				versionSem = sver
 			}
 		}
-		
 
-		if(version != "") {
-			result, _ :=  vm.ToValue(version)
+		if version != "" {
+			result, _ := vm.ToValue(version)
 			return result
 		} else {
 			return otto.UndefinedValue()
 		}
 	})
-} 
+}
 
-func JsonExport(input interface {}) interface {} {
-	asMap, isMap := input.(map[string] interface {})
-	asSlice, isSlice := input.([] interface {})
-	if(isMap) {
+func JsonExport(input interface{}) interface{} {
+	asMap, isMap := input.(map[string]interface{})
+	asSlice, isSlice := input.([]interface{})
+	if isMap {
 		for index, value := range asMap {
 			asValue, ok := value.(otto.Value)
-			if(ok) {
+			if ok {
 				exported, _ := asValue.Export()
 				asMap[index] = JsonExport(exported)
 			}
 		}
 		return asMap
-	} else if(isSlice) {
+	} else if isSlice {
 		for index, value := range asSlice {
 			asValue, ok := value.(otto.Value)
-			if(ok) {
+			if ok {
 				exported, _ := asValue.Export()
 				asSlice[index] = JsonExport(exported)
 			}

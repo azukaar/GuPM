@@ -6,7 +6,7 @@ package utils
 // )
 
 // type Json map[interface{}]interface {}
-type Json map[string]interface {}
+type Json map[string]interface{}
 
 // func (j *Json) AsObject() map[string]interface {} {
 // 	res := map[string]interface{}{}
@@ -17,15 +17,15 @@ type Json map[string]interface {}
 // }
 
 func (j *Json) Contains(test interface{}) bool {
-	for i, _  := range *j {
-		if(i == test) {
+	for i, _ := range *j {
+		if i == test {
 			return true
 		}
 	}
 	return false
 }
 
-func (j *Json) get (index interface{}) interface {} {
+func (j *Json) get(index interface{}) interface{} {
 	return (*j)[index.(string)]
 }
 

@@ -1,15 +1,15 @@
 package ui
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
-	"time"
-	"sync"
-	"bufio"
-	"errors"
-	"strconv"
 	"os"
+	"strconv"
+	"sync"
+	"time"
 )
 
 var errorList = make([]string, 0)
@@ -18,7 +18,7 @@ var currentLog string
 var currentTitle string
 var progress int
 var screenWidth int
-var positionToDrawAt int 
+var positionToDrawAt int
 var logBox = uilive.New()
 
 var lock = sync.RWMutex{}
@@ -30,7 +30,7 @@ var running = true
 var isWaitingForInput = false
 
 func Title(log string) {
-    _ = color.Green
+	_ = color.Green
 	currentTitle = log
 	currentLog = ""
 	redrawNeeded = true
@@ -41,27 +41,27 @@ func Log(log string) {
 	redrawNeeded = true
 }
 
-func Error(errs... interface{}) error {
+func Error(errs ...interface{}) error {
 	res := ""
-	
+
 	for _, err := range errs {
 		errErr, isErr := err.(error)
 		errStr, isStr := err.(string)
-		if (isErr && errErr != nil) {
+		if isErr && errErr != nil {
 			res += " " + errErr.Error()
-		} else if (isStr) {
+		} else if isStr {
 			res += " " + errStr
 		}
 	}
 
-	if(res != "") {
+	if res != "" {
 		errorLock.Lock()
 		errorList = append(errorList, res)
 		errorLock.Unlock()
-		if(len(errorList) <= 10) {
+		if len(errorList) <= 10 {
 			redrawNeeded = true
 		}
-	
+
 		return errors.New(res)
 	} else {
 		return nil
@@ -70,7 +70,7 @@ func Error(errs... interface{}) error {
 
 func Debug(err string) {
 	debugList = append(debugList, err)
-	if(len(debugList) <= 10) {
+	if len(debugList) <= 10 {
 		Draw()
 	}
 }
@@ -95,11 +95,11 @@ func moveCursor(x int, y int) {
 func init() {
 	positionToDrawAt = 0
 
-    logBox.Start()
-	
+	logBox.Start()
+
 	go (func() {
 		for _ = range time.Tick(200 * time.Millisecond) {
-			if(running){
+			if running {
 				Draw()
 			}
 		}
@@ -107,7 +107,7 @@ func init() {
 }
 
 func drawTitle() string {
-	if(currentTitle != "") {
+	if currentTitle != "" {
 		title := color.New(color.FgBlue, color.Bold)
 		return title.Sprintln("🐶   " + currentTitle)
 	} else {
@@ -116,7 +116,7 @@ func drawTitle() string {
 }
 
 func drawLog() string {
-	if(currentLog != "") {
+	if currentLog != "" {
 		log := color.New(color.FgGreen)
 		return log.Sprintln("✓   " + currentLog)
 	} else {
@@ -153,7 +153,7 @@ func WaitForInput(msg string) string {
 	}
 
 	if scanner.Err() != nil {
-		
+
 	}
 
 	return ""
@@ -165,7 +165,7 @@ func WaitForMenu(msgs []string) int {
 	res := 0
 
 	for _, msg := range msgs {
-		fmt.Println(strconv.Itoa(i)+" : " + msg)
+		fmt.Println(strconv.Itoa(i) + " : " + msg)
 		i++
 	}
 
@@ -177,18 +177,18 @@ func WaitForMenu(msgs []string) int {
 }
 
 func Draw() {
-	if(!redrawNeeded || isWaitingForInput) {
-		return;
+	if !redrawNeeded || isWaitingForInput {
+		return
 	}
 
 	result := ""
 
 	result += drawTitle()
 
-	if(progress > 0) {
+	if progress > 0 {
 		fmt.Print("📦📦")
-		for i := 0; i < 20; i++  {
-			if(i == progress / 5) {
+		for i := 0; i < 20; i++ {
+			if i == progress/5 {
 				fmt.Print("🐕")
 			} else {
 				fmt.Print("-")
@@ -196,7 +196,7 @@ func Draw() {
 		}
 		fmt.Println("🏠")
 	}
-	
+
 	result += drawLog()
 
 	errorColor := color.New(color.FgRed)
@@ -204,10 +204,10 @@ func Draw() {
 	errorLock.RLock()
 	for _, v := range errorList {
 		_ = v
-		if(limit == 10) {
+		if limit == 10 {
 			result += errorColor.Sprintln("❌❌❌   Too many errors to display...")
 			limit++
-			} else if(limit < 10) {
+		} else if limit < 10 {
 			result += errorColor.Sprintln("❌   " + v)
 			limit++
 		}
@@ -217,21 +217,21 @@ func Draw() {
 	limit = 0
 	for _, v := range debugList {
 		_ = v
-		if(limit == 10) {
+		if limit == 10 {
 			result += "Too many debugs..."
 			limit++
-		} else if(limit < 10) {
+		} else if limit < 10 {
 			result += v
 			limit++
 		}
 	}
 
 	lock.Lock()
-	if(running) {
+	if running {
 		fmt.Fprintf(logBox, result)
 	} else {
 		fmt.Fprintf(logBox, "\n")
-		logBox.Stop() 
+		logBox.Stop()
 		fmt.Println(result)
 	}
 	redrawNeeded = false
