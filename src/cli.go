@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
-	"strings"
 	"strconv"
-    "fmt"
+	"strings"
+
 	"./ui"
 	"./utils"
 )
@@ -13,7 +14,8 @@ type json = utils.Json
 
 var ProviderWasForced = false
 
-type Arguments map[string] string
+type Arguments map[string]string
+
 func (a *Arguments) AsJson() json {
 	res := utils.Json{}
 	for i, v := range *a {
@@ -24,7 +26,7 @@ func (a *Arguments) AsJson() json {
 func (a *Arguments) Join() string {
 	res := ""
 	for i, v := range *a {
-		if(v == "true" || v == "false" ) {
+		if v == "true" || v == "false" {
 			res += "--" + strings.ToLower(i) + " "
 		} else if ok, _ := regexp.MatchString(`^\$\d+`, i); ok {
 			res += v + " "
@@ -36,11 +38,13 @@ func (a *Arguments) Join() string {
 }
 func (a *Arguments) AsList() []string {
 	res := []string{}
-	for i, v := range *a {
-		if ok, _ := regexp.MatchString(`^\$\d+`, i); ok && i != "$0" {
-			res = append(res, v)
-		}
+	i := 1
+
+	for (*a)["$"+strconv.Itoa(i)] != "" {
+		res = append(res, (*a)["$"+strconv.Itoa(i)])
+		i++
 	}
+
 	return res
 }
 
@@ -48,49 +52,49 @@ func GetArgs(args []string) (string, Arguments) {
 	arguments := make(Arguments)
 	next := ""
 	dolsI := 1
-	
-	if(len(args) == 0) {
+
+	if len(args) == 0 {
 		arguments["$0"] = ""
 		return "", arguments
 	}
 
 	command := args[0]
-	if(len(args) < 2) {
+	if len(args) < 2 {
 		arguments["$0"] = command
 		return command, arguments
 	}
 
 	argsToParse := args[1:]
-	
-	for _, value := range argsToParse {	
+
+	for _, value := range argsToParse {
 		nameCheck := regexp.MustCompile(`^--?(\w+)`)
 		tryname := nameCheck.FindString(value)
-		if(tryname != "") {
+		if tryname != "" {
 			long, _ := regexp.MatchString(`^--`, tryname)
-			if(long) {
+			if long {
 				tryname = tryname[1:]
 			}
 
-			if(next != "") {
+			if next != "" {
 				arguments[next] = "true"
 				next = ""
 			}
-			next = strings.ToUpper(tryname[1:2]) + tryname[2:]			
+			next = strings.ToUpper(tryname[1:2]) + tryname[2:]
 		} else {
-			if(next != "") {
+			if next != "" {
 				arguments[next] = value
 				next = ""
 			} else {
-				arguments["$" + strconv.FormatInt(int64(dolsI), 10)] = value
+				arguments["$"+strconv.FormatInt(int64(dolsI), 10)] = value
 				dolsI++
 			}
 		}
 	}
 
-	if(next != "") {
+	if next != "" {
 		arguments[next] = "true"
 	}
-	
+
 	arguments["$0"] = command + " " + arguments.Join()
 
 	return command, arguments
@@ -99,12 +103,12 @@ func GetArgs(args []string) (string, Arguments) {
 func getProvider(c string, args Arguments) string {
 	defaultProvider := "gupm"
 
-	if(utils.FileExists("gupm.json")) {
+	if utils.FileExists("gupm.json") {
 		config, err := utils.ReadGupmJson("gupm.json")
-		if(err != nil) {
+		if err != nil {
 			ui.Error(err)
 		} else {
-			if(config.Cli.DefaultProviders[c] != "") {
+			if config.Cli.DefaultProviders[c] != "" {
 				defaultProvider = config.Cli.DefaultProviders[c]
 			}
 		}
@@ -113,36 +117,35 @@ func getProvider(c string, args Arguments) string {
 	if args["Provider"] != "" {
 		ProviderWasForced = true
 		return args["Provider"]
-	} else if(args["P"] != "") {
+	} else if args["P"] != "" {
 		ProviderWasForced = true
-		return args["P"] 
+		return args["P"]
 	} else {
 		return defaultProvider
 	}
 }
 
-
 func ExecCli(c string, args Arguments) (bool, error) {
 	var err error
 	notFound := "Cannot find commmand"
-	shorthands := map[string] string {
-		"h": "help",
-		"m": "make",
-		"i": "install",
-		"d": "delete",
-		"p": "publish",
-		"b": "bootstrap",
-		"c": "cache",
-		"s": "self",
-		"t": "test",
+	shorthands := map[string]string{
+		"h":  "help",
+		"m":  "make",
+		"i":  "install",
+		"d":  "delete",
+		"p":  "publish",
+		"b":  "bootstrap",
+		"c":  "cache",
+		"s":  "self",
+		"t":  "test",
 		"pl": "plugin",
 	}
 
-	if(shorthands[c] != "") {
+	if shorthands[c] != "" {
 		c = shorthands[c]
 	}
-	
-	if provider := getProvider(c, args); provider != ""  {
+
+	if provider := getProvider(c, args); provider != "" {
 		Provider = provider
 	}
 
@@ -157,70 +160,50 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		fmt.Println("cache / c :", "clear or check the cache with \"cache clear\" or \"cache check\"")
 		fmt.Println("self / s :", "self manage gupm. Try g \"self upgrade\" or \"g self uninstall\"")
 		fmt.Println("plugin / pl :", "To install a plugin \"g pl install\". Then use \"g pl create\" to create a new one and \"g pl link\" to test your plugin")
-	} else 
-
-	if c == "make" {
+	} else if c == "make" {
 		err = InstallProject(".")
-	} else
-	
-	if c == "install" {
+	} else if c == "install" {
 		err = AddDependency(".", args.AsList())
-		if(err == nil) {
+		if err == nil {
 			err = InstallProject(".")
 		}
-	} else
-	
-	if c == "publish" {
+	} else if c == "publish" {
 		err = Publish(".")
-	} else
-
-	if c == "delete" {
+	} else if c == "delete" {
 		err = RemoveDependency(".", args.AsList())
-	} else
-	
-	if c == "plugin" {
-		if(args["$1"] == "create") {
+	} else if c == "plugin" {
+		if args["$1"] == "create" {
 			PluginCreate(".")
-		} else if (args["$1"] == "link") {
+		} else if args["$1"] == "link" {
 			PluginLink(".")
-		} else if (args["$1"] == "install") {
+		} else if args["$1"] == "install" {
 			err = PluginInstall(".", args.AsList()[1:])
-		} else if (args["$1"] == "delete") {
+		} else if args["$1"] == "delete" {
 			PluginDelete(".", args.AsList()[1:])
 		} else {
 			ui.Error(notFound, args["$1"], "\n", "try cache clear or cache check")
 		}
-	} else
-	
-	if c == "cache" {
-		if(args["$1"] == "clear") {
+	} else if c == "cache" {
+		if args["$1"] == "clear" {
 			CacheClear()
-		} else if (args["$1"] == "check") {
+		} else if args["$1"] == "check" {
 			ui.Error("Not implemented yet.")
 		} else {
 			ui.Error(notFound, args["$1"], "\n", "try cache clear or cache check")
 		}
-	} else
-
-	if c == "self" {
-		if(args["$1"] == "upgrade") {
+	} else if c == "self" {
+		if args["$1"] == "upgrade" {
 			SelfUpgrade()
-		} else if (args["$1"] == "uninstall") {
+		} else if args["$1"] == "uninstall" {
 			SelfUninstall()
-		}else {
+		} else {
 			ui.Error(notFound, args["$1"])
 		}
-	} else
-	
-	if c == "bootstrap" {
+	} else if c == "bootstrap" {
 		err = Bootstrap(".")
-	} else 
-	
-	if c == "test" {
+	} else if c == "test" {
 		RunTest("tests")
-	} else 
-	
-	{
+	} else {
 		return false, nil
 	}
 
