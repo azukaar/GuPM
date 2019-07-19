@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"./provider"
 	"./ui"
 	"./utils"
-	"fmt"
-	"os"
 )
 
 func PluginLink(path string) {
@@ -102,8 +103,8 @@ func PluginCreate(path string) {
     },
     "config": {
         "default": {
-            "entrypoint": "rubything.rb",
-            "installPath": "go_modules/src"
+            "entrypoint": "gupm.json",
+            "installPath": "gupm_modules"
         }
     }
 }`)

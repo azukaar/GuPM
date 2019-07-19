@@ -168,7 +168,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 			err = InstallProject(".")
 		}
 	} else if c == "publish" {
-		err = Publish(".")
+		err = Publish(".", args["$1"])
 	} else if c == "delete" {
 		err = RemoveDependency(".", args.AsList())
 	} else if c == "plugin" {
