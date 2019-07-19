@@ -1,9 +1,7 @@
 package utils
 
 import (
-	"../ui"
 	"encoding/json"
-	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,6 +12,9 @@ import (
 	"runtime"
 	"sync"
 	"time"
+
+	"../ui"
+	"github.com/mitchellh/go-homedir"
 )
 
 type Dependency struct {
@@ -305,4 +306,17 @@ func ArrString(something interface{}) []string {
 	} else {
 		return something.([]string)
 	}
+}
+
+func GupmConfig() gupmEntryPointConfig {
+	gupmjson, _ := ReadGupmJson(Path(DIRNAME() + "/gupm.json"))
+	return gupmjson.Config.Default
+}
+
+func OSNAME() string {
+	osName := runtime.GOOS
+	if osName == "darwin" {
+		return "mac"
+	}
+	return osName
 }

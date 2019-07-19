@@ -1,14 +1,15 @@
 package provider
 
 import (
+	"errors"
+
 	"../defaultProvider"
 	"../jsVm"
 	"../utils"
-	"errors"
 	// "fmt"
 )
 
-func Publish(path string) error {
+func Publish(path string, namespace string) error {
 	if Provider != "gupm" {
 		var file = utils.FileExists(utils.Path(ProviderPath + "/publish.gs"))
 		if file {
@@ -20,6 +21,6 @@ func Publish(path string) error {
 			return errors.New("Provider doesn't have any publish function. Please use 'g publish' to use the default publish.")
 		}
 	} else {
-		return defaultProvider.Publish(path)
+		return defaultProvider.Publish(path, namespace)
 	}
 }

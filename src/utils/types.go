@@ -25,8 +25,10 @@ type gupmEntryPointConfigList struct {
 }
 
 type gupmEntryPointConfig struct {
-	Entrypoint  string
-	InstallPath string
+	Entrypoint      string
+	InstallPath     string
+	DefaultProvider string
+	OsProviders     map[string]string
 }
 
 type gupmEntryPointPublish struct {

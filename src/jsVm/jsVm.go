@@ -1,17 +1,17 @@
 package jsVm
 
 import (
-	"../ui"
-	"../utils"
 	"encoding/json"
 	"errors"
-	"github.com/Masterminds/semver"
-	"github.com/robertkrimen/otto"
 	"io/ioutil"
 	"os"
-	"runtime"
 	"sync"
 	"time"
+
+	"../ui"
+	"../utils"
+	"github.com/Masterminds/semver"
+	"github.com/robertkrimen/otto"
 )
 
 var lock = sync.RWMutex{}
@@ -212,7 +212,7 @@ func Setup(vm *otto.Otto) {
 		return result
 	})
 
-	vm.Set("_OSNAME", runtime.GOOS)
+	vm.Set("_OSNAME", utils.OSNAME())
 
 	vm.Set("mkdir", func(call otto.FunctionCall) otto.Value {
 		path, _ := call.Argument(0).ToString()
