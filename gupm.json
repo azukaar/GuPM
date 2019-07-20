@@ -22,8 +22,13 @@
     },
     "git": {
         "hooks": {
-            "precommit": "echo $StagedFiles(**/*.go)",
-            "prepush": "echo $UnpushedFiles(**/*.go)"
+            "precommit": [
+                "g gofmt -w -s $StagedFiles(**/*.go)"
+            ],
+            "prepush": [
+                "g test",
+                "g gotest"
+            ]
         }
     },
     "name": "gupm",

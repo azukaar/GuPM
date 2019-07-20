@@ -21,8 +21,8 @@ type gupmEntryPointGit struct {
 }
 
 type gupmEntryPointGitHooks struct {
-	Precommit string
-	Prepush   string
+	Precommit interface{}
+	Prepush   interface{}
 }
 
 type gupmEntryPointDependenciesList struct {
