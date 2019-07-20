@@ -45,10 +45,10 @@ func PluginInstall(path string, plugins []string) error {
 		}
 
 		pluginName := filepath.Base(newDep["name"].(string))
-		if len(strings.Split(pluginName, ":")) > 0 {
+		if len(strings.Split(pluginName, ":")) > 1 {
 			pluginName = strings.Split(pluginName, ":")[1]
 		}
-		if len(strings.Split(pluginName, "/")) > 0 {
+		if len(strings.Split(pluginName, "/")) > 1 {
 			pluginName = strings.Split(pluginName, "/")[1]
 		}
 
