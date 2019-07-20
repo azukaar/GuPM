@@ -36,7 +36,7 @@ This idea is born from the frustration of having to give up my habits whenever I
  * 📦 **Packages Manager**. Install packages from any repository and manage dependencies in a seamless way.
  * 🖥 **CLI Manager**. Install and use CLI tools in a flexible way without conflicts.
  * 🚏 **Scripting**. GuPM is bundled with GuScript, allowing you to build cross platform scripts for your project.
- * 🐙 **Packed with features**. Manage configs, environment variables, CI, and more.
+ * 🐙 **Packed with features**. Manage configs, git hooks, parallel executions, environment variables, CI, and more.
  * 🔥 **Even more to come!** See : [Next](https://github.com/azukaar/GuPM/projects/1#column-5571474) for the roadmap of feature. You are welcomed to contribute!
 <br />
 
