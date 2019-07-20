@@ -6,7 +6,7 @@
             "installPath": "gupm_modules",
             "defaultProvider": "os",
             "osProviders": {
-                "linux": "flathub",
+                "linux": "linux",
                 "mac": "brew",
                 "windows": "chocolatey"
             }
