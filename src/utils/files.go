@@ -60,7 +60,7 @@ func (g *FileStructure) getOrCreate(path string, options FileStructure) FileStru
 	}
 
 	if len(folders) > 1 {
-		next := folders[1:len(folders)]
+		next := folders[1:]
 		return child.getOrCreate(strings.Join(next[:], "/"), options)
 	} else {
 		return child

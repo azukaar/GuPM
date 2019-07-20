@@ -22,9 +22,7 @@
     },
     "git": {
         "hooks": {
-            "precommit": [
-                "gofmt -w -s $StagedFiles(**/*.go)"
-            ],
+            "precommit": "gofmt -w -s $StagedFiles(**/*.go)",
             "prepublish": [
                 "g test",
                 "g gotest"

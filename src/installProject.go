@@ -109,7 +109,7 @@ func expandDepList(depList []map[string]interface{}) []map[string]interface{} {
 		})(channel, index, dep)
 	}
 
-	for _, _ = range depList {
+	for range depList {
 		i := <-channel
 		if i == 0 {
 			return nil
@@ -155,7 +155,7 @@ func installDep(path string, depList []map[string]interface{}) map[string]string
 			channel <- 1
 		})(channel, index, dep)
 	}
-	for _, _ = range depList {
+	for range depList {
 		<-channel
 	}
 	return installPaths

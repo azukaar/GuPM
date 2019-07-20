@@ -98,7 +98,7 @@ func init() {
 	logBox.Start()
 
 	go (func() {
-		for _ = range time.Tick(200 * time.Millisecond) {
+		for range time.Tick(200 * time.Millisecond) {
 			if running {
 				Draw()
 			}

@@ -17,7 +17,7 @@ type Json map[string]interface{}
 // }
 
 func (j *Json) Contains(test interface{}) bool {
-	for i, _ := range *j {
+	for i := range *j {
 		if i == test {
 			return true
 		}
