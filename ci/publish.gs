@@ -11,7 +11,7 @@ if(typeof $1 != "undefined" && $1 == "windows") {
 goArgs = goArgs.concat(dir("src/*.go"))
 
 copyFiles("plugins", "gupm/plugins")
-copyFiles("src/distribution_gupm.json", "build/gupm.json")
+copyFiles("src/distribution_gupm.json", "gupm/gupm.json")
 
 if(typeof $1 != "undefined" && $1 == "mac") {
     env("GOOS", "darwin")
