@@ -118,7 +118,7 @@ func RunHook(path string, hook string) {
 	if hook == "precommit" && config.Git.Hooks.Precommit != nil {
 		runHooks(config.Git.Hooks.Precommit)
 	}
-	if hook == "prepush" && config.Git.Hooks.Prepush != nil {
-		runHooks(config.Git.Hooks.Prepush)
+	if hook == "prepublish" && config.Git.Hooks.Prepublish != nil {
+		runHooks(config.Git.Hooks.Prepublish)
 	}
 }

@@ -25,7 +25,7 @@
             "precommit": [
                 "gofmt -w -s $StagedFiles(**/*.go)"
             ],
-            "prepush": [
+            "prepublish": [
                 "g test",
                 "g gotest"
             ]
