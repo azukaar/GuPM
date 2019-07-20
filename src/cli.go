@@ -161,6 +161,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		fmt.Println("self / s :", "self manage gupm. Try g \"self upgrade\" or \"g self uninstall\"")
 		fmt.Println("plugin / pl :", "To install a plugin \"g pl install\". Then use \"g pl create\" to create a new one and \"g pl link\" to test your plugin")
 	} else if c == "make" {
+		BuildGitHooks(".")
 		err = InstallProject(".")
 	} else if c == "install" {
 		err = AddDependency(".", args.AsList())
@@ -168,7 +169,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 			err = InstallProject(".")
 		}
 	} else if c == "publish" {
-		err = Publish(".")
+		err = Publish(".", args["$1"])
 	} else if c == "delete" {
 		err = RemoveDependency(".", args.AsList())
 	} else if c == "plugin" {
@@ -203,6 +204,8 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		err = Bootstrap(".")
 	} else if c == "test" {
 		RunTest("tests")
+	} else if c == "hook" {
+		RunHook(".", args["$1"])
 	} else {
 		return false, nil
 	}

@@ -5,6 +5,6 @@ goArgs = goArgs.concat(dir("src/*.go"))
 exec("go", goArgs)
 
 copyFiles("plugins", "build/plugins")
-copyFiles("gupm.json", "build/gupm.json")
+copyFiles("src/distribution_gupm.json", "build/gupm.json")
 
 console.log("\nBuild done! 💖")

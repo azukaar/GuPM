@@ -4,6 +4,7 @@ type GupmEntryPoint struct {
 	Name              string
 	Version           string
 	WrapInstallFolder string
+	Git               gupmEntryPointGit
 	Publish           gupmEntryPointPublish
 	Cli               gupmEntryPointCliList
 	Config            gupmEntryPointConfigList
@@ -13,6 +14,15 @@ type GupmEntryPoint struct {
 type gupmEntryPointCliList struct {
 	DefaultProviders map[string]string
 	Aliases          map[string]interface{}
+}
+
+type gupmEntryPointGit struct {
+	Hooks gupmEntryPointGitHooks
+}
+
+type gupmEntryPointGitHooks struct {
+	Precommit interface{}
+	Prepush   interface{}
 }
 
 type gupmEntryPointDependenciesList struct {
@@ -25,8 +35,10 @@ type gupmEntryPointConfigList struct {
 }
 
 type gupmEntryPointConfig struct {
-	Entrypoint  string
-	InstallPath string
+	Entrypoint      string
+	InstallPath     string
+	DefaultProvider string
+	OsProviders     map[string]string
 }
 
 type gupmEntryPointPublish struct {

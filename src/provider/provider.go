@@ -1,14 +1,15 @@
 package provider
 
 import (
-	"../defaultProvider"
-	"../jsVm"
-	"../ui"
-	"../utils"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"../defaultProvider"
+	"../jsVm"
+	"../ui"
+	"../utils"
 )
 
 var Provider string
@@ -18,6 +19,17 @@ var linkHasErrored = false
 var pConfigLock = sync.RWMutex{}
 
 func GetProviderPath(name string) string {
+	if name == "os" {
+		osName := utils.OSNAME()
+		gupmConfig := utils.GupmConfig()
+		if gupmConfig.OsProviders[osName] != "" {
+			name = gupmConfig.OsProviders[osName]
+		} else {
+			ui.Error("No provider set for", osName)
+			return utils.DIRNAME()
+		}
+	}
+
 	if name == "gupm" || name == "" {
 		return utils.DIRNAME()
 	} else {

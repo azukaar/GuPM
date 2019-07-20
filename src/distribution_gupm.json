@@ -1,0 +1,15 @@
+{
+    "name": "gupm",
+    "config": {
+        "default": {
+            "entrypoint": "gupm.json",
+            "installPath": "gupm_modules",
+            "defaultProvider": "os",
+            "osProviders": {
+                "linux": "linux",
+                "mac": "brew",
+                "windows": "chocolatey"
+            }
+        }
+    }
+}

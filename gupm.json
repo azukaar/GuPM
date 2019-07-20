@@ -5,15 +5,10 @@
             "start": "./build/dg"
         }
     },
-    "config": {
-        "default": {
-            "entrypoint": "gupm.json",
-            "installPath": "gupm_modules"
-        }
-    },
     "dependencies": {
         "default": {
             "go://github.com/Masterminds/semver": "master",
+            "go://github.com/bmatcuk/doublestar": "master",
             "go://github.com/fatih/color": "master",
             "go://github.com/gosuri/uilive": "master",
             "go://github.com/mattn/go-isatty": "master",
@@ -25,6 +20,17 @@
         },
         "defaultProvider": "go"
     },
-    "name": "gupm:gupm",
-    "version": "1.0.2"
+    "git": {
+        "hooks": {
+            "precommit": [
+                "gofmt -w -s $StagedFiles(**/*.go)"
+            ],
+            "prepush": [
+                "g test",
+                "g gotest"
+            ]
+        }
+    },
+    "name": "gupm",
+    "version": "1.2.0"
 }
