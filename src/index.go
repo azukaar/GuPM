@@ -119,7 +119,7 @@ func main() {
 					ch <- 0
 				}(aliasLine.(string))
 			}
-			for _, _ = range listAlias {
+			for range listAlias {
 				<-ch
 			}
 		} else {
