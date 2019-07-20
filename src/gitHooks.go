@@ -15,8 +15,8 @@ func BuildGitHooks(path string) {
 		if !utils.FileExists(".git/hooks/pre-commit") {
 			utils.WriteFile(".git/hooks/pre-commit", "g hook precommit")
 		}
-		if !utils.FileExists(".git/hooks/pre-publish") {
-			utils.WriteFile(".git/hooks/pre-publish", "g hook prepublish")
+		if !utils.FileExists(".git/hooks/pre-push") {
+			utils.WriteFile(".git/hooks/pre-push", "g hook prepush")
 		}
 	}
 }
@@ -118,7 +118,7 @@ func RunHook(path string, hook string) {
 	if hook == "precommit" && config.Git.Hooks.Precommit != nil {
 		runHooks(config.Git.Hooks.Precommit)
 	}
-	if hook == "prepublish" && config.Git.Hooks.Prepublish != nil {
-		runHooks(config.Git.Hooks.Prepublish)
+	if hook == "prepush" && config.Git.Hooks.Prepush != nil {
+		runHooks(config.Git.Hooks.Prepush)
 	}
 }
