@@ -3,9 +3,10 @@ package utils
 import (
 	"os"
 	"strings"
+
 	// "fmt"
+	"github.com/bmatcuk/doublestar"
 	"github.com/otiai10/copy"
-	"path/filepath"
 )
 
 var EmptyFileStructure = FileStructure{}
@@ -18,7 +19,7 @@ type FileStructure struct {
 }
 
 func Dir(path string) (matches []string, err error) {
-	return filepath.Glob(path)
+	return doublestar.Glob(path)
 }
 
 func RemoveFiles(files []string) error {

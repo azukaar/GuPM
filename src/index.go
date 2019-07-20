@@ -55,6 +55,13 @@ func runAlias(alias string) {
 	}
 }
 
+func runAliasList(aliasList string) {
+	aliases := strings.Split(aliasList, ";")
+	for _, alias := range aliases {
+		runhook(strings.Trim(alias, " "))
+	}
+}
+
 func main() {
 	binFolder := make(map[string]bool)
 
@@ -108,15 +115,15 @@ func main() {
 		if isArray {
 			for _, aliasLine := range listAlias {
 				go func(aliasLine string) {
-					runAlias(aliasLine)
+					runAliasList(aliasLine)
 					ch <- 0
 				}(aliasLine.(string))
 			}
-			for _, _ = range listAlias {
+			for range listAlias {
 				<-ch
 			}
 		} else {
-			runAlias(aliases[c].(string))
+			runAliasList(aliases[c].(string))
 		}
 	} else if binFolder[c] == true {
 		binFile(c, os.Args[2:])
