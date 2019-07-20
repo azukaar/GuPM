@@ -2,7 +2,11 @@
     "cli": {
         "aliases": {
             "gotest": "go test ./src ./src/utils",
-            "start": "./build/dg"
+            "start": "./build/dg",
+            "new": [
+                "echo 123",
+                "echo 456"
+            ]
         }
     },
     "dependencies": {

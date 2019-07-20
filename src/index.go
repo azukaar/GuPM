@@ -1,14 +1,15 @@
 package main
 
 import (
-	"./jsVm"
-	"./ui"
-	"./utils"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"./jsVm"
+	"./ui"
+	"./utils"
 )
 
 var Provider string
@@ -41,6 +42,17 @@ func binFile(name string, args []string) {
 func Exit(code int) {
 	ui.Stop()
 	os.Exit(code)
+}
+
+func runAlias(alias string) {
+	commands := strings.Split(alias, ";")
+	for _, command := range commands {
+		commandList := strings.Split(command, " ")
+		err := utils.ExecCommand(commandList[0], append(commandList[1:], os.Args[2:]...))
+		if err != nil {
+			ui.Error(err)
+		}
+	}
 }
 
 func main() {
@@ -91,10 +103,20 @@ func main() {
 		}
 		utils.ExecCommand(toProcess[0], toProcess[1:])
 	} else if aliases[c] != nil {
-		commands := strings.Split(aliases[c].(string), ";")
-		for _, command := range commands {
-			commandList := strings.Split(command, " ")
-			utils.ExecCommand(commandList[0], append(commandList[1:], os.Args[2:]...))
+		ch := make(chan int)
+		listAlias, isArray := aliases[c].([]interface{})
+		if isArray {
+			for _, aliasLine := range listAlias {
+				go func(aliasLine string) {
+					runAlias(aliasLine)
+					ch <- 0
+				}(aliasLine.(string))
+			}
+			for _, _ = range listAlias {
+				<-ch
+			}
+		} else {
+			runAlias(aliases[c].(string))
 		}
 	} else if binFolder[c] == true {
 		binFile(c, os.Args[2:])
