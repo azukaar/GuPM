@@ -77,7 +77,7 @@ func runhook(hook string) {
 		}
 	}
 
-	commandListConsolidated := strings.Join(commandList, " ")
+	commandListConsolidated := strings.Trim(strings.Join(commandList, " "), " ")
 	commandList = strings.Split(commandListConsolidated, " ")
 
 	err := utils.ExecCommand(commandList[0], append(commandList[1:]))
