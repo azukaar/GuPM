@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"./provider"
 	"./ui"
@@ -42,7 +44,15 @@ func PluginInstall(path string, plugins []string) error {
 			return err
 		}
 
-		newDep["path"] = pluginFolder + utils.Path("/"+newDep["name"].(string))
+		pluginName := filepath.Base(newDep["name"].(string))
+		if len(strings.Split(pluginName, ":")) > 0 {
+			pluginName = strings.Split(pluginName, ":")[1]
+		}
+		if len(strings.Split(pluginName, "/")) > 0 {
+			pluginName = strings.Split(pluginName, "/")[1]
+		}
+
+		newDep["path"] = pluginFolder + utils.Path("/"+pluginName)
 		getRes, errorGD := provider.GetDependency(
 			newDep["provider"].(string),
 			newDep["name"].(string),
