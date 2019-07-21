@@ -18,6 +18,15 @@ else
     ln -s ~/.gupm/gupm/g /bin/g
 fi
 
+if [ "$(uname)" = "Darwin" ]; then
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+    then
+        g plugin install https://azukaar.github.io/GuPM-official/repo:provider-brew
+        sed -ie 's/"defaultProvider": "gupm"/"defaultProvider": "os"/' ~/.gupm/gupm/gupm.json
+    fi
+    esac
+fi
+
 echo "------"
 echo "Installaton complete"
 echo "------"
