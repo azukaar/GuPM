@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -35,6 +36,7 @@ func Run(path string, input utils.Json) (otto.Value, error) {
 	vm := otto.New()
 	vm.Interrupt = make(chan func(), 1)
 	Setup(vm)
+	vm.Set("_DIRNAME", filepath.Dir(path))
 
 	for varName, varValue := range input /*.AsObject()*/ {
 		vm.Set(varName, varValue)
@@ -175,7 +177,9 @@ func Setup(vm *otto.Otto) {
 			return result
 		}
 
-		res = res[:len(res)-1]
+		if res != "" {
+			res = res[:len(res)-1]
+		}
 
 		result, _ := vm.ToValue(res)
 		return result

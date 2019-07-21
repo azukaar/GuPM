@@ -19,9 +19,14 @@ var linkHasErrored = false
 var pConfigLock = sync.RWMutex{}
 
 func GetProviderPath(name string) string {
+	gupmConfig := utils.GupmConfig()
+
+	if name == "" {
+		name = gupmConfig.DefaultProvider
+	}
+
 	if name == "os" {
 		osName := utils.OSNAME()
-		gupmConfig := utils.GupmConfig()
 		if gupmConfig.OsProviders[osName] != "" {
 			name = gupmConfig.OsProviders[osName]
 		} else {
@@ -30,7 +35,7 @@ func GetProviderPath(name string) string {
 		}
 	}
 
-	if name == "gupm" || name == "" {
+	if name == "gupm" {
 		return utils.DIRNAME()
 	} else {
 		homePlugin := utils.HOMEDIR(".") + utils.Path("/.gupm/plugins/provider-"+name)

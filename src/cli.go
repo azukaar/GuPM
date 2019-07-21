@@ -101,7 +101,18 @@ func GetArgs(args []string) (string, Arguments) {
 }
 
 func getProvider(c string, args Arguments) string {
-	defaultProvider := "gupm"
+	gupmConfig := utils.GupmConfig()
+	defaultProvider := gupmConfig.DefaultProvider
+
+	if defaultProvider == "os" {
+		osName := utils.OSNAME()
+		if gupmConfig.OsProviders[osName] != "" {
+			defaultProvider = gupmConfig.OsProviders[osName]
+		} else {
+			ui.Error("No provider set for", osName)
+			return utils.DIRNAME()
+		}
+	}
 
 	if utils.FileExists("gupm.json") {
 		config, err := utils.ReadGupmJson("gupm.json")
