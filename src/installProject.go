@@ -59,7 +59,7 @@ func expandDepList(depList []map[string]interface{}) []map[string]interface{} {
 					if errorGD != nil {
 						ui.Error(errorGD)
 					}
-					_, errorPGD := provider.PostGetDependency(
+					newPath, errorPGD := provider.PostGetDependency(
 						newDep["provider"].(string),
 						newDep["name"].(string),
 						newDep["version"].(string),
@@ -67,6 +67,9 @@ func expandDepList(depList []map[string]interface{}) []map[string]interface{} {
 						newDep["path"].(string),
 						getRes,
 					)
+
+					newDep["path"] = newPath
+
 					if errorPGD != nil {
 						ui.Error(errorPGD)
 					}
