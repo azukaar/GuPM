@@ -207,7 +207,7 @@ func InstallProject(path string) error {
 	}
 
 	ui.Title("Install dependencies...")
-	installPaths := installDep(".", depList)
+	installPaths := installDep(path, depList)
 
 	ui.Title("Install Binaries...")
 	err = provider.BinaryInstall(installPaths)
