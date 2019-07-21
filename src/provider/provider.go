@@ -95,10 +95,11 @@ func GetProviderConfig(providerName string) (*utils.GupmEntryPoint, error) {
 	}
 }
 
-func GetPackageConfig() (utils.Json, error) {
+func GetPackageConfig(path string) (utils.Json, error) {
 	var file = utils.FileExists(ProviderPath + utils.Path("/getPackageConfig.gs"))
 	if file {
 		input := make(map[string]interface{})
+		input["Path"] = path
 		res, err := jsVm.Run(ProviderPath+utils.Path("/getPackageConfig.gs"), input)
 		if err != nil {
 			return nil, err
@@ -111,7 +112,7 @@ func GetPackageConfig() (utils.Json, error) {
 		if err != nil {
 			return nil, err
 		}
-		return defaultProvider.GetPackageConfig(pc.Config.Default.Entrypoint), nil
+		return defaultProvider.GetPackageConfig(utils.Path(path + "/" + pc.Config.Default.Entrypoint)), nil
 	}
 }
 
@@ -133,11 +134,12 @@ func PostGetPackageConfig(config utils.Json) (utils.Json, error) {
 	}
 }
 
-func SaveDependencyList(depList []map[string]interface{}) error {
+func SaveDependencyList(path string, depList []map[string]interface{}) error {
 	var file = utils.FileExists(ProviderPath + utils.Path("/saveDependencyList.gs"))
 	if file {
 		input := make(map[string]interface{})
 		input["Dependencies"] = depList
+		input["Path"] = path
 
 		_, err := jsVm.Run(ProviderPath+utils.Path("/saveDependencyList.gs"), input)
 		if err != nil {
@@ -146,7 +148,7 @@ func SaveDependencyList(depList []map[string]interface{}) error {
 
 		return nil
 	} else {
-		return defaultProvider.SaveDependencyList(depList)
+		return defaultProvider.SaveDependencyList(path, depList)
 	}
 }
 

@@ -32,7 +32,7 @@ func AddDependency(path string, rls []string) error {
 		return err
 	}
 
-	packageConfig, err = provider.GetPackageConfig()
+	packageConfig, err = provider.GetPackageConfig(path)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func AddDependency(path string, rls []string) error {
 	}
 
 	if packageConfig != nil {
-		err = provider.SaveDependencyList(depList)
+		err = provider.SaveDependencyList(path, depList)
 		if err != nil {
 			return err
 		}

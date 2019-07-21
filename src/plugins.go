@@ -74,6 +74,10 @@ func PluginInstall(path string, plugins []string) error {
 		if errorPGD != nil {
 			return errorPGD
 		}
+
+		InstallProject(newDep["path"].(string))
+
+		ui.Title("Installation done ❤️")
 	}
 	return nil
 }

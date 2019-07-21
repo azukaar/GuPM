@@ -179,7 +179,7 @@ func InstallProject(path string) error {
 
 	providerConfig, err = provider.GetProviderConfig(Provider)
 	ui.Error(err)
-	packageConfig, _ = provider.GetPackageConfig()
+	packageConfig, _ = provider.GetPackageConfig(path)
 	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
 
 	depList, err = provider.GetDependencyList(packageConfig)

@@ -25,7 +25,7 @@ func RemoveDependency(path string, rls []string) error {
 
 	providerConfig, err = provider.GetProviderConfig(Provider)
 	ui.Error(err)
-	packageConfig, _ = provider.GetPackageConfig()
+	packageConfig, _ = provider.GetPackageConfig(path)
 	packageConfig, _ = provider.PostGetPackageConfig(packageConfig)
 
 	depList, err = provider.GetDependencyList(packageConfig)
@@ -43,7 +43,7 @@ func RemoveDependency(path string, rls []string) error {
 		}
 	}
 
-	err = provider.SaveDependencyList(depList)
+	err = provider.SaveDependencyList(path, depList)
 	if err != nil {
 		return err
 	}

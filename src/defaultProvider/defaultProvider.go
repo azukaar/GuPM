@@ -159,7 +159,7 @@ func BinaryInstall(path string, packagePath string) error {
 	return nil
 }
 
-func SaveDependencyList(depList []map[string]interface{}) error {
+func SaveDependencyList(path string, depList []map[string]interface{}) error {
 	config := GetPackageConfig("gupm.json")
 	if config["dependencies"] == nil {
 		config["dependencies"] = make(map[string]interface{})
@@ -175,7 +175,7 @@ func SaveDependencyList(depList []map[string]interface{}) error {
 		config["dependencies"].(map[string]interface{})["default"].(map[string]interface{})[key] = dep["version"].(string)
 	}
 
-	utils.WriteJsonFile("gupm.json", config)
+	utils.WriteJsonFile(utils.Path(path+"/"+"gupm.json"), config)
 
 	return nil
 }
