@@ -103,7 +103,7 @@ func GetArgs(args []string) (string, Arguments) {
 func getProvider(c string, args Arguments) string {
 	gupmConfig := utils.GupmConfig()
 	defaultProvider := "gupm"
-	fmt.Println(c, gupmConfig)
+
 	if c == "install" {
 		defaultProvider = gupmConfig.DefaultProvider
 	}
