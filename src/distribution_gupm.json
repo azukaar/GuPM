@@ -4,7 +4,7 @@
         "default": {
             "entrypoint": "gupm.json",
             "installPath": "gupm_modules",
-            "defaultProvider": "os",
+            "defaultProvider": "gupm",
             "osProviders": {
                 "linux": "linux",
                 "mac": "brew",
