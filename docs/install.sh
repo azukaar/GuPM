@@ -13,8 +13,16 @@ rm gupm.tar.gz
 
 if [ -d "/usr/local/bin" ] 
 then
+    if [ -f "/usr/local/bin/g" ] 
+    then
+        rm /usr/local/bin/g
+    fi
     ln -s ~/.gupm/gupm/g /usr/local/bin/g
 else
+    if [ -f "/bin/g" ] 
+    then
+        rm /bin/g
+    fi
     ln -s ~/.gupm/gupm/g /bin/g
 fi
 
