@@ -29,14 +29,18 @@ func executeFile(path string, args Arguments) {
 	if err != nil {
 		ui.Error("File execution failed")
 		ui.Error(err)
-		os.Exit(1)
+		Exit(1)
 	}
 }
 
 func binFile(name string, args []string) {
 	path := utils.Path("./.bin/" + name)
 	realPath, _ := filepath.EvalSymlinks(path)
-	utils.ExecCommand(realPath, args)
+	err := utils.ExecCommand(realPath, args)
+	if err != nil {
+		ui.Error(err)
+		Exit(1)
+	}
 }
 
 func Exit(code int) {

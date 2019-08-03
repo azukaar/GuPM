@@ -35,7 +35,6 @@ if(name.split(':').length > 1) {
     Dependency.version = version
 } else {
     Dependency.url = 'http://' + name
-    Dependency.name = Dependency.name.replace(/\//g, "-")
 }
 
 Dependency;
