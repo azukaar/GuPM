@@ -144,11 +144,11 @@ func installDep(path string, depList []map[string]interface{}) map[string]string
 			ui.Log("Installing " + path)
 			provider.InstallDependency(destination, dep)
 
-			if path == "." {
-				installPathsLock.Lock()
-				installPaths[dep["provider"].(string)] = depProviderConfig.Config.Default.InstallPath
-				installPathsLock.Unlock()
-			}
+			// if path == "." {
+			installPathsLock.Lock()
+			installPaths[dep["provider"].(string)] = utils.Path(path + "/" + depProviderConfig.Config.Default.InstallPath)
+			installPathsLock.Unlock()
+			// }
 
 			nextDepList, ok := depList[index]["dependencies"].([]map[string]interface{})
 
@@ -210,7 +210,7 @@ func InstallProject(path string) error {
 	installPaths := installDep(path, depList)
 
 	ui.Title("Install Binaries...")
-	err = provider.BinaryInstall(installPaths)
+	err = provider.BinaryInstall(path, installPaths)
 	if err != nil {
 		return err
 	}

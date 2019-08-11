@@ -140,7 +140,7 @@ func ExpandDependency(dependency map[string]interface{}) (map[string]interface{}
 	return dependency, nil
 }
 
-func BinaryInstall(path string, packagePath string) error {
+func BinaryInstall(dest string, packagePath string) error {
 	packages, _ := utils.ReadDir(packagePath)
 
 	for _, dep := range packages {
@@ -150,7 +150,7 @@ func BinaryInstall(path string, packagePath string) error {
 			if config["binaries"] != nil {
 				bins := config["binaries"].(map[string]string)
 				for name, relPath := range bins {
-					os.Symlink(utils.Path("../gupm_modules/"+"/"+dep.Name()+relPath), ".bin/"+name)
+					os.Symlink(utils.Path("/../gupm_modules/"+"/"+dep.Name()+relPath), utils.Path(dest+"/"+name))
 				}
 			}
 		}
@@ -160,7 +160,7 @@ func BinaryInstall(path string, packagePath string) error {
 }
 
 func SaveDependencyList(path string, depList []map[string]interface{}) error {
-	config := GetPackageConfig("gupm.json")
+	config := GetPackageConfig(utils.Path(path + "/gupm.json"))
 	if config["dependencies"] == nil {
 		config["dependencies"] = make(map[string]interface{})
 	}

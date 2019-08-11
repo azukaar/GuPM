@@ -47,6 +47,16 @@ func (a *Arguments) AsList() []string {
 
 	return res
 }
+func (a *Arguments) Shift() {
+	i := 2
+
+	for (*a)["$"+strconv.Itoa(i)] != "" {
+		(*a)["$"+strconv.Itoa(i-1)] = (*a)["$"+strconv.Itoa(i)]
+		i++
+	}
+
+	(*a)["$"+strconv.Itoa(i-1)] = ""
+}
 
 func GetArgs(args []string) (string, Arguments) {
 	arguments := make(Arguments)
@@ -104,9 +114,12 @@ func getProvider(c string, args Arguments) string {
 	gupmConfig := utils.GupmConfig()
 	defaultProvider := "gupm"
 
-	if c == "install" {
+	if c == "install" || c == "global" {
 		defaultProvider = gupmConfig.DefaultProvider
 	}
+
+	fmt.Println(gupmConfig)
+	fmt.Println(gupmConfig.DefaultProvider)
 
 	if defaultProvider == "os" {
 		osName := utils.OSNAME()
@@ -154,6 +167,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		"s":  "self",
 		"t":  "test",
 		"pl": "plugin",
+		"g":  "global",
 	}
 
 	if shorthands[c] != "" {
@@ -172,6 +186,7 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		fmt.Println("bootstrap / b :", "[--provider=]", "bootstrap a new project based on the model of your specific provider")
 		fmt.Println("test / t :", "[--provider=] Run project's tests in tests folder.")
 
+		fmt.Println("global / g :", "install or delete global packages")
 		fmt.Println("cache / c :", "clear or check the cache with \"cache clear\" or \"cache check\"")
 		fmt.Println("self / s :", "self manage gupm. Try g \"self upgrade\" or \"g self uninstall\"")
 		fmt.Println("plugin / pl :", "To install a plugin \"g pl install\". Then use \"g pl create\" to create a new one and \"g pl link\" to test your plugin")
@@ -187,6 +202,16 @@ func ExecCli(c string, args Arguments) (bool, error) {
 		err = Publish(".", args["$1"])
 	} else if c == "delete" {
 		err = RemoveDependency(".", args.AsList())
+	} else if c == "global" {
+		if args["$1"] == "install" || args["$1"] == "i" {
+			args.Shift()
+			GlobalAdd(args.AsList())
+		} else if args["$1"] == "delete" || args["$1"] == "d" {
+			args.Shift()
+			GlobalDelete(args.AsList())
+		} else {
+			ui.Error(notFound, args["$1"], "\n", "try install or delete")
+		}
 	} else if c == "plugin" {
 		if args["$1"] == "create" {
 			PluginCreate(".")

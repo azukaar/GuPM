@@ -1,24 +1,27 @@
 package provider
 
 import (
+	"io/ioutil"
+	"os"
+	"regexp"
+
 	"../defaultProvider"
 	"../jsVm"
 	"../ui"
 	"../utils"
-	"io/ioutil"
-	"os"
-	"regexp"
 )
 
-func BinaryInstall(path map[string]string) error {
-	os.RemoveAll(".bin")
+func BinaryInstall(path string, paths map[string]string) error {
+	dest := utils.Path(path + "/.bin")
+	os.RemoveAll(dest)
+	os.MkdirAll(dest, os.ModePerm)
 
-	for pr, prdir := range path {
+	for pr, prdir := range paths {
 		depProviderPath := GetProviderPath(pr)
 		var file = utils.FileExists(depProviderPath + utils.Path("/binaryInstall.gs"))
 		if pr != "gupm" && file {
 			input := make(map[string]interface{})
-			input["Destination"] = ".bin"
+			input["Destination"] = dest
 			input["Source"] = prdir
 
 			res, err := jsVm.Run(depProviderPath+utils.Path("/binaryInstall.gs"), input)
@@ -29,7 +32,7 @@ func BinaryInstall(path map[string]string) error {
 			_, err1 := res.ToString()
 			return err1
 		} else {
-			return defaultProvider.BinaryInstall(".bin", prdir)
+			return defaultProvider.BinaryInstall(dest, prdir)
 		}
 	}
 	return nil
