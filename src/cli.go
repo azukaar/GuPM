@@ -118,9 +118,6 @@ func getProvider(c string, args Arguments) string {
 		defaultProvider = gupmConfig.DefaultProvider
 	}
 
-	fmt.Println(gupmConfig)
-	fmt.Println(gupmConfig.DefaultProvider)
-
 	if defaultProvider == "os" {
 		osName := utils.OSNAME()
 		if gupmConfig.OsProviders[osName] != "" {
