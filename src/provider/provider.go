@@ -256,6 +256,7 @@ func GetDependency(provider string, name string, version string, url string, pat
 
 func PostGetDependency(provider string, name string, version string, url string, path string, result string) (string, error) {
 	depProviderPath := GetProviderPath(provider)
+
 	var file = utils.FileExists(depProviderPath + utils.Path("/postGetDependency.gs"))
 	if provider != "gupm" && file {
 		input := make(map[string]interface{})

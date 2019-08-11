@@ -43,7 +43,6 @@ func PluginInstall(path string, plugins []string) error {
 		if err != nil {
 			return err
 		}
-
 		pluginName := filepath.Base(newDep["name"].(string))
 		if len(strings.Split(pluginName, ":")) > 1 {
 			pluginName = strings.Split(pluginName, ":")[1]
@@ -52,7 +51,8 @@ func PluginInstall(path string, plugins []string) error {
 			pluginName = strings.Split(pluginName, "/")[1]
 		}
 
-		newDep["path"] = pluginFolder + utils.Path("/"+pluginName)
+		newDep["path"] = pluginFolder + utils.Path(pluginName)
+
 		getRes, errorGD := provider.GetDependency(
 			newDep["provider"].(string),
 			newDep["name"].(string),
@@ -63,6 +63,7 @@ func PluginInstall(path string, plugins []string) error {
 		if errorGD != nil {
 			return errorGD
 		}
+
 		_, errorPGD := provider.PostGetDependency(
 			newDep["provider"].(string),
 			newDep["name"].(string),
